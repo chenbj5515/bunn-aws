@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   getAskAIStateAtom,
@@ -39,22 +39,25 @@ export function AskAISection({ memoCard }: AskAISectionProps) {
 
   const askAIState = getAskAIState(memoCard.id);
 
-  // 初始化：检查是否有历史消息
-  useEffect(() => {
-    // 转换预加载的消息格式
-    const preloadedMessages = memoCard.messages?.map(msg => ({
+  // 预处理预加载的消息（从 RSC 传入）
+  const preloadedMessages = useMemo(() => {
+    if (!memoCard.messages || memoCard.messages.length === 0) return undefined;
+    return memoCard.messages.map(msg => ({
       id: msg.id,
       role: msg.role as 'user' | 'assistant',
       content: msg.content,
       isInitialAnalysis: msg.isInitialAnalysis,
       isHistory: true,
     }));
+  }, [memoCard.messages]);
 
+  // 初始化：同步 Jotai 状态
+  useEffect(() => {
     initializeAskAI({
       cardId: memoCard.id,
       messages: preloadedMessages,
     });
-  }, [memoCard.id, memoCard.messages, initializeAskAI]);
+  }, [memoCard.id, preloadedMessages, initializeAskAI]);
 
   // 处理发送消息（从输入框）
   const handleSendMessage = (message: string) => {
@@ -82,22 +85,17 @@ export function AskAISection({ memoCard }: AskAISectionProps) {
 
   // 根据状态渲染不同的内容
   const renderContent = () => {
-    const { stage, messages, isLoadingHistory } = askAIState;
+    const { stage, messages: storeMessages } = askAIState;
 
-    // 正在加载历史消息时显示加载状态
-    if (isLoadingHistory) {
-      return (
-        <div className="flex justify-center items-center bg-gray-50 p-4 border border-gray-200 rounded-xl h-[140px]">
-          <div className="text-gray-400 text-sm animate-pulse">加载中...</div>
-        </div>
-      );
-    }
+    // 优先使用预加载的消息（首次渲染时 Jotai 状态可能还没更新）
+    const hasPreloadedMessages = preloadedMessages && preloadedMessages.length > 0;
+    const displayMessages = storeMessages.length > 0 ? storeMessages : (preloadedMessages || []);
 
-    // 有历史消息时显示预览框
-    if (stage === AskAIStage.HasHistory || (stage === AskAIStage.DialogOpen && messages.length > 0)) {
+    // 有消息时显示预览框
+    if (hasPreloadedMessages || stage === AskAIStage.HasHistory || (stage === AskAIStage.DialogOpen && storeMessages.length > 0)) {
       return (
         <AskAIChatPreview
-          messages={messages}
+          messages={displayMessages}
           onClick={handlePreviewClick}
         />
       );

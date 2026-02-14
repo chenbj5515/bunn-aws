@@ -3,7 +3,7 @@
 import { FC } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslations } from 'next-intl';
-import { MemoCardV2 as MemoCard } from '@/components/memo-card';
+import { MemoCard as MemoCard } from '@/components/memo-card';
 import { DeleteButton } from '@/components/ui/delete-button';
 import {
   showMemoCardAtom,
@@ -30,6 +30,8 @@ export const MemoCardModal: FC = () => {
   const channelDetail = useAtomValue(channelDetailAtom);
   const eligibleForQuestionEntry = useAtomValue(eligibleForQuestionEntryAtom);
   const videoPlayer = useAtomValue(videoPlayerRefAtom);
+
+  console.log('selectedMemoCard', selectedMemoCard?.messages);
 
   // 写入状态
   const hideMemoCardModal = useSetAtom(hideMemoCardModalAtom);

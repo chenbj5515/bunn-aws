@@ -6,18 +6,19 @@ import { getSession } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 import { getServerTrpc } from "@/lib/trpc/server";
 import type { QuestionType } from "@/types/memo-card";
+import type { AppLocale, RequiredLocalizedText } from "@/types/locale";
 
 interface UpdateMemoCardQuestionParams {
   memoCardId: string;
   questionText: string; // 通常为中文
-  sourceLang?: 'zh' | 'en' | 'zh-TW';
+  sourceLang?: AppLocale;
   questionType?: QuestionType | null; // 未选择时可不传
 }
 
 interface UpdateMemoCardQuestionResult {
   success: boolean;
   memoCardId?: string;
-  question?: { zh: string; en: string; 'zh-TW': string };
+  question?: RequiredLocalizedText;
   error?: string;
 }
 

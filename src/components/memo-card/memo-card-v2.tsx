@@ -14,38 +14,52 @@ import { GrammarAnalysisDialog } from "./grammar-analysis-dialog";
 import { AvatarSpeechBubble } from "@/components/avatar-speech-bubble";
 import { translateContext } from "./translate-context";
 import { updateMemoCardTranslation } from "./server-functions/update-translation";
-import { updateMemoCardQuestion } from "@/server-functions/update-memo-card-question";
-import { updateMemoCardQuestionType } from "@/server-functions/update-memo-card-question-type";
 import type { QuestionType } from "@/types/memo-card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import type { AppLocale, LocalizedText, RequiredLocalizedText } from "@/types/locale";
 import { AskAISection } from "./ask-ai";
+import type { Character } from "./types";
+import type { MemoCardWithChannel, MemoCardMessage } from "@/app/[locale]/channels/[channelId]/_store/types";
 
-export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapterId' | 'translation'> & {
+/** 上下文信息类型 */
+type ContextInfo = RequiredLocalizedText[];
+
+/** MemoCard 组件 Props 类型 */
+interface MemoCardProps extends Omit<InferSelectModel<typeof memoCard>, 'chapterId' | 'translation' | 'contextInfo' | 'question' | 'questionType'> {
   translation: Record<string, string> | string;
-} & {
   weakBorder?: boolean;
   hideCreateTime?: boolean;
-  // 单词卡片数量（不同页面会传入）
+  /** 单词卡片数量（不同页面会传入） */
   wordCardCount?: number;
-  character?: any;
-  allCharacters?: any[];
+  character?: Character;
+  allCharacters?: Character[];
   onCharacterListChange?: () => void;
   onDelete?: () => void;
   width?: string | number;
   height?: string | number;
   mode?: string;
+  /** 角色名称（从外部传入） */
+  characterName?: string | null;
   characterAvatarUrl?: string | null;
   channelAvatarUrl?: string | null;
-  setDisplayCards?: React.Dispatch<React.SetStateAction<any>>;
+  setDisplayCards?: React.Dispatch<React.SetStateAction<MemoCardWithChannel[]>>;
   onPlayVideo?: () => void;
-  // 仅当每日任务出现问答题（且正确率达到阈值）时，才显示问题录入区域
+  /** 仅当每日任务出现问答题（且正确率达到阈值）时，才显示问题录入区域 */
   shouldShowQuestionEntry?: boolean;
-  // 翻译更新后的回调，用于同步本地状态
+  /** 翻译更新后的回调，用于同步本地状态 */
   onTranslationUpdate?: (translation: Record<string, string>) => void;
-  // 笔记/上下文更新后的回调，用于同步本地状态
-  onContextInfoUpdate?: (contextInfo: Array<{ zh: string; en: string; 'zh-TW': string }>) => void;
-}) {
+  /** 笔记/上下文更新后的回调，用于同步本地状态 */
+  onContextInfoUpdate?: (contextInfo: ContextInfo) => void;
+  /** 问题文本（多语言对象或字符串） */
+  question?: LocalizedText | string | null;
+  /** 问题类型 */
+  questionType?: QuestionType | null;
+  /** 上下文信息 */
+  contextInfo?: ContextInfo | null;
+  /** AI 对话历史消息 */
+  messages?: MemoCardMessage[];
+}
+
+export function MemoCard(props: MemoCardProps) {
   const {
     id,
     originalText,
@@ -54,31 +68,15 @@ export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapt
     weakBorder = false,
     hideCreateTime = false,
     contextUrl,
-    characterId,
-    seriesId,
-    channelId,
     characterName,
-    wordSegmentation,
     rubyTranslations,
     kanaPronunciation,
     setDisplayCards,
-    character,
-    allCharacters,
-    onCharacterListChange,
-    onDelete,
-    width,
-    height,
-    mode,
     characterAvatarUrl,
     channelAvatarUrl,
-    shouldShowQuestionEntry
-  } = props as any;
+  } = props;
 
-  const locale = useLocale() as 'zh' | 'en' | 'zh-TW';
-  const t = useTranslations('memoCards');
-  const tCard = useTranslations('memoCard');
-
-  console.log('rubyTranslations', rubyTranslations);
+  const locale = useLocale() as AppLocale;
 
   const translationTextRef = useRef<HTMLDivElement>(null);
   const prevTranslationTextRef = useRef<string>("");
@@ -86,44 +84,6 @@ export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapt
 
   const [isDictationFocused, setIsDictationFocused] = useState(false);
 
-  // 问题录入本地状态（按当前语言优先，回退 zh -> en -> zh-TW）
-  const initialQuestion = (() => {
-    try {
-      const q = (props as any).question as { zh?: string; en?: string; 'zh-TW'?: string } | string | undefined;
-      // 如果是字符串，直接返回
-      if (typeof q === 'string') {
-        return q;
-      }
-      // 如果是对象，按照语言优先级提取
-      return (q?.[locale] || q?.zh || q?.en || q?.['zh-TW'] || '').toString();
-    } catch {
-      return '';
-    }
-  })();
-  const [questionInput, setQuestionInput] = useState<string>(initialQuestion);
-  const [questionType, setQuestionType] = useState<string>(
-    ((props as any).questionType as any) || 'description'
-  );
-
-  // 同步question和questionType的状态
-  useEffect(() => {
-    const newQuestion = (() => {
-      try {
-        const q = (props as any).question as { zh?: string; en?: string; 'zh-TW'?: string } | string | undefined;
-        if (typeof q === 'string') {
-          return q;
-        }
-        return (q?.[locale] || q?.zh || q?.en || q?.['zh-TW'] || '').toString();
-      } catch {
-        return '';
-      }
-    })();
-
-    const newQuestionType = ((props as any).questionType as any) || 'description';
-
-    setQuestionInput(newQuestion);
-    setQuestionType(newQuestionType);
-  }, [props.question, props.questionType, locale]);
 
   function handleTranslationFocus() {
     prevTranslationTextRef.current = translationTextRef.current?.textContent || "";
@@ -137,8 +97,9 @@ export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapt
         const translations = await translateContext(newTranslation, locale);
 
         // 构造完整的翻译对象，合并新翻译
+        const existingTranslation = typeof translation === 'string' ? {} : translation;
         const finalTranslations = {
-          ...translation,
+          ...existingTranslation,
           zh: translations.zh,
           en: translations.en,
           'zh-TW': translations['zh-TW']
@@ -159,8 +120,6 @@ export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapt
   function handleDictationFocusChange(state: string) {
     setIsDictationFocused(state === 'focus');
   }
-
-
 
   return (
     <Card className={`${weakBorder ? '' : 'shadow-neumorphic'} w-[86%] m-auto text-[17px] relative p-5 pt-[22px] border ${weakBorder ? 'border-gray-200' : ''} text-left leading-[1.9] tracking-[1.5px]`}>
@@ -209,8 +168,12 @@ export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapt
           id,
           originalText,
           translation,
-          contextInfo: (props as any).contextInfo,
-          messages: (props as any).messages,
+          contextInfo: props.contextInfo ?? undefined,
+          // 转换 messages 类型：将 null 转为 undefined
+          messages: props.messages?.map(msg => ({
+            ...msg,
+            isInitialAnalysis: msg.isInitialAnalysis ?? undefined,
+          })),
         }}
       />
 
@@ -267,10 +230,10 @@ export function MemoCardV2(props: Omit<InferSelectModel<typeof memoCard>, 'chapt
         ) : null}
       </div>
 
-      {showGrammarDialog && (
+      {showGrammarDialog && setDisplayCards && (
         <GrammarAnalysisDialog
-          memoCard={{ id, originalText, translation } as any}
-          setDisplayCards={setDisplayCards as any}
+          memoCard={{ id, originalText, translation }}
+          setDisplayCards={setDisplayCards}
           onClose={() => setShowGrammarDialog(false)}
         />
       )}

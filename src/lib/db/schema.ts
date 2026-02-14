@@ -1,5 +1,7 @@
 import { pgTable, text, timestamp, foreignKey, uuid, integer, boolean, uniqueIndex, varchar, unique, serial, pgEnum, jsonb, numeric, primaryKey, index } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
+import type { LocalizedText, RequiredLocalizedText } from "@/types/locale"
+import type { QuestionType } from "@/types/memo-card"
 
 export const actionTypeEnum = pgEnum("action_type_enum", ['COMPLETE_SENTENCE_REVIEW', 'COMPLETE_WORD_REVIEW', 'COMPLETE_EXAM', 'FORGOT_WORD_MEANING', 'FORGOT_WORD_PRONUNCIATION', 'UNKNOWN_PHRASE_EXPRESSION', 'UNABLE_TO_UNDERSTAND_AUDIO', 'CREATE_MEMO', 'CREATE_WORD', 'COMPLETE_IMAGE_OCR', 'COMPLETE_TEXT_TRANSLATION_BY_EXTENSION', 'WORD_COMPLETE'])
 export const examStatusEnum = pgEnum("exam_status_enum", ['initial', 'in_progress', 'completed'])
@@ -178,13 +180,13 @@ export const memoCard = pgTable("memo_card", {
 	chapterId: uuid('chapter_id').references(() => chapters.id, { onDelete: 'set null' }), // 关联到章节ID
 	lastCorrectTime: timestamp("last_correct_time", { precision: 6, withTimezone: true, mode: 'string' }), // 最近答对的时间
 	lastWrongTime: timestamp("last_wrong_time", { precision: 6, withTimezone: true, mode: 'string' }), // 最近答错的时间
-	contextInfo: jsonb("context_info"), // 上下文信息，格式：[{en: "aaa", zh: "bbb", zh-TW: "ccc"}]
+	contextInfo: jsonb("context_info").$type<RequiredLocalizedText[]>(), // 上下文信息，格式：[{en: "aaa", zh: "bbb", zh-TW: "ccc"}]
 	adminPreTranslations: jsonb("admin_pre_translations"), // 系统管理员预设多语言翻译，用于复制功能
 	avatarUrl: text("avatar_url"), // 记忆卡片头像URL
 	// 卡片自定义问题（多语言JSON：{ zh, en, 'zh-TW' }）
-	question: jsonb("question"),
+	question: jsonb("question").$type<LocalizedText | string>(),
 	// 问题类型：null/未设置=描述型，'reading'=读音型
-	questionType: text("question_type"),
+	questionType: text("question_type").$type<QuestionType>(),
 	// 问答题相关字段
 	hasQuestionAnswerSubmission: boolean("has_question_answer_submission").default(false).notNull(),
 	questionAnswerSubmissions: jsonb("question_answer_submissions"), // 存储历史记录数组

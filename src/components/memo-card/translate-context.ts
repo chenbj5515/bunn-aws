@@ -1,9 +1,11 @@
 'use client';
 
-export async function translateContext(content: string, sourceLang: 'zh' | 'en' | 'zh-TW') {
+import type { AppLocale, RequiredLocalizedText } from "@/types/locale";
+
+export async function translateContext(content: string, sourceLang: AppLocale): Promise<RequiredLocalizedText> {
   return {
     zh: content,
     en: content,
     'zh-TW': content,
-  } as { zh: string; en: string; 'zh-TW': string };
+  };
 }

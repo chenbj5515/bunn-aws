@@ -1,7 +1,6 @@
 import { atom } from "jotai";
 import type { AskAIState, AskAIMessage, AskAIPendingAction } from "../types";
 import { AskAIStage, createInitialAskAIState } from "../types";
-import { getCardMessages } from "@/components/memo-card/server-functions/get-card-messages";
 
 // ============================================
 // 核心状态
@@ -69,14 +68,14 @@ export const updateAskAIStateAtom = atom(
 
 /**
  * 初始化卡片的问 AI 状态
- * 检查是否有历史消息，决定显示输入框还是预览框
+ * RSC 作为唯一数据源，直接使用预加载的消息
  */
 export const initializeAskAIAtom = atom(
   null,
-  async (get, set, payload: { cardId: string; messages?: AskAIMessage[] }) => {
+  (_get, set, payload: { cardId: string; messages?: AskAIMessage[] }) => {
     const { cardId, messages: preloadedMessages } = payload;
     
-    // 如果有预加载的消息
+    // 有预加载消息时显示历史
     if (preloadedMessages && preloadedMessages.length > 0) {
       const formattedMessages: AskAIMessage[] = preloadedMessages.map(msg => ({
         ...msg,
@@ -91,60 +90,18 @@ export const initializeAskAIAtom = atom(
           isLoadingHistory: false,
         },
       });
-      return true;
+      return;
     }
 
-    // 标记正在加载
+    // 没有消息，显示输入框状态
     set(updateAskAIStateAtom, {
       cardId,
-      state: { isLoadingHistory: true },
+      state: {
+        stage: AskAIStage.Idle,
+        messages: [],
+        isLoadingHistory: false,
+      },
     });
-
-    try {
-      // 从服务器加载历史消息
-      const result = await getCardMessages(cardId);
-
-      if (result.success && result.messages.length > 0) {
-        const formattedMessages: AskAIMessage[] = result.messages.map(msg => ({
-          id: msg.id,
-          role: msg.role as 'user' | 'assistant',
-          content: msg.content,
-          isInitialAnalysis: msg.isInitialAnalysis ?? false,
-          isHistory: true,
-        }));
-
-        set(updateAskAIStateAtom, {
-          cardId,
-          state: {
-            stage: AskAIStage.HasHistory,
-            messages: formattedMessages,
-            isLoadingHistory: false,
-          },
-        });
-        return true;
-      }
-
-      // 没有历史消息，保持 Idle 状态
-      set(updateAskAIStateAtom, {
-        cardId,
-        state: {
-          stage: AskAIStage.Idle,
-          messages: [],
-          isLoadingHistory: false,
-        },
-      });
-      return false;
-    } catch (error) {
-      console.error('加载问 AI 历史消息失败:', error);
-      set(updateAskAIStateAtom, {
-        cardId,
-        state: {
-          stage: AskAIStage.Idle,
-          isLoadingHistory: false,
-        },
-      });
-      return false;
-    }
   }
 );
 

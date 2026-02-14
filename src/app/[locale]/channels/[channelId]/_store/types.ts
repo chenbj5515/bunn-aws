@@ -1,5 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 import type { memoCard } from "@/lib/db/schema";
+import type { LocalizedText, RequiredLocalizedText } from "@/types/locale";
+import type { QuestionType } from "@/types/memo-card";
 
 /**
  * 视频信息
@@ -22,13 +24,31 @@ export interface ChannelDetail {
 }
 
 /**
+ * 记忆卡片消息
+ */
+export interface MemoCardMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  isInitialAnalysis?: boolean | null;
+}
+
+/**
  * 带频道信息的记忆卡片
  */
-export interface MemoCardWithChannel extends Omit<InferSelectModel<typeof memoCard>, 'chapterId' | 'translation'> {
+export interface MemoCardWithChannel extends Omit<InferSelectModel<typeof memoCard>, 'chapterId' | 'translation' | 'question' | 'questionType' | 'contextInfo'> {
   translation: Record<string, string> | string;
   channelId: string;
   videoId: string;
   videoTitle: string | null;
+  /** AI 对话历史消息（从 RSC 预加载） */
+  messages?: MemoCardMessage[];
+  /** 问题文本（多语言对象或字符串） */
+  question?: LocalizedText | string | null;
+  /** 问题类型 */
+  questionType?: QuestionType | null;
+  /** 上下文信息 */
+  contextInfo?: RequiredLocalizedText[] | null;
 }
 
 /**

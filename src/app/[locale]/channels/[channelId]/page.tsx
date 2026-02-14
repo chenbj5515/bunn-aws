@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db/index';
-import { memoCard, videos } from '@/lib/db/schema';
-import { and, asc, eq } from 'drizzle-orm';
+import { memoCard, memoCardMessages, videos } from '@/lib/db/schema';
+import { and, asc, eq, inArray } from 'drizzle-orm';
 import { getSession, getUserSettings } from '@/lib/auth';
 import { VideoViewerClient } from './_components/video-viewer-client';
 import { getChannelDetail } from '../_data/get-channel-detail';
-import type { MemoCardWithChannel, VideoInfo } from './_store/types';
+import type { MemoCardWithChannel, MemoCardMessage, VideoInfo } from './_store/types';
 
 // ============================================
 // 数据获取函数
@@ -28,12 +28,13 @@ async function fetchVideosList(channelId: string, userId: string): Promise<Video
 }
 
 /**
- * 获取频道下所有视频的记忆卡片数据
+ * 获取频道下所有视频的记忆卡片数据（包含AI对话消息）
  */
 async function fetchMemoCards(
   channelId: string,
   userId: string
 ): Promise<MemoCardWithChannel[]> {
+  // 1. 获取所有记忆卡片
   const memoCardsData = await db
     .select({
       id: memoCard.id,
@@ -83,10 +84,43 @@ async function fetchMemoCards(
     )
     .orderBy(memoCard.createTime);
 
+  // 2. 批量获取所有卡片的 AI 对话消息
+  const cardIds = memoCardsData.map((card) => card.id);
+  let messagesMap = new Map<string, MemoCardMessage[]>();
+
+  if (cardIds.length > 0) {
+    const allMessages = await db
+      .select({
+        id: memoCardMessages.id,
+        memoCardId: memoCardMessages.memoCardId,
+        role: memoCardMessages.role,
+        content: memoCardMessages.content,
+        isInitialAnalysis: memoCardMessages.isInitialAnalysis,
+        messageOrder: memoCardMessages.messageOrder,
+      })
+      .from(memoCardMessages)
+      .where(inArray(memoCardMessages.memoCardId, cardIds))
+      .orderBy(memoCardMessages.messageOrder);
+
+    // 按 memoCardId 分组
+    for (const msg of allMessages) {
+      const cardMessages = messagesMap.get(msg.memoCardId) || [];
+      cardMessages.push({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content,
+        isInitialAnalysis: msg.isInitialAnalysis,
+      });
+      messagesMap.set(msg.memoCardId, cardMessages);
+    }
+  }
+
+  // 3. 合并卡片数据和消息
   return memoCardsData.map((card) => ({
     ...card,
     channelId: card.channelId!,
     translation: card.translation as Record<string, string> | string,
+    messages: messagesMap.get(card.id) || [],
   }));
 }
 
@@ -140,6 +174,8 @@ export default async function ChannelViewerPage({
     fetchMemoCards(channelId, session.user.id),
     checkQuestionEntryEligibility(session.user.id),
   ]);
+
+  console.log('memoCardsData', memoCardsData.map(card => card.messages));
 
   return (
     <VideoViewerClient
