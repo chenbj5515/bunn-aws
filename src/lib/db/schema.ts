@@ -9,13 +9,14 @@ export const relatedTypeEnum = pgEnum("related_type_enum", ['word_card', 'memo_c
 export const userRoleEnum = pgEnum("user_role_enum", ['user', 'admin'])
 
 
+// Better Auth 表 - 注意：使用 mode: 'date' 以兼容 Better Auth（它期望 Date 对象）
 export const verification = pgTable("verification", {
 	id: text().primaryKey().notNull(),
 	identifier: text().notNull(),
 	value: text().notNull(),
-	expiresAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-	createdAt: timestamp({ precision: 3, mode: 'string' }),
-	updatedAt: timestamp({ precision: 3, mode: 'string' }),
+	expiresAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
+	createdAt: timestamp({ precision: 3, mode: 'date' }),
+	updatedAt: timestamp({ precision: 3, mode: 'date' }),
 });
 
 // AI 计费明细日志（用于长期留存与审计）
@@ -60,6 +61,7 @@ export const wordCard = pgTable("word_card", {
 		}),
 ]);
 
+// Better Auth 表
 export const account = pgTable("account", {
 	id: text().primaryKey().notNull(),
 	accountId: text().notNull(),
@@ -68,12 +70,12 @@ export const account = pgTable("account", {
 	accessToken: text(),
 	refreshToken: text(),
 	idToken: text(),
-	accessTokenExpiresAt: timestamp({ precision: 3, mode: 'string' }),
-	refreshTokenExpiresAt: timestamp({ precision: 3, mode: 'string' }),
+	accessTokenExpiresAt: timestamp({ precision: 3, mode: 'date' }),
+	refreshTokenExpiresAt: timestamp({ precision: 3, mode: 'date' }),
 	scope: text(),
 	password: text(),
-	createdAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-	updatedAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
+	createdAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
+	updatedAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.userId],
@@ -104,6 +106,7 @@ export const articles = pgTable("articles", {
 	title: text(),
 });
 
+// Better Auth 表
 export const user = pgTable("user", {
 	id: text().primaryKey().notNull(),
 	name: text().notNull(),
@@ -122,18 +125,19 @@ export const user = pgTable("user", {
 	ttsVoiceId: text("tts_voice_id"),
 	preferredTTSVoice: text("preferred_tts_voice").default('haruka').notNull(), // 可选：'haruka' | 'custom'
 	preferredUiLocale: text("preferred_ui_locale").default('en'),
-	createdAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-	updatedAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
+	createdAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
+	updatedAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
 }, (table) => [
 	uniqueIndex("user_email_key").using("btree", table.email.asc().nullsLast().op("text_ops")),
 ]);
 
+// Better Auth 表
 export const session = pgTable("session", {
 	id: text().primaryKey().notNull(),
-	expiresAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
+	expiresAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
 	token: text().notNull(),
-	createdAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
-	updatedAt: timestamp({ precision: 3, mode: 'string' }).notNull(),
+	createdAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
+	updatedAt: timestamp({ precision: 3, mode: 'date' }).notNull(),
 	ipAddress: text(),
 	userAgent: text(),
 	userId: text().notNull(),

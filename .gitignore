@@ -31,7 +31,24 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env
+.env.local
+.env.production.local
+# 保留 .env.example 和 .env.development 作为模板
+!.env.example
+!.env.development
+
+# Docker
+docker/init-db/*
+!docker/init-db/.gitkeep
+
+# CDK
+cdk/node_modules
+cdk/cdk.out
+cdk/dist
+cdk/*.js
+cdk/*.d.ts
+!cdk/jest.config.js
 
 # vercel
 .vercel
