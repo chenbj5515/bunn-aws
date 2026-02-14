@@ -1,0 +1,1180 @@
+{
+  "common": {
+    "language": "Language",
+    "login": "Login",
+    "signup": "Sign Up",
+    "guide": "GUIDE",
+    "pricing": "PRICING",
+    "blog": "BLOG",
+    "columns": "COLUMNS",
+    "contact": "CONTACT US",
+    "footer": {
+      "copyright": "Bunn © 2026",
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "businessDisclosure": "Specified Commercial Transaction Act"
+    },
+    "back": "Back",
+    "limitReachedWithUpgrade": "Limit reached. <upgrade>Upgrade</upgrade> to unlock.",
+    "limitReached": "Limit reached. Upgrade to unlock.",
+    "upgrade": "Upgrade",
+    "home": "Home"
+  },
+  "components": {
+    "recordingControls": {
+      "recording": "Recording..."
+    },
+    "dock": {
+      "dailyTasks": "Daily Tasks",
+      "youtube": "YouTube",
+      "safari": "Safari",
+      "netflix": "Netflix",
+      "books": "Books",
+      "bookmarks": "Bookmarks",
+      "others": "Others"
+    }
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "backToBookshelf": "Back to bookshelf",
+    "addBookmark": "Add bookmark",
+    "addFromClipboard": "Paste screenshot from clipboard",
+    "addFromFileSecondary": "Or choose an image from your computer",
+    "dialogTitle": "Create bookmark",
+    "titlePlaceholder": "Please enter a title",
+    "sourceLabel": "Source",
+    "sourceTypes": {
+      "url": "Website",
+      "book": "Book",
+      "comic": "Comic",
+      "level": "Level Exam",
+      "exam": "Exam",
+      "other": "Other"
+    },
+    "sourcePlaceholder": "e.g. https://example.com/xxx / 《Book》Ch.3 P.45 / 2023 JLPT N1",
+    "uploadTitle": "Screenshot",
+    "uploading": "Creating…",
+    "or": "or",
+    "cancel": "Cancel",
+    "errors": {
+      "clipboardNotSupported": "Your browser does not support reading images from clipboard.",
+      "noImageInClipboard": "No image found in clipboard.",
+      "clipboardReadFailed": "Failed to read from clipboard.",
+      "imageRequired": "Please paste or upload a screenshot.",
+      "noText": "No readable text was found in the image.",
+      "ocrFailed": "Failed to extract text from image.",
+      "unauthorized": "You are not authorized. Please log in again.",
+      "limitReached": "You have reached the OCR usage limit. Please try again later or upgrade your plan.",
+      "createFailed": "Failed to create bookmark.",
+      "noClipboardContent": "No supported content found in clipboard.",
+      "emptyText": "Text content is empty.",
+      "splitFailed": "Failed to split sentences.",
+      "deleteFailed": "Delete failed."
+    },
+    "confirmDelete": "Confirm delete?",
+    "delete": "Delete",
+    "sentence": {
+      "showTranslation": "Show translation",
+      "hideTranslation": "Hide translation",
+      "tts": "TTS",
+      "playing": "Playing",
+      "translationError": "Failed to generate translation. Please try again later.",
+      "ttsError": "TTS playback failed. Please try again later.",
+      "tooltipTranslation": "View or generate translation",
+      "tooltipTts": "Play TTS"
+    },
+    "bookSource": {
+      "bookLabel": "Book",
+      "createNewBook": "Create new book",
+      "bookPlaceholder": "Select a book",
+      "chapterLabel": "Chapter",
+      "chapterPlaceholder": "Select a chapter",
+      "newChapterNumberLabel": "Chapter number",
+      "newChapterTitleLabel": "Chapter title",
+      "pageNumberLabel": "Page",
+      "pageNumberPlaceholder": "Enter page number (optional)",
+      "newBookCoverLabel": "Cover",
+      "newBookTitlePlaceholder": "Enter book title",
+      "bookRequired": "Please upload a cover and enter a book title.",
+      "chapterRequired": "Please enter a valid chapter number.",
+      "createNewChapter": "Create new chapter"
+    },
+    "comicSource": {
+      "bookLabel": "Comic",
+      "createNewBook": "Create new comic",
+      "bookPlaceholder": "Select a comic",
+      "chapterLabel": "Episode",
+      "chapterPlaceholder": "Select an episode",
+      "newChapterNumberLabel": "Episode number",
+      "newChapterTitleLabel": "Episode title",
+      "addPage": "Add page",
+      "createPage": "Create",
+      "createChapter": "Create episode",
+      "createChapterFirst": "Please create an episode first, or switch back to selecting an existing episode.",
+      "chapterSelectRequired": "Please select an episode.",
+      "imagePlaceholder": "Paste or upload a screenshot.",
+      "pageNumberLabel": "Page",
+      "pageNumberPlaceholder": "Enter page number",
+      "pageNumberRequired": "Please enter a valid page number.",
+      "newBookCoverLabel": "Cover",
+      "newBookTitlePlaceholder": "Enter comic title",
+      "bookRequired": "Please upload a cover and enter a comic title.",
+      "chapterRequired": "Please enter a valid episode number and title.",
+      "createNewChapter": "Create new episode"
+    },
+    "comicReader": {
+      "pickLocation": "Pick episode & page",
+      "go": "Go",
+      "pagePlaceholder": "Select a page"
+    },
+    "levelSource": {
+      "titleRequired": "Please enter a title.",
+      "metaRequired": "Please enter level, year and month.",
+      "yearInvalid": "Please enter a valid year.",
+      "titleLabel": "Title",
+      "levelLabel": "Level",
+      "levelPlaceholder": "e.g. JLPT N1 / Intermediate",
+      "yearLabel": "Year",
+      "yearPlaceholder": "e.g. 2023",
+      "monthLabel": "Month",
+      "monthPlaceholder": "Select month",
+      "month7": "July",
+      "month12": "December"
+    },
+    "textMode": {
+      "previewLabel": "Text Preview",
+      "placeholder": "Paste the Japanese sentences you want to learn...",
+      "splitting": "Splitting sentences...",
+      "continue": "Continue Creating"
+    }
+  },
+  "home": {
+    "title": "Learn Japanese with AI",
+    "subtitle": "Master Japanese through personalized AI conversations",
+    "startLearning": "Start Learning",
+    "features": "Features",
+    "personalJourney": "An all-in-one language learning app centered around sentences",
+    "stopScattering": "Can't find a complete, elegant and truly useful language learning solution? Try Bunn!",
+    "bunnWillHeloYou": " ",
+    "getStartedFree": "Get Started Free",
+    "tryBunnNow": "Try Bunn now!",
+    "learnSentences": "Everyone says, don't learn words, learn sentences.",
+    "shadowReading": "Everyone is talking about shadow reading.",
+    "bunnHelps": "Bunn's memory cards can help you achieve all of this.",
+    "contextTitle": "Beyond just sentences, Bunn helps you instantly recall the full context.",
+    "pluginHelp": "Bunn plugin helps you copy with context.",
+    "cards": {
+      "memoCard": {
+        "title": "Memory Cards",
+        "description": "Translation, pronunciation, shadow reading and dictation - all in one card."
+      },
+      "wordCard": {
+        "title": "Word Cards",
+        "description": "Remember which sentence a word appeared in, just click to check if you forget."
+      },
+      "exam": {
+        "title": "Exam Mode",
+        "description": "Test your knowledge mastery to ensure you truly understand what you've learned."
+      },
+      "dailyReport": {
+        "title": "Daily Report",
+        "description": "5 minutes before bed to review forgotten content and maintain learning progress."
+      }
+    },
+    "landingPage": {
+      "subtitle": {
+        "copiedSuccess": "Subtitle copied successfully!"
+      },
+      "ctrlSection": {
+        "title": "anime-based learning",
+        "subtitle": "Struggling with memorizing words?\nLearn with anime using Bunn - more fun, more effective!"
+      },
+      "mediaSection": {
+        "extension": "Bunn extension",
+        "pressToCopy": "Press Ctrl to copy subtitle",
+        "pressToCreate": "Press Ctrl to create memo card"
+      },
+      "comprehensibleInput": {
+        "title": "Comprehensible input",
+        "description": "One click to turn subtitles into memo cards."
+      },
+      "shadowReading": {
+        "title": "Painless repetition",
+        "description": "Hating review?\nIn Bunn, reviewing is just rewatching your favorite anime clips and answering questions.\nSimple, easy but effective.",
+        "speakLike": "Speak like your favorite character!",
+        "jumpBack": "Jump back to the scene with one click!"
+      },
+      "personalizedPage": {
+        "title": "Personalized pages",
+        "description": "Build personalized pages for your favorite anime!"
+      },
+      "zenMoment": {
+        "title": "Zen moment",
+        "description": "Complete your daily training and enjoy your moment of Zen."
+      },
+      "linkSection": {
+        "title": "Not an app, but a connection",
+        "subtitle": "Struggling to find suitable anime for learning? Bunn will recommend for you.\nBunn has no recommendation algorithm, all videos are carefully selected by the author from my Japanese learning experience."
+      }
+    }
+  },
+  "guide": {
+    "title": "Bunn Design Philosophy",
+    "subtitle": "Sentences, Review and Context",
+    "preface": {
+      "title": "Preface",
+      "challenge": "Language learning has always been a significant challenge. While mastering one or multiple languages can open up many career opportunities and life experiences, most people find it truly difficult to master a language.",
+      "aiEra": "With the advent of AI, language learning efficiency has greatly improved. Various tools are much better compared to the pre-AI era, but I've noticed that current tools might only excel at one aspect without addressing the entire learning process, lacking core principles and design.",
+      "bestProcess": "So, what is theoretically the best learning process? No one can really answer this question because there will always be better processes. However, in my view, there are several strong logical principles that must hold true:",
+      "principles": [
+        "Learn by sentences rather than individual words",
+        "Review should be the core action",
+        "Context recreation, recalling the scene where sentences appeared",
+        "Streamlined process without distracting non-core features"
+      ],
+      "creation": "I couldn't find any software in the market that adheres to these basic principles, so I created Bunn. Bunn's design is centered around these points, aiming to create an elegant and complete language learning system."
+    },
+    "core": {
+      "title": "Making Sentences the Core",
+      "description": "It's now widely accepted that learning language through sentences is far more efficient than learning through individual words.",
+      "gap": "Unfortunately, there's a lack of language learning tools truly built around sentences. While there are many excellent language learning applications, none provide a complete, elegant, and efficient learning process.",
+      "origin": "That's why I created Bunn, which means \"sentence\" in Japanese. Bunn's core approach is reviewing sentences with context.",
+      "features": "After entering a sentence, you immediately get accurate translations and kana annotations, practice shadow reading, and do dictation. You can also highlight unfamiliar words to add them to your vocabulary list, establishing connections between words and their usage contexts.",
+      "inputMethods": "Put the video you want to watch into Bunn, and you only need one click to input the current subtitles of the video.",
+      "methods": {
+        "subtitles": "Get subtitle phrases from YouTube/Netflix videos",
+        "copy": "Directly copy Japanese sentences from websites",
+        "picture": "In the future, Bunn will support image recognition, allowing you to upload images containing Japanese text, with Bunn identifying all Japanese sentences for you to select which ones to upload."
+      },
+      "future": "In the future, we'll also support image input, allowing you to upload images containing Japanese text. Bunn will identify all Japanese sentences and let you choose which ones to review.",
+      "demo": {
+        "intro": "Here's how a sentence memory card looks:",
+        "shadow": "Shadow Reading - Repeat after the audio to improve pronunciation",
+        "dictation": "Dictation - Test if you can roughly remember the sentence"
+      }
+    },
+    "review": {
+      "title": "Review Like Browsing a Collection",
+      "description": "Another core logic of Bunn is review. We all know repetition is necessary for memory, but often we're reluctant to review what we've learned.",
+      "reason": "A key reason for this reluctance is that it's not engaging enough - your recorded content lacks interactivity and context, or the platform distracts you with other new content.",
+      "solution": "These issues don't exist in Bunn. Bunn won't push any distracting content - everything is what you've input yourself, like anime you've watched, technical articles you've read, or interesting news you've seen. This ensures you're interested in or at least genuinely care about the content you're reviewing.",
+      "interaction": "Plus, you can interact with each sentence - view context, practice shadow reading, and do dictation. These interactive actions make reviewing as engaging as browsing through your personal collection."
+    },
+    "context": {
+      "title": "Context Recreation",
+      "intro": "Think about how we mastered our native language. Many of us often mentally simulate scenarios - what we would say to others and how they might respond. The language used in these scenarios is what we absolutely remember.",
+      "importance": "While it's hard to remember language elements in isolation, it's easy to remember contexts. Once we grasp the connection between context and expressions, we're more likely to remember those expressions. Sentences provide context for words, and sentences themselves exist within larger contexts.",
+      "feature": "Bunn will record the location of all the sentences you input, and with one click you can go back to the corresponding position in the video to watch that animation segment again. I believe this is the most effective way to review."
+    },
+    "getStarted": {
+      "title": "How to Get Japanese Sentences with Context",
+      "intro": "While you're free to choose your sentence sources, I strongly recommend trying this workflow:",
+      "steps": {
+        "extension": {
+          "title": "1. Download the Extension",
+          "description": "Install <link>our Chrome extension</link> from the Chrome Web Store"
+        },
+        "videos": {
+          "title": "2. Find Videos You Like",
+          "description": "Choose videos from YouTube or Netflix. For YouTube videos, select ones with built-in subtitles (avoid YouTube's subtitle feature as its sentence breaks are usually poor and don't align with our sentence-centered approach)."
+        },
+        "copy": {
+          "title": "3. Copy Subtitles",
+          "description": "Press cmd+shift+c and wait for the subtitles to be copied to your clipboard."
+        },
+        "paste": {
+          "title": "4. Paste to Bunn",
+          "description": "Return to the <link>Bunn app</link> and paste into the input box at the bottom."
+        }
+      },
+      "review": "When reviewing, you can click the <button>button</button> in the top right of each card to instantly return to the original context and pronunciation. This feature helps you better understand how the sentence is used in its original context and ensures you practice accurate pronunciation.",
+      "clickMe": "Click me!",
+      "recommendation": {
+        "intro": "I personally recommend <channel>Mary's YouTube channel</channel> for these reasons:",
+        "reasons": [
+          "Perfect sentence breaks with built-in subtitles",
+          "Seamless shadow reading experience when used with our extension and app",
+          "Modern, practical Japanese that you can use in daily life",
+          "Content interesting enough to make learning enjoyable"
+        ]
+      },
+      "netflix": "Of course, if you prefer anime, you can find Japanese anime with Japanese subtitles on Netflix. Netflix's subtitle feature provides natural sentence breaks that work perfectly with Bunn's workflow.",
+      "websiteCopy": "When copying text from websites, press the \"c\" key twice after selecting text to record both the website URL and scroll position in your clipboard. When pasted into Bunn, it will look like this:"
+    },
+    "remember": {
+      "title": "What If I Can't Remember What I've Learned?",
+      "normal": "First, forgetting is completely normal. Everyone forgets a large portion of what they learn - that's just how our brains work.",
+      "key": "The key is to be selective: only input sentences you find interesting or important. If you truly find certain content interesting or important, you'll naturally be more willing to spend time on:",
+      "methods": [
+        "Shadow reading",
+        "Dictation practice",
+        "Recalling sentences from keywords",
+        "Taking tests",
+        "Reviewing daily learning reports"
+      ],
+      "conclusion": "When you engage with learning materials in these multiple ways, you'll find you can remember a large portion of what you've learned. The Bunn system is designed to support this multi-faceted approach to learning, making retention more effective than traditional methods."
+    },
+    "why": {
+      "title": "Why Choose Bunn?",
+      "sections": {
+        "built": {
+          "title": "Built by a Real Language Learner",
+          "description": "Bunn was created by a developer who is learning Japanese and living in Japan. This means the app is designed based on real understanding of language learning challenges and needs."
+        },
+        "serious": {
+          "title": "A Serious Learning System",
+          "description": "Unlike many language apps that focus on gamification and entertainment, Bunn is a serious learning tool built on solid design principles and effective learning methods."
+        },
+        "workflow": {
+          "title": "Clear and Efficient Workflow",
+          "description": "We've designed a unique, streamlined learning process that eliminates unnecessary complexity. Every feature serves a clear purpose in your language learning journey."
+        }
+      },
+      "explore": "Start exploring <link>Bunn</link> now!"
+    }
+  },
+  "onboarding": {
+    "title": "THE CHOICE IS YOURS",
+    "subtitle": "Choose one to start your learning journey",
+    "step4": {
+      "title": "Get sentences from Japanese channels!",
+      "loading": "Creating sample cards...",
+      "clone_button": "Just create some!"
+    },
+    "step7": {
+      "success": "You have successfully created memory cards!",
+      "check_it_out": "Check it out!"
+    },
+    "onboarding": {
+      "daily_limit": {
+        "free_limit": "Free users can import only once daily, ",
+        "upgrade_unlock": "upgrade to unlock"
+      }
+    },
+    "daily_limit": {
+      "free_limit": "Free users can import only once daily, ",
+      "upgrade_unlock": "upgrade to unlock"
+    },
+    "cards": {
+      "youtube": {
+        "title": "Explore Yourself",
+        "desc": "Explore on your own, control your learning path"
+      },
+      "netflix": {
+        "title": "Use Sample Data",
+        "desc": "Use our carefully prepared learning data"
+      },
+      "books": {
+        "title": "Books / Articles",
+        "desc": "Copy Japanese sentences from books or web pages for study and review."
+      }
+    },
+    "actions": {
+      "installExtension": "Install extension",
+      "openYoutube": "Open YouTube",
+      "openNetflix": "Open Netflix",
+      "goBooks": "Go to Books"
+    },
+    "footer": {
+      "col1": "Our tools and strategies surface issues before they slow you down, keeping a steady study rhythm.",
+      "col2": "We leverage automation and semantic analysis to boost efficiency, reduce friction, and keep your workflow smooth."
+    }
+  },
+  "pricing": {
+    "title": "Pricing Plans",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "free": "Free",
+    "pro": "Pro",
+    "freePlan": {
+      "title": "Free Plan",
+      "description": "Basic features for casual users",
+      "price": "¥0 / month",
+      "features": {
+        "tokens": "10,000 tokens per day",
+        "images": "5 image uploads per day",
+        "tts": "5 TTS uses per day"
+      },
+      "currentPlan": "Current Plan"
+    },
+    "proPlan": {
+      "title": "Premium Plan",
+      "description": "More access and premium features",
+      "price": "$10 / month",
+      "features": {
+        "tokens": "Up to 1,000,000 tokens/month",
+        "images": "Up to 300MB image uploads/month",
+        "tts": "Up to 5,000 TTS uses/month"
+      },
+      "upgrade": "Upgrade Now"
+    }
+  },
+  "talk2Bunn": {
+    "title": "Chat with Bunn",
+    "completedReviewsMessage": "Great job! You've completed all your review tasks for today.",
+    "forgottenWordsPrompt": "I've noticed you've forgotten some words recently. Let's review them together.",
+    "incompleteReviewsMessage": "You haven't completed your review tasks for today. Please complete the following:",
+    "memoCardIncomplete": "\n- Memory Card Review",
+    "wordCardIncomplete": "\n- Word Card Review",
+    "goToMemoCards": "Review Memory Cards",
+    "goToWordCards": "Review Word Cards",
+    "inputDisabledPlaceholder": "Please complete today's reviews first",
+    "inputPlaceholder": "Type your question...",
+    "sending": "Sending...",
+    "send": "Send",
+    "readyToStart": "I'm ready to help you review forgotten words.",
+    "startQuestions": "Let's start reviewing words you've recently forgotten. I'll ask you about them one by one to see if you remember their meanings and pronunciations."
+  },
+  "login": {
+    "welcome": "Welcome Back",
+    "description": "Sign in with GitHub or Google",
+    "loginWithGithub": "Sign in with GitHub",
+    "loginWithGoogle": "Sign in with Google",
+    "agreement": {
+      "prefix": "By continuing, you agree to our",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy",
+      "suffix": "."
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "subtitle": "Bunn Terms of Service",
+    "lastUpdated": "Last Updated",
+    "welcome": "Welcome, and thank you for your interest in Bunn. These Terms of Service (including Bunn's Privacy Policy) constitute a legally binding contract between you and Bunn regarding your use of the Service.",
+    "sections": {
+      "read": {
+        "title": "Please Read These Terms Carefully:",
+        "description": "By using our service, you acknowledge that you have read and understood, and agree to be bound by these Terms of Service as a condition of using the service. If you do not agree to these terms, you have no right to use the service."
+      },
+      "info": {
+        "title": "1. Information Collection",
+        "description1": "When you log in through Google or GitHub, we collect the following information: username, email address, user ID, and profile picture. This information is used solely for authentication purposes and sending product-related communications.",
+        "description2": "We also store the sentences you upload and record your actions within the application. These are fundamental components of our service functionality and are used solely to provide the service.",
+        "description3": "All information we collect is used only to provide the service and is not shared with third parties or used for model training purposes.",
+        "description4": "For more details about how we handle your information, please refer to our Privacy Policy.",
+        "description5": "You can request termination of your account by contacting our customer support team. After terminating your user account, we will immediately and permanently delete all personally identifiable information you provided to us (including your account information), though we may retain non-personally identifiable demographic information, data we collected during your use of the service, and your user content for as long as we deem appropriate."
+      },
+      "license": {
+        "title": "2. Service Usage License",
+        "description1": "Unless otherwise stated, we or our licensors own the intellectual property rights in the service and service content. You may only use the service and service content for personal language learning, subject to the restrictions set out in these terms and other limitations.",
+        "description2": "You may not copy, redistribute, sell, rent, sublicense, publicly display, publicly perform, provide, modify, transmit, or otherwise exploit the service content outside of the service, whether for commercial purposes or not. If we specifically allow use of service content outside the service, such use requires adherence to additional licensing.",
+        "description3": "You must not use the service in any way that causes, or may cause, damage to our website or impairment of the availability or accessibility of the service; or in any way which is unlawful, fraudulent or harmful, or in connection with any unlawful, fraudulent or harmful purpose or activity.",
+        "description4": "You must not use the service to copy, store, host, transmit, send, use, publish or distribute any material which consists of (or is linked to) any spyware, computer virus, Trojan horse, worm, keystroke logger, rootkit or other malicious computer software.",
+        "description5": "You must not conduct any systematic or automated data collection activities on or in relation to the service without our express written consent.",
+        "description6": "You must not use the service to transmit or send unsolicited commercial communications. \"Bunn\" and all other trademarks, service marks, graphics and logos used in connection with the service (collectively, \"Marks\") are trademarks or service marks of Bunn or their respective owners, some of which may be registered. Nothing in these terms grants you any right to copy or otherwise use these Marks."
+      },
+      "content": {
+        "title": "3. User Generated Content",
+        "description1": "In these terms, \"your user content\" means material (including without limitation text, images, audio material, video material, and audio-visual material) that you submit to the service, for whatever purpose.",
+        "userContent": {
+          "title": "User Content",
+          "description": "All content you upload or provide to this service (including but not limited to text, images, audio, etc.) remains your property. This service will not use your content for commercial purposes or make it available to other users."
+        },
+        "licenseGrant": {
+          "title": "License Grant",
+          "description": "You grant us a non-exclusive, worldwide, royalty-free license solely for storing, processing, and providing the service. This license terminates when you delete your content or account."
+        },
+        "contentDeletion": {
+          "title": "Content Deletion",
+          "description": "You can delete your content at any time, or delete all data through account management. We will delete the relevant data within a reasonable timeframe, though there may be brief storage delays due to technical reasons such as backups."
+        },
+        "description2": "Your user content must not be illegal or unlawful, must not infringe any third party's legal rights, and must not be capable of giving rise to legal action against you, us, or a third party (in each case under any applicable law).",
+        "description3": "You must not submit any user content that is or has been the subject of any threatened or actual legal proceedings or other similar complaint."
+      },
+      "payment": {
+        "title": "4. Payment and Refunds",
+        "description1": "You can cancel your subscription at any time. After cancellation, you can continue using the service until the end of the current month, but refunds are not allowed.",
+        "description2": "All paid plans require a valid credit card. Free accounts do not require a credit card number.",
+        "description3": "Upgrading from the free plan to any paid plan will result in immediate billing.",
+        "description4": "Service fees are charged monthly or annually in advance. We do not provide refunds or credits for partial months of service, upgrades/downgrades, or unused months.",
+        "description5": "All fees are exclusive of all taxes, levies, or duties imposed by taxing authorities, and you shall be responsible for payment of all such taxes, levies, or duties, excluding only United States (federal or state) taxes.",
+        "description6": "Downgrading your service may cause the loss of features or capacity of your account. Bunn does not accept any liability for such loss."
+      },
+      "changes": {
+        "title": "5. Changes to Terms",
+        "description1": "We may modify these terms from time to time. Modified terms will apply to your use of the service from the date the modified terms are posted on our website, or from such later date as may be specified in the modified terms.",
+        "description2": "If we modify these terms, we will notify you (for example by email or when you next use the service). If you do not agree to the modified terms, you may request termination of your user account."
+      },
+      "agreement": {
+        "title": "6. Entire Agreement",
+        "description": "These terms, together with our Privacy Policy, constitute the entire agreement between you and us regarding your use of the service and supersede all prior agreements regarding your use of the service."
+      },
+      "thirdParty": {
+        "title": "7. Exclusion of Third Party Rights",
+        "description": "These terms are for the benefit of you and us and are not intended to benefit any third party or be enforceable by any third party. The exercise of our and your rights in relation to these terms is not subject to the consent of any third party."
+      },
+      "contact": {
+        "title": "8. Contact Us",
+        "description": "If you have any questions about these Terms of Service, please contact us"
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "Bunn Privacy Policy",
+    "lastUpdated": "Last Updated",
+    "welcome": "Welcome, and thank you for your interest in Bunn. This Privacy Policy outlines how we collect, use, and protect your information when you use our services.",
+    "sections": {
+      "read": {
+        "title": "Please Read These Privacy Terms Carefully:",
+        "description": "By using our services, you agree to the collection and use of your information in accordance with this Privacy Policy. If you do not agree with our policies and practices, please do not use our services."
+      },
+      "collect": {
+        "title": "1. Information We Collect",
+        "description": "When you log in through Google or GitHub, we collect the following information:",
+        "items": [
+          "Username",
+          "Email address",
+          "User ID",
+          "Profile picture"
+        ]
+      },
+      "how": {
+        "title": "2. How We Collect Information",
+        "description": "We collect this information when you authenticate through Google or GitHub to use our services. This information is provided directly to us from these platforms with your consent during the login process."
+      },
+      "use": {
+        "title": "3. How We Use Your Information",
+        "description": "We use the collected information to:",
+        "items": [
+          "Provide and maintain our login services",
+          "Provide relevant product advertising",
+          "Improve and personalize your service experience",
+          "Communicate with you about our services"
+        ]
+      },
+      "share": {
+        "title": "4. Information Sharing",
+        "description": "We do not share your personal information with third parties unless necessary for providing services or required by law."
+      },
+      "storage": {
+        "title": "5. Data Storage and Security",
+        "description": "We take appropriate security measures to protect your personal information. However, no method of transmission over the internet or electronic storage is 100% secure."
+      },
+      "rights": {
+        "title": "6. Your Rights",
+        "description": "You have the following rights regarding your personal information:",
+        "items": [
+          "Access your personal information",
+          "Correct inaccurate information",
+          "Request deletion of your information",
+          "Object to processing of your information",
+          "Data portability"
+        ],
+        "contact": "To exercise these rights, please contact us using the information provided below."
+      },
+      "cookies": {
+        "title": "7. Cookie Policy",
+        "description": "Our website only uses cookies to store login information to ensure your session security. We do not use cookies for advertising tracking or analytics purposes. These cookies are necessary for providing a secure browsing experience on our website."
+      },
+      "changes": {
+        "title": "8. Changes to This Privacy Policy",
+        "description": "We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the \"Last Updated\" date. We recommend reviewing this Privacy Policy periodically for any changes."
+      },
+      "contact": {
+        "title": "9. Contact Us",
+        "description": "If you have any questions about this Privacy Policy, please contact us"
+      }
+    }
+  },
+  "LoginedHeader": {
+    "membershipPlan": "Membership Plan",
+    "expiryDate": "Expiry Date",
+    "subscriptionManagement": "Subscription Management",
+    "logout": "Logout",
+    "latest": "Latest",
+    "random": "Random",
+    "wordCards": "Word Cards",
+    "exam": "Exam",
+    "dailyReport": "Daily Report",
+    "memoCards": "Memory Cards",
+    "channels": "Channels",
+    "talk2Bunn": "Talk to Bunn",
+    "ttsManage": "TTS Management",
+    "back": "Back",
+    "languageLabel": "Text Language",
+    "freshHaruka": "Fresh Haruka",
+    "inUse": "Using",
+    "useOwnVoice": "Use your own voice",
+    "changeOwnVoice": "Change your voice",
+    "changeOwnVoiceButton": "Change your voice",
+    "stopRecording": "Stop recording",
+    "playRecording": "Play recording",
+    "pausePlaying": "Pause playing",
+    "recordAgain": "Record again",
+    "uploaded": "Uploaded",
+    "uploadAndClone": "Upload and Clone",
+    "myVoice": "My Voice",
+    "answerAccuracy": "Answer Accuracy"
+  },
+  "memoCards": {
+    "noDataFound": "Please enter Japanese text you're interested in",
+    "importSampleData": "Import Sample Data",
+    "inputPlaceholder": "Enter the Japanese sentence you want to learn",
+    "contextPlaceholder": "Please enter the context for this sentence...",
+    "limitMessage": "You've reached today's limit of 20 sentences. Upgrade to",
+    "demoTranslation1": "It's too boring to ask that.",
+    "demoTranslation2": "Are you saying I should distort facts based on personal feelings?",
+    "demoTranslation3": "The rumor about Fukuoka having many beautiful women is no longer just a legend - it's now considered a fact.",
+    "demoTranslation4": "The best practices for using Project and Rules in Cursor",
+    "demoTranslation5": "Did you use a high-load implant without breaking it in?",
+    "demoTranslation6": "Every time you completely copy the cover's coordination, so fashionable huh?",
+    "demoTranslation7": "You're faster than the rest, right?",
+    "whereToGetSentence": "Where can I get Japanese sentences?",
+    "allCardsCompleted": "You have completed all memory cards for today",
+    "allWordCardsCompleted": "You have completed all word cards for today.",
+    "emptyState": {
+      "noData": "No Data here",
+      "description": "It seems a bit empty. Let's add some memory cards to get started.",
+      "addingText": "Adding...",
+      "addButton": "Add some starter cards",
+      "goOnboarding": "Choose a way to add cards"
+    },
+    "talk2Bunn": {
+      "title": "AI Coach",
+      "completedReviewsMessage": "Great job! You've completed all your review tasks for today.",
+      "forgottenWordsPrompt": "I noticed you've forgotten some words recently. Let's review them together.",
+      "incompleteReviewsMessage": "You haven't completed your review tasks for today. Please complete the following:",
+      "memoCardIncomplete": "\n- Memory Card Review",
+      "wordCardIncomplete": "\n- Word Card Review",
+      "goToMemoCards": "Review Memory Cards",
+      "goToWordCards": "Review Word Cards",
+      "inputDisabledPlaceholder": "Please complete today's reviews first",
+      "inputPlaceholder": "Type your question...",
+      "sending": "Sending...",
+      "send": "Send",
+      "readyToStart": "I'm ready to help you review forgotten words.",
+      "startQuestions": "Let's start reviewing words you've recently forgotten. I'll ask you about them one by one to see if you remember their meanings and pronunciations."
+    },
+    "avatar": {
+      "pasteHint": "Ctrl+V to upload the avatar!",
+      "noImage": "Take a screenshot and copy it to the clipboard!"
+    }
+  },
+  "wordCards": {
+    "demoMeaning": "distort, misinterpret",
+    "noWordCards": "No Word Cards Yet",
+    "importSampleFirst": "Let's start by importing some sample sentences",
+    "importSampleData": "Import Sample Data",
+    "clickHere": "Click Here",
+    "selectWordGuide": "Select Words to Learn",
+    "selectWordGuideDesc": "Click on any word or phrase in the sentence to add it to your word cards"
+  },
+  "wordCard": {
+    "word": "Word",
+    "meaning": "Meaning",
+    "addToWordCards": "Add to Word Cards",
+    "recognize": "Know it",
+    "unrecognize": "Don't know"
+  },
+  "exam": {
+    "title": "Exam",
+    "submit": "Submit",
+    "translation_reading": "Translation & Reading",
+    "translation_to_japanese": "Japanese Translation",
+    "listening": "Listening Questions",
+    "enter_hiragana": "Please enter hiragana",
+    "enter_with_user_mother_tongue": "Please enter in English",
+    "enter_japanese": "Please enter in Japanese",
+    "question": "Question",
+    "play_audio": "Play Audio",
+    "fix_answer": "Fix Answer",
+    "fix_confirm": {
+      "title": "Confirm Fix",
+      "description": "Are you sure you want to mark this answer as correct?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "start": "Start New Test",
+    "history": "Test History",
+    "cannotStart": "Cannot Start Test",
+    "insufficientData": "Insufficient data. Please enter enough Japanese sentences before starting a test.",
+    "score": "Score",
+    "duration": "Test Duration",
+    "minutes": "minutes",
+    "correct": "Correct!",
+    "reference_answer": "Reference answer: {answer}"
+  },
+  "dailyReport": {
+    "history": {
+      "title": "History",
+      "cardDate": "Date",
+      "cardStats": "Study Stats",
+      "noHistory": "No history data yet"
+    },
+    "completedLearning": "Today's Progress",
+    "sentences": "Sentences",
+    "words": "Words",
+    "test": "Test",
+    "noRecord": "No study record today",
+    "startReview": "Start Review",
+    "memoCardReview": "Complete Memo Card Review",
+    "wordCardReview": "Complete Word Card Review",
+    "todayTasks": "Today's Tasks",
+    "completedAllTasks": "Congratulations! You've completed all your tasks for today",
+    "forgotMeaning": "You forgot the meaning of \"{word}\", do you remember it now?",
+    "forgotPronunciation": "You forgot the pronunciation of \"{word}\", do you remember it now?",
+    "forgotExpression": "You forgot how to express \"{meaning}\" in Japanese, do you remember it now?",
+    "unableToUnderstand": "You couldn't understand this sentence, can you understand it now after listening again?",
+    "completion": {
+      "congratulations": "Congratulations!",
+      "message": "You've cleared all the knowledge points you found yourself forgetting today.\nKeep up this pace!"
+    },
+    "studyItems": {
+      "item0": {
+        "question": "You forgot the meaning of 「しらばっくれる」, do you remember it now?",
+        "answer": "play dumb",
+        "translation": "Are you still playing dumb!"
+      },
+      "item1": {
+        "question": "You forgot the meaning of 「しかねます」, do you remember it now?",
+        "answer": "unable to do",
+        "translation": "Regarding your previous request, we are unable to accept it."
+      },
+      "item2": {
+        "question": "You forgot the meaning of 「引き下がれない」, do you remember it now?",
+        "answer": "unable to back down",
+        "translation": "Having come this far, I can't back down now."
+      }
+    }
+  },
+  "memoCard": {
+    "originalText": "Original Text",
+    "translation": "Translation",
+    "addCharacter": "Add Character",
+    "useCharacterAvatar": "Click to add character avatar",
+    "removeCharacter": "Remove character",
+    "pronunciation": "Pronunciation",
+    "addToDictionary": "Add to dictionary",
+    "added": "Added",
+    "dictation": "Dictation",
+    "upload": "Upload",
+    "recordVoice": "Record",
+    "listening": "Listening",
+    "wordlist": "Word List",
+    "context": {
+      "placeholder": "Take notes here..."
+    },
+    "question": {
+      "placeholder": "Enter a custom question",
+      "type": {
+        "none": "Type (optional)",
+        "description": "Descriptive",
+        "reading": "Q&A (simple)"
+      }
+    }
+  },
+  "dictation": {
+    "writeOriginalText": "Dictate the original text here"
+  },
+  "usageGuide": {
+    "title": "Usage Guide",
+    "description": "Use these keyboard shortcuts to perform different actions",
+    "forBestResults": "After copying, paste the content to",
+    "BunnIsBest": "Bunn provides translation, phonetic symbols, shadowing practice and dictation features. It also records the context of each copy, allowing you to instantly replay the scene anytime.",
+    "shortcuts": {
+      "option": {
+        "title": "option/Alt",
+        "forText": "For text",
+        "textPrefix": "Select and press to copy to clipboard. Paste into ",
+        "textSuffix": " app to review anytime and return to the original context with one click.",
+        "youtubeTitle": "For",
+        "youtubeContent": "Don't open captions but find videos with built-in subtitles. Press to copy the subtitle of the current frame to clipboard.",
+        "netflixTitle": "For",
+        "netflixContent": "Simply enable subtitles and press to copy the text currently on screen to clipboard.",
+        "youtube": "For YouTube videos: Don't open captions but find videos with built-in subtitles. Press to copy the subtitle of the current frame to clipboard.",
+        "netflix": "For Netflix videos: Simply enable subtitles and press to copy the text currently on screen to clipboard."
+      },
+      "t": {
+        "title": "T",
+        "description": "Select text and press T to translate. Supports both paragraph and phrase translation."
+      }
+    }
+  },
+  "loginPage": {
+    "missingApiKey": "Missing OpenAI API Key",
+    "chooseOption": "Choose one of the following options to use the extension:",
+    "signIn": {
+      "title": "Sign in",
+      "description": "Sign in with GitHub or Google to access premium features without an API key"
+    },
+    "or": "OR",
+    "apiKey": {
+      "title": "Use API Key",
+      "description": "Provide your own OpenAI API key to use the extension without an account",
+      "placeholder": "Enter your OpenAI API Key",
+      "visitPage": "Visit the",
+      "officialPage": "official OpenAI settings page",
+      "toObtain": "to obtain your key.",
+      "saveSettings": "Save Settings",
+      "alreadySetup": "You have already set up your OpenAI API key",
+      "invalidKey": "Invalid API key, please check and enter again",
+      "saveFailed": "Failed to save API key"
+    },
+    "signOut": "Sign Out",
+    "loading": "Loading..."
+  },
+  "subscription": {
+    "title": "Upgrade to Premium",
+    "description": "Get access to all features without needing an API key. Plus, enjoy unlimited access to Bunn.",
+    "subscribeNow": "Subscribe Now",
+    "learnMore": "Learn more about",
+    "website": "Bunn"
+  },
+  "auth": {
+    "signInWithGithub": "Sign in with GitHub",
+    "signInWithGoogle": "Sign in with Google",
+    "or": "Or"
+  },
+  "uploadDialog": {
+    "title": "Set Poster",
+    "replaceTitle": "Replace Poster",
+    "titleBackgroundTitle": "Upload Title Image",
+    "cancel": "Cancel",
+    "applyChanges": "Apply Changes"
+  },
+  "characterSelection": {
+    "newCharacter": "New Character",
+    "enterCharacterName": "Enter character name",
+    "searchCharacter": "Search character",
+    "loading": "Loading...",
+    "loadFailed": "Load failed",
+    "noMatchingCharacters": "No matching characters found",
+    "clickToAddNewCharacter": "Click to add new character",
+    "uploadLimitReached": "Upload limit reached",
+    "addCharacter": "Add character",
+    "uploadCharacterAvatar": "Upload character avatar",
+    "confirmDelete": "Confirm delete?",
+    "cancel": "Cancel"
+  },
+  "Channels": {
+    "yourChannels": "Your YouTube Channels",
+    "noChannelsFound": "No channels found. Add YouTube notes to see channels here.",
+    "switchToEditMode": "Switch to Edit Mode",
+    "switchToLockedMode": "Switch to Locked Mode"
+  },
+  "ChannelDetail": {
+    "backToChannels": "Back to Channels",
+    "about": "About",
+    "videos": "Videos",
+    "noVideosFound": "No videos found",
+    "selectVideo": "Select Video",
+    "noCards": "No cards",
+    "enterCharacterName": "character name",
+    "onlyImageSupported": "Only image files are supported",
+    "bannerUploadSuccess": "Banner image uploaded successfully",
+    "bannerUploadFailed": "Failed to upload banner image:",
+    "avatarUploadSuccess": "Avatar image uploaded successfully",
+    "avatarUploadFailed": "Failed to upload avatar image:",
+    "openUploadDialog": "Open upload dialog",
+    "deleteFailed": "Delete failed:",
+    "characterDeleted": "Character deleted",
+    "characterDeleteFailed": "Failed to delete character",
+    "characterDeleteError": "Error deleting character:",
+    "characterNameUpdated": "Character name updated",
+    "characterNameUpdateFailed": "Failed to update character name",
+    "characterNameUpdateError": "Error updating character name:",
+    "defaultCharacterName": "They",
+    "characterAvatarUpdated": "Character avatar updated",
+    "characterAvatarUpdateFailed": "Failed to update character avatar",
+    "characterAvatarUpdateError": "Error updating character avatar:",
+    "uploading": "Uploading...",
+    "clickToUploadBanner": "Click to upload banner image",
+    "channelBanner": "Channel Banner",
+    "clearFilter": "Clear filter",
+    "filterCleared": "Video filter cleared, showing all cards",
+    "resetToSelectMode": "Switched to video selection mode",
+    "deleteMemoCard": "Delete card",
+    "videoSearchPlaceholder": "Search videos...",
+    "videoCount": "{count} videos",
+    "clearSearch": "Clear search",
+    "replaceAvatar": "Change Avatar",
+    "deleteCharacter": "Delete Character",
+    "filterByCharacter": "Filter cards by this character",
+    "characterFilterApplied": "Showing cards for character \"{name}\"",
+    "characterFilterCleared": "Character filter cleared",
+    "noCharacterCards": "No cards found for this character",
+    "uploadCharacterAvatar": "Upload character avatar"
+  },
+  "VideoSelector": {
+    "searchPlaceholder": "Search videos...",
+    "noResults": "No matching videos found",
+    "cancel": "Cancel",
+    "videoCount": "{count} videos"
+  },
+  "timeline": {
+    "lockedMode": "Locked Mode (Press Cmd+E to Edit)",
+    "editMode": "Edit Mode (Press Cmd+L to Lock)",
+    "switchToEditMode": "Switch to Edit Mode",
+    "switchToLockedMode": "Switch to Locked Mode",
+    "season": "Season",
+    "episode": "Episode",
+    "filterBySeason": "Filter by Season",
+    "all": "All",
+    "seasonNumber": "Season {number}",
+    "noCardsForCharacterInSeason": "No cards for this character in Season {season}",
+    "noCardsForCharacter": "No cards for this character",
+    "noCardsInSeason": "No cards in Season {season}",
+    "noCards": "No cards",
+    "seasonError": "Season must be an integer between -32768 and 32767",
+    "unreviewedOnly": "Unreviewed Only"
+  },
+  "WebSources": {
+    "switchToEditMode": "Switch to Edit Mode",
+    "switchToLockedMode": "Switch to Locked Mode",
+    "lockedMode": "Locked Mode (Press Cmd+E to Edit)",
+    "editMode": "Edit Mode (Press Cmd+L to Lock)",
+    "domainSources": "Web Sources",
+    "showAllCards": "Show All Cards",
+    "cardsFromDomain": "Cards from {domain}",
+    "allCards": "All Cards",
+    "noCardsForDomain": "No cards from {domain} yet",
+    "noCards": "No cards available",
+    "noDomains": "No domains yet. Please add a new domain",
+    "addNewDomain": "Add New Domain",
+    "enterDomain": "Enter domain",
+    "enterDisplayName": "Enter display name (optional)",
+    "uploadDomainIcon": "Upload Domain Icon",
+    "addDomain": "Add Domain",
+    "deleteDomain": "Delete Domain",
+    "enterDomainName": "Enter domain name",
+    "deleteMemoCard": "delete",
+    "updateIcon": "update icon"
+  },
+  "grammarAnalysis": {
+    "title": "Grammar Analysis",
+    "placeholder": "Enter your question...",
+    "close": "Close",
+    "initialMessage": "Analyzing the grammar structure and word usage of the original text, please wait...",
+    "errorMessage": "Sorry, an error occurred while processing your request. Please try again later.",
+    "loadingMessages": "Loading messages...",
+    "upgrade": "Upgrade",
+    "limitReached": "Limit reached",
+    "nextQuestion": "Next Question"
+  },
+  "blog": {
+    "indexPage": {
+      "title": "Bunn Blog",
+      "subtitle": "Insights, tips, and stories about language learning"
+    },
+    "backToBlog": "Back to Blog",
+    "imagePlaceholder": "Image will be displayed here",
+    "publishedDate": "Published on May 24, 2025",
+    "learningJapaneseWithYoutubeGuide": {
+      "title": "How to Learn Japanese with YouTube in 2025: A Complete, Realistic Guide",
+      "excerpt": "YouTube can absolutely help you learn Japanese — but only if you stop \"just watching\" and start turning videos into structured practice. This guide shows a realistic, step-by-step way to use subtitles, shadowing, and review to learn from the videos you already love.",
+      "intro": "If you’ve ever told yourself “I’m totally learning Japanese, I watch a lot of anime,” you’re not alone.\nAnd if you’ve ever opened a textbook, did two chapters, and then quietly went back to YouTube, you’re also not alone.\n\nThe good news: in 2025, learning Japanese with YouTube is absolutely possible.\nThe bad news: just watching YouTube will not get you there.\n\nThis article shows you a realistic, step-by-step way to turn any YouTube video into a structured Japanese lesson — using subtitles, shadowing, and spaced repetition. We’ll also see where a tool like Bunn (bunn.ink) fits in, without pretending it’s magic.",
+      "part1_title": "Why YouTube Is the Best Source of Real Japanese",
+      "part1_content": "Textbooks are great at one thing: being out of date.\n\nYouTube, on the other hand, gives you:\n\n- Real language, not textbook language\nYou hear the way people actually speak: fillers, sentence endings, casual forms, slang, hesitation — the things that never make it into polite dialogues.\n\n- Endless variety of content\nVlogs, news, gaming, tech, anime analysis, cooking, JLPT prep, street interviews. Whatever you like in your native language, there’s probably a Japanese version of it.\n\n- Fresh and relevant input\nYou can watch videos about events that happened yesterday, not fake conversations about “Ken buying a CD at a record store”.\n\n- Native-level pronunciation and rhythm\nIf your goal is natural listening and speaking, you want hours of exposure to real voices, not just slow and over-articulated audio tracks.\n\nAll of this makes YouTube a perfect input source.\nBut as anyone who has “studied Japanese” while letting the autoplay algorithm take over knows: input without structure turns into background noise very quickly.",
+      "part2_title": "Why “Just Watching YouTube” Doesn’t Work",
+      "part2_content": "If YouTube alone could make you fluent, half the internet would be speaking perfect Japanese by now.\n\nThere are three main reasons “just watching” fails:\n\n**Problem 1: Passive Watching**\nYou click one video. You understand a bit. You click another. Repeat for an hour.\nYou feel like you’re studying, but you never replay the same sentence several times, you never check what was actually said, and you never test yourself on what you just heard.\nYour brain treats it like entertainment, not learning.\n\n**Problem 2: Subtitle Chaos**\nMany serious learners get stuck on subtitles:\n- The video has no Japanese subtitles at all.\n- It only has translated subtitles in another language.\n- Auto-generated subtitles are full of errors, missing particles, and wrong kanji.\n- You can’t easily pause and study line by line.\nSo you end up guessing, which is fun, but not efficient.\n\n**Problem 3: No Review System**\nEven if you catch a cool phrase or interesting word, you don’t write it down, or you write it down and never see it again.\nWithout a simple way to save and revisit vocabulary and sentences, your progress is slower than it should be. You keep rediscovering the same words and thinking, “I’ve seen this before…” — and you probably have.",
+      "part3_title": "The Right Approach: Turn Any Video into a Japanese Lesson",
+      "part3_content": "Now for the part that actually works.\nHere’s a realistic workflow to learn Japanese with YouTube in 2025.\n\nWe’ll assume you’re using a tool like Bunn (bunn.ink) that can:\n- Import Japanese and English subtitles from YouTube\n- Split the video into sentence-level segments\n- Let you loop, slow down, and shadow specific lines\n- Help you review vocabulary you mark as important\n\nYou can do some of this manually of course, but life is short.\n\n**Step 0: Choose the Right Video**\nNot every video is a good learning video, especially if you’re below N2.\nLook for clear audio, Japanese subtitles, content you genuinely care about, and a reasonable length (5–20 minutes is ideal).\n\n**Step 1: Get Accurate Japanese Subtitles**\nThis is the foundation: no reliable subtitles, no precise learning.\nUse videos with official Japanese subtitles when possible, and use tools like Bunn to fetch and align Japanese (and optionally English) subtitles.\n\n**Step 2: Do a “Global Understanding” Watch**\nBefore dissecting the video, watch it once all the way through with Japanese subtitles. Don’t pause or rewind; just get a general sense of the topic and tone.\n\n**Step 3: Study Sentence by Sentence**\nFor each line: listen once without looking, then listen while reading Japanese, and only then check the translation if needed. In Bunn, this looks like one sentence on screen with aligned JP/EN subtitles and instant replay.\n\n**Step 4: Shadow the Audio**\nAfter you understand a line, speak along with the audio, matching rhythm and intonation. Loop and slow-down features in Bunn make this much easier.\n\n**Step 5: Save Key Vocabulary and Phrases**\nDon’t save everything — only what is useful and recurring. Mark words and lines in Bunn as \"worth learning\" so you can review them later in context.\n\n**Step 6: Build a Simple Weekly Routine**\nAim for 3–5 sessions per week, 30–45 minutes each: a bit of global watching, a focused sentence-by-sentence section, shadowing, and short review.",
+      "part4_title": "A 30-Minute Study Session You Can Copy",
+      "part4_content": "Here’s a simple 30-minute session template using a 7–10 minute Japanese vlog with subtitles and Bunn to manage subtitles and sentences.\n\n0–5 minutes: Watch the whole video once with Japanese subtitles, no pausing.\n5–15 minutes: Go through the first 1–2 minutes sentence by sentence: listen, read Japanese, then (optionally) check English.\n15–25 minutes: Shadow 5–10 key sentences several times each.\n25–30 minutes: Save 5–10 key phrases you want to remember.\n\nThe pattern is always: whole video → parts → voice → memory.\nInstead of letting the recommendation algorithm run until you feel tired, you direct your attention and energy on a small number of sentences you truly learn.",
+      "part5_title": "Different Ways to Use YouTube for Japanese",
+      "part5_content": "Not all YouTube-based study methods are equal.\n\nJust watching YouTube is easy and fun, but gives you almost no repetition, no clear progress, and you forget most new words.\nManual note-taking with pausing gives you full control, but is high-friction: constant pausing, rewinding, and typing Japanese by hand.\n\nA structured tool like Bunn sits in the middle:\n- Sentence-level control and synced subtitles\n- Built-in looping, slowing down, and shadowing\n- An easy way to save phrases for later review\n\nThe point isn’t that you must use Bunn; the point is that the more boring logistics you offload to a tool, the more brainspace you have left for actual Japanese.",
+      "part6_title": "Can Beginners Really Start with YouTube?",
+      "part6_content": "Short answer: yes, but not with any random video.\n\nFor absolute beginners, start with channels designed for learners, easy Japanese content, or clear anime clips with good subtitles. Focus on recognizing basic patterns and a small number of high-frequency phrases.\n\nBunn helps beginners by showing Japanese and English side by side, letting you replay the same line until it stops sounding like noise, and giving you a safe place to pause and think without fighting the YouTube UI.\n\nIt is a bit harder than textbook dialogues, but far more motivating, because you’re studying content you genuinely like.",
+      "part7_title": "Putting It All Together",
+      "part7_content": "Learning Japanese with YouTube in 2025 is no longer just a vague idea — it’s a concrete workflow.\n\nIn short:\n1. Choose the right video with clear audio and Japanese subtitles.\n2. Import it into a tool that gives you sentence-level control (like Bunn).\n3. Watch globally first, then study locally, line by line.\n4. Shadow key sentences until your mouth catches up with your ears.\n5. Save and review only what matters, in context.\n6. Repeat this routine a few times a week.\n\nIf you’re already spending time on YouTube, you don’t need to change your life to start learning Japanese with it — you just need to turn random watching into intentional practice.\nBunn is designed to help with the subtitles, looping, and remembering, turning any YouTube video into an interactive Japanese lesson without replacing the content you already love.",
+      "conclusion": "If you want to turn your YouTube time into real Japanese progress, try loading one of your favorite videos into Bunn and following the workflow from this guide. Start small, be consistent, and let real Japanese from real videos become your main teacher.",
+      "image": {
+        "alt": "Learning Japanese with YouTube illustration"
+      }
+    },
+    "pageTitle": "Bunn Blog",
+    "pageDescription": "Insights, tips, and stories about language learning",
+    "common": {
+      "upgrade": "Upgrade",
+      "home": "Home"
+    }
+  },
+  "contextEditor": {
+    "title": "Context Information Editor",
+    "context": "Context",
+    "chinese": "Chinese",
+    "english": "English",
+    "traditional": "Traditional Chinese",
+    "chinesePlaceholder": "Enter Chinese content",
+    "englishPlaceholder": "English translation",
+    "traditionalPlaceholder": "Traditional Chinese translation",
+    "generate": "Generate Translation",
+    "addContext": "Add Context",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "contextViewer": {
+    "inputPlaceholder": "Enter context information here...",
+    "close": "Close",
+    "defaultCharacterName": "They"
+  },
+  "jobs": {
+    "selectUserToDelete": "Select user to delete data",
+    "selectUserToClear": "Select user to clear word segmentation data"
+  },
+  "chapterUpload": {
+    "chapterTitlePlaceholder": "Chapter title"
+  },
+  "streakCounter": {
+    "consecutive": "{count} in a row!"
+  },
+  "badges": {
+    "pointsEarned": "Achievement points earned",
+    "nextMilestone": "Get {points} more to reach milestone {number}",
+    "maxMilestone": "Top milestone reached",
+    "nextRound": "Next round",
+    "title": "Achievement Badges",
+    "currentBadge": "Current Badge",
+    "allBadges": "All Badges",
+    "toNextLevel": "Get {remain} more points to reach the next milestone",
+    "pointsUnit": "points",
+    "levelUp": "Badge Level Up",
+    "completed": "Completed",
+    "levels": {
+      "yellow": "Yellow",
+      "orange": "Orange",
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "black": "Black",
+      "volt": "Volt"
+    }
+  },
+  "dailyTask": {
+    "startPrompt": "Start Daily Tasks?",
+    "letsGo": "Let's go!",
+    "noCardsFound": "No memo cards found",
+    "insufficientDataTitle": "No cards to review",
+    "justGetSome": "Just get some!",
+    "invalidYouTubeLink": "Invalid YouTube link",
+    "wordQuizTitle": "Word Quiz",
+    "continue": "Continue",
+    "correctAnswer": "Correct Answer",
+    "correct": "Correct!",
+    "loading": "Loading...",
+    "questionMeaning": "What does \"{word}\" mean in this sentence?",
+    "questionPronunciation": "What is the pronunciation of \"{word}\"?",
+    "captureSubtitle": "Press Ctrl to capture subtitle",
+    "capturedSubtitle": "Captured Subtitle",
+    "extractingSubtitle": "Extracting subtitle",
+    "submit": "Submit",
+    "continueAnswering": "Continue answering",
+    "explainInNativeLanguage": "Try explaining in your native language",
+    "close": "Close",
+    "nextQuestion": "Next Question",
+    "videoArea": "Video Area"
+  },
+  "sentenceBuilding": {
+    "title": "Tap as you heard it",
+    "clickHint": "Click the word segments below to build the sentence",
+    "correct": "Sentence is correct!",
+    "incorrect": "Incorrect order",
+    "correctAnswer": "Correct Answer",
+    "continue": "Continue",
+    "submit": "Submit",
+    "tryAgain": "Try Again",
+    "nextQuestion": "Next Question",
+    "startQuestionAnswer": "Start Question & Answer",
+    "startHint": "Please start building the sentence",
+    "progress": "Selected {selected} / {total} segments",
+    "cardFrontPlaceholder": "Click to view context information",
+    "autoSaving": "Auto-saving...",
+    "analyzingSentence": "Analyzing sentence...",
+    "characterSaid": "What did {character} say? Complete the sentence!",
+    "defaultCharacterName": "They",
+    "viewContext": "View sentence context",
+    "noSegmentationData": "No segmentation data available"
+  },
+  "questionAnswer": {
+    "title": "Question & Answer",
+    "history": "History",
+    "newSubmission": "New Submission",
+    "question": "Watch the full video and explain why {character} said this line",
+    "defaultCharacter": "They",
+    "submit": "Submit Answer",
+    "recheck": "Recheck",
+    "aiEvaluating": "AI is evaluating...",
+    "aiFeedback": "AI Feedback",
+    "noSuggestions": "No improvement suggestions",
+    "suggestExpression": "Suggested expression",
+    "continue": "Continue",
+    "placeholder": "Write your answer here...",
+    "nativeLanguagePlaceholder": "Express what the context is in your native language...",
+    "japanesePlaceholder": "Try expressing it in Japanese...",
+    "evaluationError": "Failed to get AI feedback, please try again",
+    "noHistory": "No history yet",
+    "loading": "Loading...",
+    "watchVideo": "Watch Video",
+    "fixFeedbackPlaceholder": "Enter your feedback..."
+  },
+  "insufficientData": {
+    "checking": "Checking...",
+    "loading": "Loading...",
+    "success": "Success!",
+    "refreshing": "Refreshing...",
+    "upgradeToUnlock": "Upgrade to unlock",
+    "noNewCards": "No new cards"
+  },
+  "subtitleCapture": {
+    "captureTooltip": "Capture subtitle, create memory card",
+    "permissionRequired": "Screen recording permission required for subtitle capture",
+    "creationFailed": "Creation failed",
+    "creationSuccess": "Memory card created successfully!",
+    "previewAlt": "Captured frame preview",
+    "createMemoryCard": "Create memory card",
+    "confirm": "Confirm",
+    "previewImage": "Image Preview",
+    "confirmImagePrompt": "Confirm to extract subtitles from this image?",
+    "extractingSubtitleText": "Extracting subtitles...",
+    "extractingSubtitle": "Extracting subtitle",
+    "subtitleRecognized": "Subtitle recognized",
+    "cancel": "Cancel",
+    "originalText": "Original Text",
+    "translation": "Translation",
+    "pronunciation": "Pronunciation",
+    "errors": {
+      "extractFailed": "Failed to extract subtitles. Please try again later.",
+      "noText": "No subtitles detected. Make sure the video is playing and captions are visible.",
+      "unauthorized": "Unauthorized. Please sign in and try again.",
+      "missingImage": "No image found. Please try again.",
+      "internal": "Internal server error. Please try again later.",
+      "iframeNotFound": "Video area not found. Please ensure the player is visible.",
+      "captureFailed": "Screen capture failed. Please try again later.",
+      "noVideoTrack": "No video track obtained. Please check screen recording permission."
+    }
+  },
+  "safari": {
+    "addVideo": {
+      "title": "Add Video",
+      "videoUrl": "Video URL",
+      "videoUrlPlaceholder": "Enter YouTube video URL",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "success": "Video added successfully",
+      "error": "Failed to add",
+      "invalidUrl": "Invalid YouTube URL",
+      "videoAlreadyExists": "Video already exists",
+      "fetchVideoInfoError": "Failed to fetch video information",
+      "coverFromClipboard": "Pick cover from clipboard",
+      "coverPreview": "Cover (optional)",
+      "removeCover": "Remove cover"
+    },
+    "findVideos": "Go find videos!"
+  },
+  "channels": {
+    "search": {
+      "placeholder": "Search videos..."
+    },
+    "pauseGuide": {
+      "closeMoreVideos": "Close more videos",
+      "showSubtitles": "Show subtitles to recognize them!"
+    },
+    "captureSubtitles": "Recognize subtitles",
+    "deleteVideo": "Delete video",
+    "deleteMemoCard": "Delete card"
+  }
+}

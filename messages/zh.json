@@ -1,0 +1,1136 @@
+{
+  "common": {
+    "language": "语言",
+    "login": "登录",
+    "signup": "注册",
+    "guide": "指南",
+    "pricing": "价格",
+    "blog": "博客",
+    "columns": "专栏",
+    "contact": "联系我们",
+    "footer": {
+      "copyright": "Bunn © 2026",
+      "termsOfService": "服务条款",
+      "privacyPolicy": "隐私政策",
+      "businessDisclosure": "特定商取引法に基づく表示"
+    },
+    "back": "返回",
+    "limitReachedWithUpgrade": "已达限额。<upgrade>升级</upgrade>以解锁。",
+    "limitReached": "已达限额。升级以解锁。",
+    "upgrade": "升级",
+    "home": "首页"
+  },
+  "components": {
+    "recordingControls": {
+      "recording": "录音中..."
+    },
+    "dock": {
+      "dailyTasks": "每日任务",
+      "youtube": "YouTube",
+      "safari": "探索",
+      "netflix": "Netflix",
+      "books": "书籍",
+      "bookmarks": "书摘",
+      "others": "其他"
+    }
+  },
+  "bookmarks": {
+    "title": "书摘",
+    "backToBookshelf": "返回书架",
+    "addBookmark": "添加书摘",
+    "addFromClipboard": "从剪贴板粘贴截图",
+    "addFromFileSecondary": "或从电脑中选择图片上传",
+    "dialogTitle": "创建书摘",
+    "titlePlaceholder": "请输入标题",
+    "sourceLabel": "来源",
+    "sourceTypes": {
+      "url": "网址",
+      "book": "书籍",
+      "comic": "漫画",
+      "level": "等级考",
+      "exam": "考试",
+      "other": "其他"
+    },
+    "sourcePlaceholder": "例如：https://example.com/xxx / 《某书》第3章 P.45 / 2023 日本语N1 阅读",
+    "uploadTitle": "截图",
+    "uploading": "创建中…",
+    "or": "或",
+    "cancel": "取消",
+    "errors": {
+      "clipboardNotSupported": "当前浏览器不支持从剪贴板读取图片。",
+      "noImageInClipboard": "剪贴板中没有图片。",
+      "clipboardReadFailed": "读取剪贴板失败。",
+      "imageRequired": "请先粘贴或上传截图。",
+      "noText": "图片中没有识别到可用的文本。",
+      "ocrFailed": "从图片中提取文字失败。",
+      "unauthorized": "未授权访问，请重新登录后再试。",
+      "limitReached": "已达到图片识别使用上限，请稍后重试或升级账户。",
+      "createFailed": "创建书摘失败。",
+      "noClipboardContent": "剪贴板中没有可用内容。",
+      "emptyText": "文本内容为空。",
+      "splitFailed": "分割句子失败。",
+      "deleteFailed": "删除失败。"
+    },
+    "confirmDelete": "确认删除？",
+    "delete": "删除",
+    "sentence": {
+      "showTranslation": "显示翻译",
+      "hideTranslation": "收起翻译",
+      "tts": "朗读",
+      "playing": "播放中",
+      "translationError": "生成翻译失败，请稍后重试。",
+      "ttsError": "TTS 播放失败，请稍后重试。",
+      "tooltipTranslation": "查看或生成翻译",
+      "tooltipTts": "播放朗读"
+    },
+    "bookSource": {
+      "bookLabel": "书籍",
+      "createNewBook": "新建书籍",
+      "bookPlaceholder": "请选择一本书",
+      "chapterLabel": "章节",
+      "chapterPlaceholder": "请选择章节",
+      "newChapterNumberLabel": "章节编号",
+      "newChapterTitleLabel": "章节标题",
+      "pageNumberLabel": "页码",
+      "pageNumberPlaceholder": "请输入页码（可选）",
+      "newBookCoverLabel": "封面",
+      "newBookTitlePlaceholder": "请输入书名",
+      "bookRequired": "请上传封面并输入书名。",
+      "chapterRequired": "请输入有效的章节编号。",
+      "createNewChapter": "新建章节"
+    },
+    "comicSource": {
+      "bookLabel": "漫画",
+      "createNewBook": "新建漫画",
+      "bookPlaceholder": "请选择一部漫画",
+      "chapterLabel": "话",
+      "chapterPlaceholder": "请选择话",
+      "newChapterNumberLabel": "话编号",
+      "newChapterTitleLabel": "话标题",
+      "addPage": "新增页",
+      "createPage": "创建",
+      "createChapter": "创建话",
+      "createChapterFirst": "请先创建话，或切回选择已有话。",
+      "chapterSelectRequired": "请选择话。",
+      "imagePlaceholder": "请粘贴或上传截图",
+      "pageNumberLabel": "页码",
+      "pageNumberPlaceholder": "请输入页码",
+      "pageNumberRequired": "请输入有效的页码。",
+      "newBookCoverLabel": "封面",
+      "newBookTitlePlaceholder": "请输入漫画名",
+      "bookRequired": "请上传封面并输入漫画名。",
+      "chapterRequired": "请输入有效的话编号和标题。",
+      "createNewChapter": "新建话"
+    },
+    "comicReader": {
+      "pickLocation": "选择话和页码",
+      "go": "跳转",
+      "pagePlaceholder": "请选择页"
+    },
+    "levelSource": {
+      "titleRequired": "请输入标题。",
+      "metaRequired": "请输入等级、年份和月份。",
+      "yearInvalid": "请输入有效的年份。",
+      "titleLabel": "标题",
+      "levelLabel": "等级",
+      "levelPlaceholder": "例如：JLPT N1 / 中级",
+      "yearLabel": "年份",
+      "yearPlaceholder": "例如：2023",
+      "monthLabel": "月份",
+      "monthPlaceholder": "请选择月份",
+      "month7": "7月",
+      "month12": "12月"
+    },
+    "textMode": {
+      "previewLabel": "文本预览",
+      "placeholder": "请粘贴您想学习的日语句子...",
+      "splitting": "正在分割句子...",
+      "continue": "继续创建"
+    }
+  },
+  "blog": {
+    "pageTitle": "Bunn博客",
+    "pageDescription": "关于语言学习的见解、技巧和故事"
+  },
+  "home": {
+    "title": "用AI学习日语",
+    "subtitle": "通过个性化AI对话掌握日语",
+    "startLearning": "开始学习",
+    "features": "特色功能",
+    "personalJourney": "看动漫学日语真的有用？",
+    "personalJourneySubtitle": "有用！用Bunn的话。",
+    "stopScattering": "市面上找不到一套完整优雅真正有效的语言学习方案？来试试Bunn吧！",
+    "getStartedFree": "免费开始使用",
+    "tryBunnNow": "立即试用 Bunn！",
+    "learnSentences": "每个人都在说，不要学习单词，学习句子。",
+    "shadowReading": "每个人都在说影子跟读。",
+    "bunnHelps": "Bunn的记忆卡片都可以帮你做到。",
+    "contextTitle": "不只是句子，Bunn让你一键完成场景回溯。",
+    "pluginHelp": "Bunn插件会帮助你带上下文拷贝。",
+    "cards": {
+      "memoCard": {
+        "title": "记忆卡片",
+        "description": "翻译、发音、跟读和听写 - 一张卡片全搞定。"
+      },
+      "wordCard": {
+        "title": "单词卡片",
+        "description": "回忆单词出现在哪个句子中，记不起来就点一下查看。"
+      },
+      "exam": {
+        "title": "考试模式",
+        "description": "测试你的知识掌握程度，确保真正掌握所学内容。"
+      },
+      "dailyReport": {
+        "title": "每日报告",
+        "description": "睡前5分钟，复习遗忘的内容，保持学习进度。"
+      }
+    },
+    "landingPage": {
+      "subtitle": {
+        "copiedSuccess": "字幕复制成功！"
+      },
+      "ctrlSection": {
+        "title": "看动漫学日语",
+        "subtitle": "还在背单词？有趣而上下文充分的动画才能真正帮你记忆。"
+      },
+      "mediaSection": {
+        "extension": "Bunn 扩展程序",
+        "pressToCopy": "按 Ctrl 复制字幕",
+        "pressToCreate": "按 Ctrl 创建记忆卡片"
+      },
+      "comprehensibleInput": {
+        "title": "可理解输入",
+        "description": "一键即可把字幕转化为记忆卡片。"
+      },
+      "shadowReading": {
+        "title": "无痛重复",
+        "description": "对复习感到痛苦？\n在Bunn里复习就是再看一遍你喜欢的动画片段然后回答问题。\n简单轻松但有效。",
+        "speakLike": "像你喜欢的角色一样说话！",
+        "jumpBack": "一键跳回原场景！"
+      },
+      "personalizedPage": {
+        "title": "个性化页面",
+        "description": "为你喜欢的动漫建立个性化页面！"
+      },
+      "zenMoment": {
+        "title": "禅意时刻",
+        "description": "完成每日训练，享受禅意时刻。"
+      },
+      "linkSection": {
+        "title": "不是一个应用而是一种链接",
+        "subtitle": "烦恼于找到合适的学习动画？Bunn会给你推荐。\nBunn没有推荐算法，所有视频都是作者在日语学习中用到并精选出来的。"
+      }
+    }
+  },
+  "guide": {
+    "title": "Bunn 的设计理念",
+    "subtitle": "句子，复习和场景",
+    "preface": {
+      "title": "前言",
+      "challenge": "语言学习一直是很大的课题，学好一门甚至多门语言可以让你多出很多工作机会和人生体验，但是对于大多数人来说学好一门语言真的很难。",
+      "aiEra": "AI出来之后语言学习的效率大大提升了，各种工具对比AI时代之前的来说真的都很好用，但是我注意到目前的这些工具可能只是做好了一个点，而没有做好整个学习流程，缺乏核心的理念和设计。",
+      "bestProcess": "那么，理论上最好的学习流程到底是什么呢？这个问题其实没有人能回答，因为永远存在更优的流程。但是在我看来有几个强逻辑是一定成立的：",
+      "principles": [
+        "以句子为单位学习而不是以单词为单位",
+        "复习应该是核心动作",
+        "要能情景再现，回顾句子出现的场景",
+        "流程简洁，没有乱七八遭的非核心功能干扰注意力"
+      ],
+      "creation": "我在市面上并没有找到一款软件符合这些基本原则，因此我创造了Bunn，Bunn的设计以上面几点为核心，我希望打造一个优雅而完整的语言学习系统。"
+    },
+    "core": {
+      "title": "把句子作为核心",
+      "description": "以句子为单位学习语言，要比以单词为单位学习效率高得多这一点可以说已经是一个共识了。",
+      "gap": "遗憾的是，市面上缺乏一款真正以句子为核心构建的语言学习工具。虽然有许多优秀的语言学习应用，但都没有提供一个完整、优雅且高效的学习流程。",
+      "origin": "所以我创造了Bunn，Bunn在日语中就是句子的意思。Bunn的核心思路就是复习带有上下文的句子。",
+      "features": "录入句子后，您可以立即获得准确的翻译和假名标注，进行影子跟读和默写。同时，您还可以划取句子中不熟悉的单词添加到单词本中，建立起单词与其使用场景的联系。",
+      "inputMethods": "把你想看的视频输入Bunn，然后你只需要一键即可录入视频当前的字幕。",
+      "methods": {
+        "subtitles": "从 YouTube/Netflix 视频中获取字幕语句",
+        "copy": "直接从网站复制日语句子",
+        "picture": "未来Bunn还会支持图片识别功能，你可以上传一张包含日语句子的图片，Bunn识别出所有日语句子并让你选择要上传的部分。"
+      },
+      "future": "未来，我们还将支持图像输入功能，让你可以上传一张包含日语句子的图片，Bunn识别出所有日语句子并让你选择要复习的部分。",
+      "demo": {
+        "intro": "下面是句子的展示形态记忆卡片: ",
+        "shadow": "影子跟读 - 跟着音频重复以提高发音",
+        "dictation": "听写 - 测试您是否能大致记住句子"
+      }
+    },
+    "review": {
+      "title": "像查看收藏品一样复习",
+      "description": "Bunn的另一个核心逻辑就是复习。我们都知道重复是记忆的必要条件，但是很多时候我们不愿意去复习自己学过的东西。",
+      "reason": "这个心理的一个重要的原因是不够好玩，你记录的东西无法交互，没有上下文，或者这个平台有其他新东西可以看干扰你的注意力。",
+      "solution": "这些问题在Bunn都不存在，Bunn不会给你推送任何干扰你的东西，全部都是你自己录入的句子，比如你看的动画，你看的技术文章，你看的有趣的新闻，这保证了你对复习的内容是感兴趣或者至少是真正关心的。",
+      "interaction": "并且你可以对这个句子进行交互，比如查看上下文，影子跟读和默写，这些动作交互让复习就行查看自己的战利品一样有趣。"
+    },
+    "context": {
+      "title": "场景再现",
+      "intro": "回想一下我们是如何掌握母语的。我相信很多人都会经常在心里模拟某个场景，在这个情景里你对别人说什么，别人会做出什么反应，这种情景中用到的语言你是绝对会记住的。",
+      "importance": "我们很难记住语言要素，但很容易记住场景，一旦掌握了场景和语句的关联性，我们就更容易记住这个语句。句子就是单词的场景，而句子本身也存在于更大的场景中。",
+      "feature": "Bunn会帮你记录所有你录入的句子的位置，一个点击就可以回到视频对应的位置再看一遍这个动画片段。我相信这是最有效的复习方式。"
+    },
+    "getStarted": {
+      "title": "如何带情景地获取日语句子",
+      "intro": "虽然您可以自由选择句子来源，但我强烈建议尝试以下流程：",
+      "steps": {
+        "extension": {
+          "title": "1. 下载扩展程序",
+          "description": "从 Chrome 网上应用店安装<link>我的 Chrome 扩展程序</link>"
+        },
+        "videos": {
+          "title": "2. 找到您喜欢的视频",
+          "description": "选择 YouTube 或 Netflix 上的视频。对于 YouTube 视频，选择带有内置字幕的视频（避免使用 YouTube 的字幕功能，因为其句子断句通常较差，不符合我们以句子为中心的方法）。"
+        },
+        "copy": {
+          "title": "3. 复制字幕",
+          "description": "按 cmd+shift+c 并等待字幕被复制到剪贴板。"
+        },
+        "paste": {
+          "title": "4. 粘贴到 Bunn",
+          "description": "返回到<link>Bunn 应用</link>并将内容粘贴到底部的输入框中。"
+        }
+      },
+      "review": "复习时，您可以点击每张卡片右上角的<button>按钮</button>立即返回到句子的原始上下文和发音。这个功能帮助您更好地理解句子在原始上下文中的使用方式，并确保您练习的发音准确。",
+      "clickMe": "点击我！",
+      "recommendation": {
+        "intro": "我个人推荐<channel>Mary 的 YouTube 频道</channel>。原因如下：",
+        "reasons": [
+          "自带内置字幕所以句子断句完美",
+          "与我的扩展程序和应用配合使用时，提供无缝的影子跟读体验",
+          "现代、实用的日语，可以在日常生活中使用",
+          "内容足够有趣，让学习变得愉快"
+        ]
+      },
+      "netflix": "当然，如果您更喜欢动漫，可以在 Netflix 上找到带有日语字幕的日本动漫。Netflix 的字幕功能提供自然的句子断句，完美符合 Bunn 的工作流程。",
+      "websiteCopy": "如果是从网站上复制文本，那么在选中文本后连续两次按下c键即可把文本所在的网址以及滚动位置都记录到剪切板，粘贴到Bunn之后会像下面这样："
+    },
+    "remember": {
+      "title": "如果我记不住学过的内容怎么办？",
+      "normal": "首先，忘记是完全正常的。每个人都会忘记所学内容的很大一部分 - 这就是我们大脑的工作方式。",
+      "key": "关键是要有选择性：只输入您觉得有趣或重要的句子。如果您真的觉得某些内容有趣或重要，您自然会更愿意投入时间进行：",
+      "methods": [
+        "影子跟读",
+        "听写练习",
+        "从关键词回忆句子",
+        "参加测试",
+        "复习每日学习报告"
+      ],
+      "conclusion": "当您以这些多种方式参与学习材料时，您会发现您能记住所学内容的很大一部分。Bunn 系统旨在支持这种多方面的学习方法，使记忆保持比传统方法更加有效。"
+    },
+    "why": {
+      "title": "为什么选择 Bunn？",
+      "sections": {
+        "built": {
+          "title": "由真实的语言学习者打造",
+          "description": "Bunn 由一位正在学习日语并生活在日本的开发者创建。这意味着应用程序是基于对语言学习挑战和需求的真实理解而设计的。"
+        },
+        "serious": {
+          "title": "严肃的学习系统",
+          "description": "与许多专注于游戏化和娱乐的语言应用不同，Bunn 是一个建立在坚实的设计原则和有效学习方法基础上的严肃学习工具。"
+        },
+        "workflow": {
+          "title": "清晰高效的工作流程",
+          "description": "我们设计了一个独特的精简学习过程，消除了不必要的复杂性。每个功能都在您的语言学习之旅中服务于明确的目的。"
+        }
+      },
+      "explore": "开始探索<link>Bunn</link>吧！"
+    }
+  },
+  "pricing": {
+    "title": "定价方案",
+    "monthly": "月付",
+    "yearly": "年付",
+    "free": "免费版",
+    "pro": "专业版",
+    "freePlan": {
+      "title": "免费计划",
+      "description": "适合休闲用户的基本功能",
+      "price": "¥0 / 月",
+      "features": {
+        "tokens": "每天 10,000 tokens",
+        "images": "每天 5 张图片上传",
+        "tts": "每天 5 次 TTS"
+      },
+      "currentPlan": "当前方案"
+    },
+    "proPlan": {
+      "title": "专业计划",
+      "description": "更多访问和高级功能",
+      "price": "$10 / 月",
+      "features": {
+        "tokens": "最多 1,000,000 tokens/月",
+        "images": "最多 300MB 图片上传/月",
+        "tts": "最多 5,000 次 TTS/月"
+      },
+      "upgrade": "立即升级"
+    }
+  },
+  "login": {
+    "welcome": "欢迎回来",
+    "description": "使用 GitHub 或 Google 账号登录",
+    "loginWithGithub": "使用 GitHub 登录",
+    "loginWithGoogle": "使用 Google 登录",
+    "agreement": {
+      "prefix": "点击继续即表示您同意我们的",
+      "terms": "服务条款",
+      "and": "和",
+      "privacy": "隐私政策",
+      "suffix": "。"
+    }
+  },
+  "terms": {
+    "title": "服务条款",
+    "subtitle": "Bunn服务条款",
+    "lastUpdated": "最后更新",
+    "welcome": "欢迎，感谢您对Bunn的关注。本服务条款（包括Bunn的隐私政策）是您与Bunn之间关于您使用本服务的具有法律约束力的合同。",
+    "sections": {
+      "read": {
+        "title": "请仔细阅读以下条款：",
+        "description": "使用我们的服务即表示您同意您已阅读并理解，并且作为使用服务的条件，您同意受本服务条款的约束。如果您不同意这些条款，则您无权使用本服务。"
+      },
+      "info": {
+        "title": "1. 信息收集",
+        "description1": "当您通过Google或GitHub登录时，我们会收集以下信息：用户名、电子邮件地址、用户ID和个人头像。这些信息仅用于身份验证目的和发送产品相关通信。",
+        "description2": "我们还会存储您上传的句子并记录您在应用程序中的操作。这些是我们服务功能的基本组成部分，仅用于为您提供服务。",
+        "description3": "我们收集的所有信息仅用于提供服务，不会与第三方共享或用于模型训练目的。",
+        "description4": "有关我们如何处理您的信息的更多详细信息，请参阅我们的隐私政策。",
+        "description5": "您可以通过联系我们的客户支持团队要求终止您的账户。在终止您的用户账户后，我们将立即永久删除您提供给我们的所有可识别个人身份的信息（包括您的账户信息），但我们可能会保留非个人身份的人口统计信息、您使用服务时我们收集的数据以及您的用户内容，只要我们认为合适。"
+      },
+      "license": {
+        "title": "2. 服务使用许可",
+        "description1": "除非另有说明，我们或我们的许可方拥有服务和服务内容的知识产权。您只能将服务和服务内容用于个人语言学习，并受这些条款中规定的限制和其他限制的约束。",
+        "description2": "您不得在服务之外复制、重新分发、出售、出租、再许可、公开展示、公开表演、提供、修改、传输或以其他方式利用服务内容，无论是否出于商业目的。如果我们特别允许在服务之外使用服务内容，此类使用需要遵守额外的许可。",
+        "description3": "您不得以任何可能导致或可能导致我们的网站损坏或服务可用性或可访问性受损的方式使用服务；或以任何非法、欺诈或有害的方式，或与任何非法、欺诈或有害的目的或活动相关的方式使用服务。",
+        "description4": "您不得使用服务复制、存储、托管、传输、发送、使用、发布或分发任何包含（或链接到）任何间谍软件、计算机病毒、特洛伊木马、蠕虫、键盘记录器、rootkit或其他恶意计算机软件的材料。",
+        "description5": "未经我们明确书面同意，您不得对服务进行任何系统性或自动化的数据收集活动（包括但不限于抓取、数据挖掘、数据提取和数据收集）。",
+        "description6": "您不得使用服务传输或发送未经请求的商业通信。\"Bunn\"和与服务相关的所有其他商标、服务标记、图形和标志（统称为\"标记\"）是Bunn或其各自所有者的商标或服务标记，某些此类标记可能已注册。本条款中的任何内容都不授予您复制或以其他方式使用这些标记的权利。"
+      },
+      "content": {
+        "title": "3. 用户生成内容",
+        "description1": "在本条款中，\"您的用户内容\"是指您出于任何目的提交给服务的材料（包括但不限于文本、图像、音频材料、视频材料和视听材料）。",
+        "userContent": {
+          "title": "用户内容",
+          "description": "您上传或提供给本服务的所有内容（包括但不限于文本、图像、音频等）仍然是您的财产。本服务不会将您的内容用于商业目的，也不会向其他用户提供。"
+        },
+        "licenseGrant": {
+          "title": "许可授予",
+          "description": "您授予我们非独占的、全球性的、免版税的许可，仅用于存储、处理和提供服务。当您删除您的内容或账户时，此许可终止。"
+        },
+        "contentDeletion": {
+          "title": "内容删除",
+          "description": "您可以随时删除您的内容，或通过账户管理删除所有数据。我们将在合理的时间范围内删除相关数据，但由于备份等技术原因可能会有短暂的存储延迟。"
+        },
+        "description2": "您的用户内容不得是非法的，不得侵犯任何第三方的合法权利，也不得可能导致针对您、我们或第三方的法律诉讼（在任何适用法律下）。",
+        "description3": "您不得提交任何正在或曾经受到任何威胁或实际法律程序或其他类似投诉的用户内容。"
+      },
+      "payment": {
+        "title": "4. 付款和退款",
+        "description1": "您可以随时取消订阅。取消订阅后，您可以继续使用服务直到当月结束，但不允许退款。",
+        "description2": "所有付费计划都必须输入有效的信用卡。免费账户不需要提供信用卡号码。",
+        "description3": "从免费计划升级到任何付费计划将立即向您收费。",
+        "description4": "服务费用按月或按年提前收取。对于部分月份的服务、升级/降级退款或未使用月份的退款，我们不提供退款或信用。",
+        "description5": "所有费用不包括税务机关征收的所有税费、征费或关税，您应负责支付所有此类税费、征费或关税，仅不包括美国（联邦或州）税。",
+        "description6": "降级您的服务可能会导致您的账户功能或容量损失。Bunn对此类损失不承担任何责任。"
+      },
+      "changes": {
+        "title": "5. 条款变更",
+        "description1": "我们可能会不时修改这些条款。修改后的条款将从修改后的条款在我们网站上发布之日起，或在修改后的条款中指定的较晚日期起适用于您对服务的使用。",
+        "description2": "如果我们修改这些条款，我们会通知您（例如通过电子邮件或当您再次使用服务时）。如果您不同意修改后的条款，您可以要求终止您的用户账户。"
+      },
+      "agreement": {
+        "title": "6. 完整协议",
+        "description": "这些条款连同我们的隐私政策构成您与我们之间关于您使用服务的完整协议，并取代您使用服务的所有先前协议。"
+      },
+      "thirdParty": {
+        "title": "7. 第三方权利的排除",
+        "description": "这些条款是为了您和我们的利益，并非旨在使任何第三方受益或可由任何第三方执行。我们和您与这些条款相关的权利的行使不受任何第三方同意的约束。"
+      },
+      "contact": {
+        "title": "8. 联系我们",
+        "description": "如果您对本服务条款有任何问题，请通过以下方式联系我们"
+      }
+    }
+  },
+  "onboarding": {
+    "title": "选择你的路径",
+    "subtitle": "选择一个开始你的学习之旅",
+    "step4": {
+      "title": "去日语频道里获取句子素材！",
+      "loading": "正在创建示例卡片...",
+      "clone_button": "直接给我来一些！"
+    },
+    "step7": {
+      "success": "你成功创建了记忆卡片！",
+      "check_it_out": "去看看！"
+    },
+    "onboarding": {
+      "daily_limit": {
+        "free_limit": "免费用户每日只能导入一次，",
+        "upgrade_unlock": "升级解锁"
+      }
+    },
+    "daily_limit": {
+      "free_limit": "免费用户每日只能导入一次，",
+      "upgrade_unlock": "升级解锁"
+    },
+    "cards": {
+      "youtube": {
+        "title": "自己探索",
+        "desc": "自己探索，掌控自己的学习路径"
+      },
+      "netflix": {
+        "title": "使用示例数据",
+        "desc": "使用我们精心准备的学习数据"
+      },
+      "books": {
+        "title": "书籍/文章",
+        "desc": "从书籍或网页复制日语句子进行学习与复习。"
+      }
+    },
+    "actions": {
+      "installExtension": "安装扩展",
+      "openYoutube": "打开 YouTube",
+      "openNetflix": "打开 Netflix",
+      "goBooks": "去书籍页"
+    },
+    "footer": {
+      "col1": "我们的工具与策略帮助你在问题出现前捕捉到它们，保持稳定的学习节奏。",
+      "col2": "我们利用自动化与语义分析提升学习效率，减少摩擦，并让你的学习流程顺畅。"
+    }
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "subtitle": "Bunn隐私政策",
+    "lastUpdated": "最后更新",
+    "welcome": "欢迎，感谢您对Bunn的关注。本隐私政策概述了我们如何在您使用我们的服务时收集、使用和保护您的信息。",
+    "sections": {
+      "read": {
+        "title": "请仔细阅读以下隐私条款：",
+        "description": "使用我们的服务即表示您同意根据本隐私政策收集和使用您的信息。如果您不同意我们的政策和做法，请不要使用我们的服务。"
+      },
+      "collect": {
+        "title": "1. 我们收集的信息",
+        "description": "当您通过Google或GitHub登录时，我们收集以下信息：",
+        "items": [
+          "用户名",
+          "电子邮件地址",
+          "用户ID",
+          "个人头像"
+        ]
+      },
+      "how": {
+        "title": "2. 我们如何收集信息",
+        "description": "我们在您通过Google或GitHub登录服务进行身份验证时收集这些信息。这些信息在登录过程中经您同意直接从这些平台提供给我们。"
+      },
+      "use": {
+        "title": "3. 我们如何使用您的信息",
+        "description": "我们使用收集的信息来：",
+        "items": [
+          "提供和维护我们的登录服务",
+          "提供相关产品广告",
+          "改善和个性化您的服务体验",
+          "就我们的服务与您沟通"
+        ]
+      },
+      "share": {
+        "title": "4. 信息共享",
+        "description": "除非为提供服务所必需或法律要求，否则我们不会与第三方共享您的个人信息。"
+      },
+      "storage": {
+        "title": "5. 数据存储和安全",
+        "description": "我们采取适当的安全措施来保护您的个人信息。但是，通过互联网传输或电子存储的方法都不是100%安全的。"
+      },
+      "rights": {
+        "title": "6. 您的权利",
+        "description": "您对您的个人信息拥有以下权利：",
+        "items": [
+          "访问您的个人信息",
+          "更正不准确的信息",
+          "要求删除您的信息",
+          "反对处理您的信息",
+          "数据可携带性"
+        ],
+        "contact": "要行使这些权利，请使用下面提供的信息联系我们。"
+      },
+      "cookies": {
+        "title": "7. Cookie政策",
+        "description": "我们的网站仅使用cookie来存储登录信息以确保您的会话安全。我们不使用cookie进行广告跟踪或分析目的。这些cookie对于在我们的网站上提供安全的浏览体验是必要的。"
+      },
+      "changes": {
+        "title": "8. 本隐私政策的变更",
+        "description": "我们可能会不时更新我们的隐私政策。我们会通过在此页面上发布新的隐私政策并更新\"最后更新\"日期来通知您任何更改。建议您定期查看本隐私政策以了解任何变更。"
+      },
+      "contact": {
+        "title": "9. 联系我们",
+        "description": "如果您对本隐私政策有任何问题，请通过以下方式联系我们"
+      }
+    }
+  },
+  "LoginedHeader": {
+    "membershipPlan": "会员计划",
+    "expiryDate": "有效期限",
+    "subscriptionManagement": "订阅管理",
+    "logout": "退出登录",
+    "latest": "最新",
+    "random": "随机",
+    "wordCards": "单词本",
+    "exam": "考试",
+    "dailyReport": "每日报告",
+    "memoCards": "记忆卡片",
+    "channels": "频道",
+    "settings": "设置",
+    "talk2Bunn": "和Bunn聊聊",
+    "ttsManage": "TTS 管理",
+    "back": "返回",
+    "languageLabel": "文本语言",
+    "freshHaruka": "Fresh Haruka",
+    "inUse": "使用中",
+    "useOwnVoice": "使用自己的声音",
+    "changeOwnVoice": "更换自己的声音",
+    "changeOwnVoiceButton": "更换自己的声音",
+    "stopRecording": "停止录音",
+    "playRecording": "播放录音",
+    "pausePlaying": "暂停播放",
+    "recordAgain": "重新录音",
+    "uploaded": "上传成功",
+    "uploadAndClone": "上传并克隆",
+    "myVoice": "我的声音",
+    "answerAccuracy": "答题正确率"
+  },
+  "memoCards": {
+    "noDataFound": "请输入您感兴趣的日语文本",
+    "importSampleData": "导入示例数据",
+    "inputPlaceholder": "输入你想学习的日语句子",
+    "contextPlaceholder": "请录入这个句子的上下文...",
+    "limitMessage": "您今天已经录入了20个句子到达了使用限制，升级到",
+    "demoTranslation1": "问这个就太无聊了。",
+    "demoTranslation2": "你是说要我因为私人情感扭曲事实吗？",
+    "demoTranslation3": "福冈美女众多的传闻已经不再是传说，可以说是定论了。",
+    "demoTranslation4": "Cursor的Project Rules运用的最佳实践",
+    "demoTranslation5": "还没有习惯就用了高负荷的植入吧？",
+    "demoTranslation6": "每次都照搬封面搭配，还真是时尚呢",
+    "demoTranslation7": "你比别人跑得快",
+    "whereToGetSentence": "哪里可以获取日语句子？",
+    "allCardsCompleted": "你已经完成了今天的所有记忆卡片",
+    "allWordCardsCompleted": "你已经完成了今天的所有单词卡片",
+    "emptyState": {
+      "noData": "这里没有数据",
+      "description": "看起来有点空。让我们添加一些记忆卡片来开始吧。",
+      "addingText": "添加中...",
+      "addButton": "添加一些入门卡片",
+      "goOnboarding": "去选择录入方式"
+    },
+    "avatar": {
+      "pasteHint": "截取屏幕复制到剪切板后按下Ctrl+V即可完成头像上传！",
+      "noImage": "剪切板中没有图片，请截取屏幕后复制到剪切板！"
+    }
+  },
+  "talk2Bunn": {
+    "title": "和Bunn聊聊",
+    "completedReviewsMessage": "太棒了！你已经完成了今天的所有复习任务。",
+    "forgottenWordsPrompt": "我注意到你最近有一些遗忘的单词，让我们一起复习一下吧。",
+    "incompleteReviewsMessage": "你今天的复习任务还没有完成。请先完成以下复习任务：",
+    "memoCardIncomplete": "\n- 记忆卡片复习",
+    "wordCardIncomplete": "\n- 单词本复习",
+    "goToMemoCards": "去复习记忆卡片",
+    "goToWordCards": "去复习单词卡片",
+    "inputDisabledPlaceholder": "请先完成今日复习任务",
+    "inputPlaceholder": "输入你的问题或回答...",
+    "sending": "发送中...",
+    "send": "发送",
+    "readyToStart": "我已准备好帮助你复习遗忘的单词。",
+    "startQuestions": "让我们开始复习你最近遗忘的单词。我会一个一个地问你，看看你是否还记得它们的含义和发音。"
+  },
+  "wordCards": {
+    "demoMeaning": "扭曲，曲解",
+    "noWordCards": "还没有单词卡",
+    "importSampleFirst": "Bunn以句子为核心，单词需要从句子中划取，让我们先导入一些示例句子。",
+    "importSampleData": "导入示例数据",
+    "clickHere": "点击这里",
+    "selectWordGuide": "选择要学习的单词",
+    "selectWordGuideDesc": "选取记忆卡片原文中的任何单词或短语将其添加到你的单词卡中"
+  },
+  "wordCard": {
+    "word": "语句",
+    "meaning": "意思",
+    "addToWordCards": "添加到单词本",
+    "recognize": "记得",
+    "unrecognize": "不记得"
+  },
+  "exam": {
+    "title": "考试",
+    "submit": "提交",
+    "translation_reading": "翻译・读音",
+    "translation_to_japanese": "日语翻译",
+    "listening": "听力问题",
+    "enter_hiragana": "请输入平假名",
+    "enter_with_user_mother_tongue": "请用中文输入",
+    "enter_japanese": "请用日语输入",
+    "question": "问题",
+    "play_audio": "播放音频",
+    "fix_answer": "修改答案",
+    "fix_confirm": {
+      "title": "确认修改",
+      "description": "您确定要将这个答案标记为正确吗？",
+      "confirm": "确定",
+      "cancel": "取消"
+    },
+    "start": "开始新测试",
+    "history": "测试历史",
+    "cannotStart": "无法开始测试",
+    "insufficientData": "数据不足。请输入足够的日语句子后再开始测试。",
+    "score": "得分",
+    "duration": "考试用时",
+    "minutes": "分钟",
+    "correct": "正解！",
+    "reference_answer": "参考答案：{answer}"
+  },
+  "dailyReport": {
+    "history": {
+      "title": "历史记录",
+      "cardDate": "日期",
+      "cardStats": "学习统计",
+      "noHistory": "暂无历史数据"
+    },
+    "completedLearning": "今日完成",
+    "sentences": "句子",
+    "words": "单词",
+    "test": "测试",
+    "noRecord": "今天还没有学习记录。要不要复习一下最近学过的句子？",
+    "startReview": "开始复习",
+    "forgotMeaning": "「{word}」的含义你忘记了，现在记得了吗？",
+    "forgotPronunciation": "「{word}」的发音你忘记了，现在记得了吗？",
+    "forgotExpression": "「{meaning}」用日语怎么表达你忘记了，现在记得了吗？",
+    "unableToUnderstand": "这句话你听不懂，现在再听一遍能听懂吗？",
+    "completion": {
+      "congratulations": "恭喜你！",
+      "message": "你已经清理了今天发现的自己遗忘的知识点。\n保持这个节奏！"
+    },
+    "studyItems": {
+      "item0": {
+        "question": "你忘记了「しらばっくれる」的意思，现在记得吗？",
+        "answer": "装傻",
+        "translation": "你还在装傻吗！"
+      },
+      "item1": {
+        "question": "你忘记了「しかねます」的意思，现在记得吗？",
+        "answer": "做不到",
+        "translation": "关于先前您提出的请求，我们无法承接。"
+      },
+      "item2": {
+        "question": "你忘记了「引き下がれない」的意思，现在记得吗？",
+        "answer": "无法退让",
+        "translation": "既然来到这一步，我也无法退缩了。"
+      }
+    },
+    "memoCardReview": "完成记忆卡片复习",
+    "wordCardReview": "完成单词卡片复习",
+    "todayTasks": "今日任务",
+    "completedAllTasks": "恭喜！你已经完成了今天的学习任务"
+  },
+  "memoCard": {
+    "originalText": "原文",
+    "translation": "翻译",
+    "addCharacter": "添加角色",
+    "useCharacterAvatar": "点击添加角色形象",
+    "removeCharacter": "移除角色",
+    "pronunciation": "读音",
+    "addToDictionary": "添加到单词本",
+    "added": "已添加",
+    "dictation": "听写",
+    "upload": "上传",
+    "recordVoice": "录音",
+    "listening": "听力",
+    "wordlist": "单词表",
+    "context": {
+      "placeholder": "在这里记笔记..."
+    },
+    "question": {
+      "placeholder": "输入自定义问题",
+      "type": {
+        "none": "类型（可不选）",
+        "description": "描述型",
+        "reading": "简单问答"
+      }
+    }
+  },
+  "dictation": {
+    "writeOriginalText": "请默写出原文"
+  },
+  "usageGuide": {
+    "title": "使用指南",
+    "description": "你可以使用如下快捷键完成不同的操作",
+    "forBestResults": "复制后，把内容粘贴到",
+    "BunnIsBest": "Bunn会给提供翻译，音标，影子跟读和默写等功能，并且Bunn还会记录这次复制发生的场景，你可以随时一键进行场景再现。",
+    "shortcuts": {
+      "option": {
+        "title": "option/Alt",
+        "forText": "对于文本",
+        "textPrefix": "选中文本后按下按键复制到剪切板，粘贴到",
+        "textSuffix": "应用后可以随时复习并且一键回到上下文。",
+        "youtubeTitle": "对于",
+        "youtubeContent": "不要打开字幕而需要找存在内置字幕的视频，按下后会把当前帧的字幕复制到剪切板。",
+        "netflixTitle": "对于",
+        "netflixContent": "你只需要打开字幕功能后按下，按下后会把当前画面中的文字复制到剪切板。",
+        "youtube": "对于YouTube视频：不要打开字幕而需要找存在内置字幕的视频，按下后会把当前帧的字幕复制到剪切板。",
+        "netflix": "对于Netflix视频：你只需要打开字幕功能后按下，按下后会把当前画面中的文字复制到剪切板。"
+      },
+      "t": {
+        "title": "T",
+        "description": "选择文本后按下T会完成翻译。支持段落翻译和短语翻译。"
+      }
+    }
+  },
+  "loginPage": {
+    "missingApiKey": "缺少 OpenAI API 密钥",
+    "chooseOption": "请登录或者录入API密钥来使用插件",
+    "signIn": {
+      "title": "登录",
+      "description": "使用 GitHub 或 Google 登录，无需 API 密钥即可访问高级功能"
+    },
+    "or": "或者",
+    "apiKey": {
+      "title": "使用 API 密钥",
+      "description": "提供您自己的 OpenAI API 密钥，无需账户即可使用插件",
+      "placeholder": "输入您的 OpenAI API 密钥",
+      "visitPage": "访问",
+      "officialPage": "OpenAI 官方设置页面",
+      "toObtain": "获取您的密钥。",
+      "saveSettings": "保存设置",
+      "alreadySetup": "您已经设置了 OpenAI API 密钥",
+      "invalidKey": "无效的API Key，请检查并重新输入",
+      "saveFailed": "保存API Key失败"
+    },
+    "signOut": "退出登录",
+    "loading": "加载中..."
+  },
+  "subscription": {
+    "title": "升级到高级版",
+    "description": "无需 API 密钥即可访问所有功能。此外，还可以无限制地使用Bunn。",
+    "subscribeNow": "立即订阅",
+    "learnMore": "了解更多关于",
+    "website": "Bunn"
+  },
+  "auth": {
+    "signInWithGithub": "使用 GitHub 登录",
+    "signInWithGoogle": "使用 Google 登录",
+    "or": "或者"
+  },
+  "uploadDialog": {
+    "title": "设置海报",
+    "replaceTitle": "更换海报",
+    "titleBackgroundTitle": "上传标题图片",
+    "cancel": "取消",
+    "applyChanges": "应用更改"
+  },
+  "characterSelection": {
+    "newCharacter": "新建角色",
+    "enterCharacterName": "输入角色名",
+    "searchCharacter": "搜索角色",
+    "loading": "加载中...",
+    "loadFailed": "加载失败",
+    "noMatchingCharacters": "未找到匹配的角色",
+    "clickToAddNewCharacter": "点击添加新角色",
+    "uploadLimitReached": "已达到上传限制",
+    "addCharacter": "添加角色",
+    "uploadCharacterAvatar": "上传角色头像",
+    "confirmDelete": "确认删除？",
+    "cancel": "取消"
+  },
+  "Channels": {
+    "yourChannels": "你的YouTube频道",
+    "noChannelsFound": "未找到频道。添加YouTube笔记以在此处查看频道。",
+    "switchToEditMode": "切换到编辑模式",
+    "switchToLockedMode": "切换到锁定模式"
+  },
+  "ChannelDetail": {
+    "backToChannels": "返回频道",
+    "about": "关于",
+    "videos": "视频",
+    "noVideosFound": "未找到视频",
+    "selectVideo": "选择视频",
+    "noCards": "没有卡片",
+    "noMatchingCards": "没有匹配的卡片",
+    "showingResults": "显示",
+    "cards": "条卡片",
+    "filtered": "已筛选",
+    "clearCharacterFilter": "清除角色筛选",
+    "enterCharacterName": "输入角色名",
+    "onlyImageSupported": "只支持上传图片文件",
+    "bannerUploadSuccess": "横幅图片上传成功",
+    "bannerUploadFailed": "上传横幅图片失败:",
+    "avatarUploadSuccess": "头像图片上传成功",
+    "avatarUploadFailed": "上传头像图片失败:",
+    "openUploadDialog": "打开上传对话框",
+    "deleteFailed": "删除失败:",
+    "characterDeleted": "角色已删除",
+    "characterDeleteFailed": "删除角色失败",
+    "characterDeleteError": "删除角色出错:",
+    "characterNameUpdated": "角色名称已更新",
+    "characterNameUpdateFailed": "更新角色名称失败",
+    "characterNameUpdateError": "更新角色名称出错:",
+    "defaultCharacterName": "TA",
+    "characterAvatarUpdated": "角色头像已更新",
+    "characterAvatarUpdateFailed": "更新角色头像失败",
+    "characterAvatarUpdateError": "更新角色头像出错:",
+    "uploading": "上传中...",
+    "clickToUploadBanner": "点击上传横幅图片",
+    "channelBanner": "频道横幅",
+    "clearFilter": "清除筛选",
+    "filterCleared": "视频筛选已清除，显示所有卡片",
+    "resetToSelectMode": "已切换到视频选择模式",
+    "deleteMemoCard": "删除卡片",
+    "videoSearchPlaceholder": "搜索视频...",
+    "videoCount": "{count} 个视频",
+    "clearSearch": "清空搜索",
+    "replaceAvatar": "更换头像",
+    "deleteCharacter": "删除角色",
+    "filterByCharacter": "筛选此角色的所有卡片",
+    "characterFilterApplied": "显示角色 \"{name}\" 的卡片",
+    "characterFilterCleared": "角色筛选已清除",
+    "noCharacterCards": "该角色没有相关卡片",
+    "uploadCharacterAvatar": "上传角色头像"
+  },
+  "VideoSelector": {
+    "searchPlaceholder": "搜索视频...",
+    "noResults": "没有找到匹配的视频",
+    "cancel": "取消",
+    "videoCount": "{count}个视频"
+  },
+  "timeline": {
+    "lockedMode": "锁定模式 (按Cmd+E编辑)",
+    "editMode": "编辑模式 (按Cmd+L锁定)",
+    "switchToEditMode": "切换到编辑模式",
+    "switchToLockedMode": "切换到锁定模式",
+    "season": "季",
+    "episode": "集",
+    "filterBySeason": "按季筛选",
+    "all": "全部",
+    "seasonNumber": "第 {number} 季",
+    "noCardsForCharacterInSeason": "该角色在第 {season} 季没有相关卡片",
+    "noCardsForCharacter": "该角色没有相关卡片",
+    "noCardsInSeason": "第 {season} 季没有卡片",
+    "noCards": "没有卡片",
+    "seasonError": "季度必须是-32768到32767之间的整数",
+    "unreviewedOnly": "仅显示未复习"
+  },
+  "WebSources": {
+    "switchToEditMode": "切换到编辑模式",
+    "switchToLockedMode": "切换到锁定模式",
+    "lockedMode": "锁定模式 (按Cmd+E编辑)",
+    "editMode": "编辑模式 (按Cmd+L锁定)",
+    "domainSources": "网页来源",
+    "showAllCards": "显示所有卡片",
+    "cardsFromDomain": "来自 {domain} 的卡片",
+    "allCards": "所有卡片",
+    "noCardsForDomain": "暂无来自 {domain} 的卡片",
+    "noCards": "暂无卡片记录",
+    "noDomains": "暂无域名，请添加新域名",
+    "addNewDomain": "添加新域名",
+    "enterDomain": "请输入域名",
+    "enterDisplayName": "请输入显示名称（可选）",
+    "uploadDomainIcon": "上传域名图标",
+    "addDomain": "添加域名",
+    "deleteDomain": "删除域名",
+    "enterDomainName": "请输入域名",
+    "deleteMemoCard": "删除",
+    "updateIcon": "更换图标"
+  },
+  "grammarAnalysis": {
+    "title": "语法分析助手",
+    "placeholder": "输入你的问题...",
+    "close": "关闭",
+    "initialMessage": "正在分析原文的语法结构和单词用法，请稍候...",
+    "loadingMessages": "正在加载消息记录...",
+    "errorMessage": "很抱歉，处理您的请求时发生错误。请稍后再试。",
+    "upgrade": "升级",
+    "limitReached": "已达限额",
+    "nextQuestion": "下一题"
+  },
+  "contextEditor": {
+    "title": "上下文信息编辑",
+    "context": "上下文",
+    "chinese": "中文",
+    "english": "英文",
+    "traditional": "繁体中文",
+    "chinesePlaceholder": "请输入中文内容",
+    "englishPlaceholder": "英文翻译",
+    "traditionalPlaceholder": "繁体中文翻译",
+    "generate": "生成翻译",
+    "addContext": "添加上下文",
+    "save": "保存",
+    "saving": "保存中..."
+  },
+  "contextViewer": {
+    "inputPlaceholder": "在这里输入上下文信息...",
+    "close": "关闭",
+    "defaultCharacterName": "TA"
+  },
+  "jobs": {
+    "selectUserToDelete": "选择要删除数据的用户",
+    "selectUserToClear": "选择要清除词段拆分数据的用户"
+  },
+  "chapterUpload": {
+    "chapterTitlePlaceholder": "目录项名称"
+  },
+  "streakCounter": {
+    "consecutive": "连对{count}次！"
+  },
+  "badges": {
+    "pointsEarned": "已获得的成就点数",
+    "nextMilestone": "再获得 {points} 点达到第{number}个里程碑",
+    "maxMilestone": "已达最高里程碑",
+    "nextRound": "下一轮",
+    "title": "成就徽章",
+    "currentBadge": "当前徽章",
+    "allBadges": "所有徽章",
+    "toNextLevel": "再获得 {remain} 点成就点即可进入下一个里程碑",
+    "pointsUnit": "点",
+    "levelUp": "徽章升级",
+    "completed": "学习完成",
+    "levels": {
+      "yellow": "黄色",
+      "orange": "橙色",
+      "green": "绿色",
+      "blue": "蓝色",
+      "purple": "紫色",
+      "black": "黑色",
+      "volt": "闪电"
+    }
+  },
+  "dailyTask": {
+    "startPrompt": "开始每日任务？",
+    "letsGo": "出发！",
+    "noCardsFound": "没有找到记忆卡片",
+    "insufficientDataTitle": "没有待复习的卡片",
+    "justGetSome": "给我随机来点！",
+    "invalidYouTubeLink": "无效的 YouTube 链接",
+    "wordQuizTitle": "单词测验",
+    "continue": "继续",
+    "correctAnswer": "正确答案",
+    "correct": "答对了！",
+    "loading": "加载中...",
+    "questionMeaning": "这个句子中\"{word}\"的意思是什么？",
+    "questionPronunciation": "\"{word}\"的发音是什么？",
+    "captureSubtitle": "按下Ctrl键识别字幕",
+    "capturedSubtitle": "识别到的字幕",
+    "extractingSubtitle": "提取字幕中",
+    "submit": "提交",
+    "continueAnswering": "继续答题",
+    "explainInNativeLanguage": "尝试用母语说明",
+    "close": "关闭",
+    "nextQuestion": "下一题",
+    "videoArea": "视频区域"
+  },
+  "sentenceBuilding": {
+    "title": "聞こえたとおりにタップしてください",
+    "clickHint": "点击下方的单词片段来拼句子",
+    "correct": "句子拼写正确！",
+    "incorrect": "顺序不正确",
+    "correctAnswer": "正确答案",
+    "continue": "继续",
+    "submit": "发送",
+    "tryAgain": "重试",
+    "nextQuestion": "下一题",
+    "startQuestionAnswer": "开始问答题",
+    "startHint": "请开始拼句子",
+    "progress": "已选择 {selected} / {total} 个片段",
+    "cardFrontPlaceholder": "点击查看上下文信息",
+    "autoSaving": "自动保存中...",
+    "analyzingSentence": "正在分析句子...",
+    "characterSaid": "{character}说了什么，请拼出句子",
+    "defaultCharacterName": "TA",
+    "viewContext": "查看句子上下文",
+    "noSegmentationData": "暂无分词数据"
+  },
+  "questionAnswer": {
+    "title": "问答题",
+    "history": "历史记录",
+    "newSubmission": "新增记录",
+    "question": "看完整的视频，讲讲TA为什么会说这句台词",
+    "defaultCharacter": "TA",
+    "submit": "提交答案",
+    "recheck": "重新检查",
+    "aiEvaluating": "AI正在评价中...",
+    "aiFeedback": "AI评价",
+    "noSuggestions": "非常自然的表达！没有什么要补充的。",
+    "suggestExpression": "建议的表达",
+    "continue": "继续",
+    "placeholder": "在这里写下你的答案...",
+    "nativeLanguagePlaceholder": "用中文表达出上下文的内容...",
+    "japanesePlaceholder": "尝试用日语表达出来...",
+    "evaluationError": "获取AI评价失败，请重试",
+    "noHistory": "暂无历史记录",
+    "loading": "加载中...",
+    "watchVideo": "去看视频",
+    "fixFeedbackPlaceholder": "输入你的反馈..."
+  },
+  "insufficientData": {
+    "checking": "检查中...",
+    "loading": "加载中...",
+    "success": "成功！",
+    "refreshing": "刷新中...",
+    "upgradeToUnlock": "升级来解锁",
+    "noNewCards": "没有新的卡片"
+  },
+  "subtitleCapture": {
+    "captureTooltip": "识别字幕，制作记忆卡片",
+    "permissionRequired": "完成字幕识别需要你完成屏幕读取授权",
+    "creationFailed": "创建失败",
+    "creationSuccess": "记忆卡片创建成功！",
+    "previewAlt": "捕捉到的画面",
+    "createMemoryCard": "制作记忆卡片",
+    "confirm": "确定",
+    "previewImage": "图片预览",
+    "confirmImagePrompt": "确认要提取这张图片中的字幕吗？",
+    "extractingSubtitleText": "正在提取字幕...",
+    "extractingSubtitle": "提取字幕中",
+    "subtitleRecognized": "字幕已识别",
+    "cancel": "取消",
+    "originalText": "原文",
+    "translation": "翻译",
+    "pronunciation": "发音",
+    "errors": {
+      "extractFailed": "字幕提取失败，请稍后再试",
+      "noText": "未检测到字幕内容，请确保视频正在播放且字幕可见",
+      "unauthorized": "未授权，请登录后再试",
+      "missingImage": "未找到图片，请重试",
+      "internal": "服务器内部错误，请稍后再试",
+      "iframeNotFound": "未找到视频区域，请确保播放器可见",
+      "captureFailed": "屏幕捕获失败，请稍后再试",
+      "noVideoTrack": "未能获取视频轨道，请检查屏幕录制权限"
+    }
+  },
+  "safari": {
+    "addVideo": {
+      "title": "添加视频",
+      "videoUrl": "视频URL",
+      "videoUrlPlaceholder": "输入YouTube视频URL",
+      "submit": "提交",
+      "cancel": "取消",
+      "loading": "加载中...",
+      "success": "视频添加成功",
+      "error": "添加失败",
+      "invalidUrl": "无效的YouTube URL",
+      "videoAlreadyExists": "该视频已存在",
+      "fetchVideoInfoError": "获取视频信息失败",
+      "coverFromClipboard": "从剪贴板选择封面",
+      "coverPreview": "封面（可选）",
+      "removeCover": "移除封面"
+    },
+    "findVideos": "去找视频！"
+  },
+  "channels": {
+    "search": {
+      "placeholder": "搜索视频..."
+    },
+    "pauseGuide": {
+      "closeMoreVideos": "关闭更多视频",
+      "showSubtitles": "让字幕展示出来才能识别字幕哦！"
+    },
+    "captureSubtitles": "识别字幕",
+    "deleteVideo": "删除视频",
+    "deleteMemoCard": "删除卡片"
+  }
+}

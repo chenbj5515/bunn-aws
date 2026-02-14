@@ -1,0 +1,115 @@
+/**
+ * 自定义 CSS 动画 keyframes
+ * 与 src/animation/index.ts 配合使用
+ * - index.ts: 管理动画时长、缓动函数、framer-motion 变体等 JS 配置
+ * - keyframes.css: 管理 CSS keyframes 和动画类
+ */
+
+/* ============================================
+   Keyframes 定义
+   ============================================ */
+
+/* 淡入上移动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 从顶部滑入 */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 从底部滑入 */
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 液体流动效果（用于进度条等） */
+@keyframes liquidFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 闪光效果 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Loading 组件的 3D 立方体旋转动画 */
+@keyframes spinner {
+  0% {
+    transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
+  }
+  50% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
+  }
+  100% {
+    transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+  }
+}
+
+/* ============================================
+   动画类定义
+   命名规范: animate-{动画名称}
+   与 CSS_ANIMATION_CLASSES 常量对应
+   ============================================ */
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+  animation-delay: 0.8s; /* 等待 typing 动画完成后再显示 */
+}
+
+.animate-slideInFromTop {
+  animation: slideInFromTop 0.5s ease-out forwards;
+}
+
+.animate-slideInBottom {
+  animation: slideInBottom 0.35s ease-out forwards;
+}
+
+.animate-liquidFlow {
+  animation: liquidFlow 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
+.animate-spinner {
+  animation: spinner 2s infinite ease;
+}

@@ -1,0 +1,14 @@
+import type { TRPC_ERROR_CODE_KEY } from '@trpc/server';
+
+/**
+ * tRPC 错误码常量
+ */
+export const TRPCCode = {
+  BAD_REQUEST: 'BAD_REQUEST',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+} as const satisfies Record<string, TRPC_ERROR_CODE_KEY>;

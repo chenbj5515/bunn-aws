@@ -1,0 +1,480 @@
+"use client"
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { updateOriginalText } from "./server-functions";
+import { Character } from "./types";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslations, useLocale } from 'next-intl';
+import { speakTextWithMinimax } from "@/lib/tts/client";
+import { insertWordCard } from "./server-functions/insert-word-card";
+import { WordCardAdder } from "./word-card-adder";
+import { X, Loader2 } from "lucide-react";
+import { removeMemoCardCharacter } from "./server-functions/remove-character";
+import Image from "next/image";
+
+// 全局 Tooltip 状态，保证全局只存在一个单词卡片
+type TooltipAnchorRect = {
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+};
+
+type GlobalTooltipState = {
+    ownerId: number;
+    word: string;
+    meaning: string;
+    kanaPronunciation?: string;
+    anchorRect: TooltipAnchorRect;
+} | null;
+
+let globalTooltipState: GlobalTooltipState = null;
+const tooltipSubscribers = new Set<(state: GlobalTooltipState) => void>();
+let tooltipOwnerIdCounter = 0;
+
+function setGlobalTooltipState(state: GlobalTooltipState) {
+    globalTooltipState = state;
+    tooltipSubscribers.forEach((listener) => listener(globalTooltipState));
+}
+
+function subscribeTooltip(listener: (state: GlobalTooltipState) => void) {
+    tooltipSubscribers.add(listener);
+    // 初始化时同步当前全局状态
+    listener(globalTooltipState);
+    return () => {
+        tooltipSubscribers.delete(listener);
+    };
+}
+
+// 防抖函数
+const debounce = <F extends (...args: any[]) => any>(func: F, wait: number) => {
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+
+    return (...args: Parameters<F>) => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(() => {
+            func(...args);
+        }, wait);
+    };
+};
+
+type KanaPronunciationData = {
+    tag: string;
+    children?: (string | { tag: string; text: string; rt: string })[];
+    text?: string;
+    rt?: string;
+};
+
+interface OriginalTextProps {
+    selectedCharacter?: Character | null;
+    isFocused?: boolean;
+    originalTextRef?: React.MutableRefObject<HTMLDivElement | null>;
+    rubyOriginalTextRecord?: any;
+    rubyTranslationRecord?: any;
+    id?: string;
+    onOpenCharacterDialog?: () => void;
+    onRemoveCharacter?: () => void;
+    isInChannelsOrTimeline?: boolean;
+    noOffset?: boolean; // 控制是否移除42px的左侧偏移
+    tooltipTheme?: 'default' | 'frosted'; // 控制单词悬浮窗的主题样式
+    hideUnderline?: boolean; // 控制是否隐藏ruby单词的下划波浪线
+    hoverUnderlineOnHover?: boolean; // 控制在隐藏彩色下划线时，hover 是否显示普通下划线
+    className?: string;
+}
+
+export function OriginalText({
+    selectedCharacter,
+    isFocused = false,
+    originalTextRef,
+    rubyOriginalTextRecord,
+    rubyTranslationRecord = {},
+    id,
+    onOpenCharacterDialog,
+    onRemoveCharacter,
+    isInChannelsOrTimeline = true,
+    noOffset = false,
+    tooltipTheme = 'default',
+    hideUnderline = false,
+    hoverUnderlineOnHover = false,
+    className,
+}: OriginalTextProps) {
+    const t = useTranslations('memoCard');
+    const locale = useLocale();
+    const pathname = usePathname();
+    const localOriginalTextRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // 使用传入的 ref 或本地创建的 ref
+    const effectiveRef = originalTextRef || localOriginalTextRef;
+
+    // 根据当前语言获取Ruby元素的翻译
+    const getRubyTranslation = (word: string): string => {
+        const translationData = rubyTranslationRecord[word];
+        if (!translationData) return '';
+
+        // 如果是新格式（对象格式），根据locale获取翻译
+        if (typeof translationData === 'object' && translationData !== null) {
+            // 对于zh-TW，如果没有专门的翻译，使用zh的翻译
+            if (locale === 'zh-TW' && !translationData['zh-TW']) {
+                return translationData['zh'] || translationData['en'] || '';
+            }
+            return translationData[locale] || translationData['en'] || '';
+        }
+
+        // 如果是旧格式（字符串格式），直接返回（向后兼容）
+        if (typeof translationData === 'string') {
+            return translationData;
+        }
+
+        return '';
+    };
+
+    // Tooltip 相关状态
+    const [activeTooltip, setActiveTooltip] = useState<{
+        word: string;
+        meaning: string;
+        kanaPronunciation?: string;
+        anchorRect: TooltipAnchorRect;
+    } | null>(null);
+    // 为每个组件实例分配唯一 ID，用于全局单例控制
+    const instanceIdRef = useRef<number | null>(null);
+    if (instanceIdRef.current === null) {
+        tooltipOwnerIdCounter += 1;
+        instanceIdRef.current = tooltipOwnerIdCounter;
+    }
+    const instanceId = instanceIdRef.current;
+    // 添加角色头像悬停状态
+    const [isHoveringCharacter, setIsHoveringCharacter] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    // 订阅全局 Tooltip 状态，确保任意时刻只会有一个组件实例处于激活状态
+    useEffect(() => {
+        const unsubscribe = subscribeTooltip((state) => {
+            if (state && state.ownerId === instanceId) {
+                setActiveTooltip({
+                    word: state.word,
+                    meaning: state.meaning,
+                    kanaPronunciation: state.kanaPronunciation,
+                    anchorRect: state.anchorRect,
+                });
+            } else {
+                setActiveTooltip(null);
+            }
+        });
+        return unsubscribe;
+    }, [instanceId]);
+
+    function handleOriginalTextBlur() {
+        if (effectiveRef.current?.textContent && !pathname.includes('/home') && !pathname.includes('/guide') && id) {
+            updateOriginalText(id, effectiveRef.current?.textContent?.slice(3));
+        }
+    }
+
+    // 处理Ruby元素点击，播放发音
+    const handleRubyClick = async (text: string) => {
+        if (!isPlaying) {
+            try {
+                setIsPlaying(true);
+                await speakTextWithMinimax(text);
+            } finally {
+                setIsPlaying(false);
+            }
+        }
+    };
+
+    // 显示单词tooltip
+    const showTooltip = (word: string, meaning: string, kanaPronunciation: string, event: React.MouseEvent) => {
+        const element = event.currentTarget as HTMLElement;
+        const rect = element.getBoundingClientRect();
+
+        // 直接使用相对于视口的锚点信息，后续由 Tooltip 自己做防溢出布局
+        setGlobalTooltipState({
+            ownerId: instanceId as number,
+            word,
+            meaning,
+            kanaPronunciation: kanaPronunciation || undefined,
+            anchorRect: {
+                top: rect.top,
+                left: rect.left,
+                right: rect.right,
+                bottom: rect.bottom,
+                width: rect.width,
+                height: rect.height,
+            },
+        });
+    };
+
+    // 添加单词到单词本
+    const handleAddToDictionary = async (word: string, meaning: string, kanaPronunciation?: string) => {
+        try {
+            if (!pathname.includes('/home') && !pathname.includes('/guide') && id) {
+                const result = await insertWordCard(word, meaning, id, kanaPronunciation);
+                if (result instanceof Error) {
+                    throw result;
+                }
+            }
+        } catch (error) {
+            console.error('添加单词失败', error);
+        } finally {
+            // 无论成功失败都关闭tooltip
+            setGlobalTooltipState(null);
+        }
+    };
+
+    // 监听鼠标移动事件，当鼠标不在tooltip或Ruby元素上时关闭tooltip
+    useEffect(() => {
+        const checkMousePosition = (event: MouseEvent) => {
+            if (activeTooltip) {
+                const tooltipElement = document.querySelector('[data-ruby-tooltip="true"]');
+                const targetElement = document.elementFromPoint(event.clientX, event.clientY);
+
+                if (!targetElement) return;
+
+                // 检查鼠标是否在tooltip内
+                let isOverTooltip = tooltipElement?.contains(targetElement);
+
+                // 检查鼠标是否在任何Ruby元素上
+                let isOverRuby = false;
+                const rubyElements = document.querySelectorAll('ruby');
+
+                rubyElements.forEach(ruby => {
+                    if (ruby.contains(targetElement)) {
+                        isOverRuby = true;
+                    }
+                });
+
+                // 如果鼠标既不在tooltip上也不在任何ruby元素上，则关闭tooltip
+                if (!isOverTooltip && !isOverRuby) {
+                    setGlobalTooltipState(null);
+                }
+            }
+        };
+
+        // 使用防抖函数包装事件处理程序，30ms 的延迟可以提高性能
+        const debouncedCheckMousePosition = debounce(checkMousePosition, 30);
+
+        document.addEventListener('mousemove', debouncedCheckMousePosition);
+        return () => {
+            document.removeEventListener('mousemove', debouncedCheckMousePosition);
+        };
+    }, [activeTooltip]);
+
+    // 处理解除角色绑定
+    const handleRemoveCharacter = async (e: React.MouseEvent) => {
+        e.stopPropagation(); // 阻止事件冒泡，避免触发点击角色头像的事件
+        
+        if (id) {
+            try {
+                // 调用server function解除绑定
+                const result = await removeMemoCardCharacter(id);
+                
+                if (result.success) {
+                    // 调用父组件传入的回调函数更新本地状态
+                    if (onRemoveCharacter) {
+                        onRemoveCharacter();
+                    }
+                } else {
+                }
+            } catch (error) {
+                console.error('解除角色绑定失败:', error);
+            }
+        }
+    };
+
+    // 渲染原始文本标签或角色头像
+    const renderOriginalTextLabel = () => {
+        if (selectedCharacter) {
+            return (
+                <div
+                    className={`inline-flex relative items-center ${isInChannelsOrTimeline ? 'cursor-pointer' : ''}`}
+                    onClick={isInChannelsOrTimeline ? onOpenCharacterDialog : undefined}
+                >
+                    <span className="flex flex-col">
+                        <div 
+                            className="relative"
+                            onMouseEnter={() => {
+                                setIsHoveringCharacter(true);
+                            }}
+                            onMouseLeave={() => {
+                                setIsHoveringCharacter(false);
+                            }}
+                            style={{ padding: '2px' }}
+                        >
+                            <img
+                                src={selectedCharacter.avatarUrl || '/icon/youtube.png'}
+                                alt={selectedCharacter.name}
+                                className="inline-block mr-1 rounded-full w-10 h-10 object-cover"
+                                onError={(e) => {
+                                    // 图片加载失败时使用占位图
+                                    (e.target as HTMLImageElement).src = '/icon/youtube.png';
+                                }}
+                            />：
+                            <span className="-top-5 left-[33%] absolute text-gray-600 text-xs text-center whitespace-nowrap -translate-x-1/2">
+                                {selectedCharacter.name}
+                            </span>
+                            
+                            {/* 删除图标仅在悬停时且在允许的路由下显示 */}
+                            {isHoveringCharacter && isInChannelsOrTimeline && (
+                                <button 
+                                    className="top-0 right-[10px] z-1000 absolute bg-white/80 hover:bg-white shadow-sm p-1 rounded-full text-gray-500 hover:text-red-500 transition-colors"
+                                    onClick={handleRemoveCharacter}
+                                    title={t('removeCharacter')}
+                                >
+                                    <X size={12} />
+                                </button>
+                            )}
+                        </div>
+                    </span>
+                </div>
+            );
+        } else {
+            return (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <div
+                            className="inline-flex relative items-center cursor-pointer"
+                            onClick={onOpenCharacterDialog}
+                        >
+                            {/* <span className="inline-block whitespace-nowrap">{t('originalText')}</span> */}
+                        </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                        <span>{t('useCharacterAvatar')}</span>
+                    </TooltipContent>
+                </Tooltip>
+            );
+        }
+    };
+
+    // 下划线颜色数组 - 包含多种颜色以避免相邻下划线颜色相同
+    const underlineColors = [
+        '#3b82f6B2', // 皇家蓝 (70% 透明度)
+        '#8b5cf6B2', // 紫色 (70% 透明度)
+        '#16a34aB2', // 绿色 (70% 透明度)
+        '#FFD700B2', // 黄色 (70% 透明度)
+        '#FFA500B2', // 橙色 (70% 透明度)
+        '#00C853B2', // 深绿色 (70% 透明度)
+        '#2979FFB2', // 深蓝色 (70% 透明度)
+        '#AA00FFB2', // 深紫色 (70% 透明度)
+        '#CCFF00B2'  // 闪电色 (70% 透明度)
+    ];
+
+    // 根据单词在句子中的位置获取颜色，确保相邻单词颜色不同
+    const getUnderlineColorByPosition = (wordIndex: number) => {
+        // 使用简单的哈希算法，确保相同位置的单词总是得到相同颜色
+        // 但相邻单词会得到不同颜色
+        return underlineColors[wordIndex % underlineColors.length];
+    };
+
+    // 递归渲染KanaPronunciation的JSX
+    const renderKanaPronunciation = (data: KanaPronunciationData | null, wordIndex: number = 0) => {
+        if (!data) return null;
+
+        if (data.tag === 'ruby') {
+            const translation = getRubyTranslation(data.text || '');
+            const hasTranslation = translation !== '';
+            const rubyClassName = [
+                'relative z-999 cursor-pointer',
+                hasTranslation ? 'has-translation' : '',
+                hideUnderline && hoverUnderlineOnHover && hasTranslation ? 'hover:underline' : '',
+            ]
+                .filter(Boolean)
+                .join(' ');
+
+            let rubyStyle: React.CSSProperties | undefined;
+
+            if (!hideUnderline) {
+                // 默认彩色波浪下划线
+                rubyStyle = {
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'wavy',
+                    textDecorationColor: getUnderlineColorByPosition(wordIndex),
+                    textDecorationThickness: '2px',
+                };
+            } else if (!hoverUnderlineOnHover) {
+                // 完全隐藏所有下划线
+                rubyStyle = {
+                    textDecorationLine: 'none',
+                    textDecorationStyle: 'solid',
+                    textDecorationColor: 'transparent',
+                    textDecorationThickness: '0px',
+                };
+            }
+            return (
+                <ruby
+                    key={Math.random()}
+                    onClick={() => handleRubyClick(data.rt || data.text || '')}
+                    onMouseEnter={hasTranslation ?
+                        (e) => showTooltip(data.text || '', translation, data.rt || '', e) :
+                        undefined
+                    }
+                    className={rubyClassName}
+                    style={rubyStyle}
+                >
+                    {data.text}
+                    <rt>{data.rt}</rt>
+                </ruby>
+            );
+        }
+
+        if (data.tag === 'span' && data.children) {
+            let rubyIndex = 0; // 跟踪ruby元素的索引
+            return (
+                <span>
+                    {renderOriginalTextLabel()}
+                    {data.children.map((child, index) => {
+                        if (typeof child === 'string') {
+                            return <React.Fragment key={index}>{child}</React.Fragment>;
+                        } else {
+                            // 只为ruby元素递增索引，确保每个ruby元素有唯一的索引
+                            const currentIndex = child.tag === 'ruby' ? rubyIndex++ : wordIndex;
+                            return renderKanaPronunciation(child, currentIndex);
+                        }
+                    })}
+                </span>
+            );
+        }
+
+        return null;
+    };
+
+    // 使用useMemo缓存渲染结果
+    const memoizedRenderedContent = useMemo(() => {
+        return renderKanaPronunciation(rubyOriginalTextRecord);
+    }, [selectedCharacter, isHoveringCharacter, rubyOriginalTextRecord]);
+
+    return (
+        <div ref={containerRef} className={`relative ${noOffset ? 'w-full' : 'w-[calc(100%-42px)]'}`}>
+            <div
+                suppressContentEditableWarning
+                // contentEditable
+                className={`relative flex items-center outline-none ${selectedCharacter ? "items-center" : "items-baseline"} ${className || ''}`}
+                onBlur={handleOriginalTextBlur}
+                ref={effectiveRef}
+            >
+                {isFocused ? (
+                    <section
+                        className={`z-1000 rounded-lg absolute ${isFocused ? "backdrop-blur-[3px] backdrop-saturate-180" : ""
+                            }  w-[101%] h-[105%] -left-[4px] -top-[2px]`}
+                    ></section>
+                ) : null}
+                {memoizedRenderedContent}
+            </div>
+
+            {/* 单词Tooltip */}
+            {activeTooltip && (
+                <WordCardAdder
+                    activeTooltip={activeTooltip}
+                    isAddButtonActive={false}
+                    handleAddToDictionary={handleAddToDictionary}
+                    theme={tooltipTheme}
+                />
+            )}
+        </div>
+    )
+}

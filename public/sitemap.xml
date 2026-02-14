@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Blog 列表页 -->
+  <url>
+    <loc>https://www.bunn.ink/en/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh-TW/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- 2025-11-23 -->
+  <url>
+    <loc>https://www.bunn.ink/en/blog/learn-japanese-with-youtube-complete-guide</loc>
+    <lastmod>2025-11-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh/blog/learn-japanese-with-youtube-complete-guide</loc>
+    <lastmod>2025-11-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh-TW/blog/learn-japanese-with-youtube-complete-guide</loc>
+    <lastmod>2025-11-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 2025-11-21 -->
+  <url>
+    <loc>https://www.bunn.ink/en/blog/learn-japanese-with-youtube</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh/blog/learn-japanese-with-youtube</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh-TW/blog/learn-japanese-with-youtube</loc>
+    <lastmod>2025-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 2025-05-24 -->
+  <url>
+    <loc>https://www.bunn.ink/en/blog/learning-japanese-with-anime</loc>
+    <lastmod>2025-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh/blog/learning-japanese-with-anime</loc>
+    <lastmod>2025-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.bunn.ink/zh-TW/blog/learning-japanese-with-anime</loc>
+    <lastmod>2025-05-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
