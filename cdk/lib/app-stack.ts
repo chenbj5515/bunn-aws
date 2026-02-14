@@ -10,6 +10,7 @@ interface AppStackProps extends cdk.StackProps {
   vpc: ec2.Vpc;
   securityGroup: ec2.SecurityGroup;
   databaseUrl: string;
+  redisUrl: string;
 }
 
 /**
@@ -21,7 +22,7 @@ export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AppStackProps) {
     super(scope, id, props);
 
-    const { appName, vpc, securityGroup, databaseUrl } = props;
+    const { appName, vpc, securityGroup, databaseUrl, redisUrl } = props;
 
     // 创建 ECS 集群
     const cluster = new ecs.Cluster(this, 'Cluster', {
@@ -51,6 +52,7 @@ export class AppStack extends cdk.Stack {
         containerPort: 3000,
         environment: {
           NODE_ENV: 'production',
+          REDIS_URL: redisUrl,
           // DATABASE_URL 通过 Secrets Manager 注入，这里只是占位
           // 实际部署时需要配置 secrets
         },

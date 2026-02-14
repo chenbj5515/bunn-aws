@@ -10,6 +10,7 @@ interface BatchStackProps extends cdk.StackProps {
   vpc: ec2.Vpc;
   securityGroup: ec2.SecurityGroup;
   databaseUrl: string;
+  redisUrl: string;
 }
 
 /**
@@ -21,7 +22,7 @@ export class BatchStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BatchStackProps) {
     super(scope, id, props);
 
-    const { appName, vpc, securityGroup } = props;
+    const { appName, vpc, securityGroup, redisUrl } = props;
 
     // 示例：创建一个定时任务 Lambda
     const cleanupFunction = new lambda.Function(this, 'CleanupFunction', {
@@ -47,6 +48,7 @@ export class BatchStack extends cdk.Stack {
       securityGroups: [securityGroup],
       environment: {
         NODE_ENV: 'production',
+        REDIS_URL: redisUrl,
         // DATABASE_URL 通过 Secrets Manager 注入
       },
     });

@@ -48,7 +48,7 @@ export function AskAIChatPreview({ messages, onClick }: AskAIChatPreviewProps) {
     <div
       ref={containerRef}
       onClick={onClick}
-      className="relative bg-gray-50 rounded-xl border border-gray-200 p-4 h-[140px] overflow-hidden cursor-pointer hover:bg-gray-100 hover:border-gray-300 transition-all duration-200"
+      className="relative bg-white rounded-xl border border-gray-200 p-4 h-[140px] overflow-hidden cursor-pointer shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200"
     >
       {/* 对话内容 */}
       <div ref={contentRef} className="space-y-2 text-[14px] leading-relaxed">
@@ -66,7 +66,7 @@ export function AskAIChatPreview({ messages, onClick }: AskAIChatPreviewProps) {
 
       {/* 底部渐变遮罩 + 向下箭头 */}
       {hasOverflow && (
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-gray-50 via-gray-50/80 to-transparent flex items-end justify-center pb-2 pointer-events-none">
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-white via-white/80 to-transparent flex items-end justify-center pb-2 pointer-events-none">
           <div className="bg-white/90 rounded-full p-1 shadow-sm border border-gray-200">
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </div>

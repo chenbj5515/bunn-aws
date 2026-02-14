@@ -109,6 +109,16 @@ export const initializeChannelDataAtom = atom(
 );
 
 /**
+ * 更新记忆卡片列表（用于切换视频时更新）
+ */
+export const setMemoCardListAtom = atom(
+  null,
+  (_get, set, memoCardList: MemoCardWithChannel[]) => {
+    set(memoCardListAtom, memoCardList);
+  }
+);
+
+/**
  * 显示记忆卡片
  */
 export const showMemoCardModalAtom = atom(

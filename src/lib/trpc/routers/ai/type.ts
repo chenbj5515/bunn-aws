@@ -112,20 +112,5 @@ export type TranslateQuestionInput = z.infer<typeof translateQuestionInput>;
 export type TranslateQuestionOutput = z.infer<typeof translateQuestionOutput>;
 
 // --- 流式 AI Chat ---
-export const streamChatInput = z.object({
-  prompt: z.string().min(1, 'Prompt 不能为空'),
-  model: z.enum(['gpt-4o', 'gpt-4o-mini']).default('gpt-4o-mini'),
-});
-
-export type StreamChatInput = z.infer<typeof streamChatInput>;
-
-/**
- * 流式 Chat 返回的 chunk 类型
- * - delta: 增量文本
- * - done: 流结束标记
- * - errorCode: 错误码（rate limit 等）
- */
-export type StreamChatChunk =
-  | { type: 'delta'; content: string }
-  | { type: 'done' }
-  | { type: 'error'; errorCode: number };
+// 注意：流式 AI Chat 已迁移到 /api/ai/chat API Route
+// 使用 Vercel AI SDK 的原生流式响应，不再通过 tRPC

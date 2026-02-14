@@ -18,6 +18,18 @@ export const askAIInputAtom = atom("");
 export const askAIShowLimitAtom = atom(false);
 
 /**
+ * 滚动到底部的触发器（递增数字，每次变化触发滚动）
+ */
+export const scrollToBottomTriggerAtom = atom(0);
+
+/**
+ * 触发滚动到底部
+ */
+export const triggerScrollToBottomAtom = atom(null, (get, set) => {
+  set(scrollToBottomTriggerAtom, get(scrollToBottomTriggerAtom) + 1);
+});
+
+/**
  * IME 输入法合成状态（日语输入等）
  */
 export const askAIIsComposingAtom = atom(false);

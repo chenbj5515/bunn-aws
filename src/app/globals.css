@@ -166,6 +166,44 @@ main,
     @apply bg-background text-foreground;
   }
 
+  /* AI 对话框中的 Markdown 内容样式 */
+  .markdown-content h1 {
+    @apply text-[1.15em] font-semibold mt-2 mb-1;
+  }
+
+  .markdown-content h2 {
+    @apply text-[1.1em] font-semibold mt-1.5 mb-1;
+  }
+
+  .markdown-content h3 {
+    @apply text-[1.05em] font-medium mt-1 mb-0.5;
+  }
+
+  .markdown-content p {
+    @apply my-0.5;
+  }
+
+  .markdown-content ul,
+  .markdown-content ol {
+    @apply pl-4 my-0.5;
+  }
+
+  .markdown-content li {
+    @apply my-0;
+  }
+
+  .markdown-content code {
+    @apply bg-muted px-1 py-0.5 rounded text-[0.9em];
+  }
+
+  .markdown-content pre {
+    @apply bg-muted p-2 rounded my-1 overflow-x-auto;
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent p-0;
+  }
+
   /* 彻底移除焦点环，避免输入框等元素聚焦时出现过大的灰色边框（参考 bunn-web） */
   *:focus {
     outline: none !important;

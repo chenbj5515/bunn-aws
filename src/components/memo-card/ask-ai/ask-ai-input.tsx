@@ -55,7 +55,7 @@ export function AskAIInput({
       </button>
 
       {/* 输入框 */}
-      <div className="relative flex items-center bg-gray-100 rounded-xl border border-gray-200 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all duration-200">
+      <div className="relative flex items-center bg-white rounded-xl border border-gray-200 focus-within:border-gray-300 focus-within:shadow-sm transition-all duration-200">
         <input
           ref={inputRef}
           type="text"

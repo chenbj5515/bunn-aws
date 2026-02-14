@@ -16,7 +16,7 @@ export function AskAIContextDisplay({ contextText }: AskAIContextDisplayProps) {
   return (
     <div className="flex justify-start">
       <div className="flex flex-row w-full md:max-w-[80%]">
-        <div className="hidden md:block z-10 relative shrink-0 mr-3">
+        <div className="hidden md:block z-10 relative mr-3 shrink-0">
           <div className="flex flex-col items-center">
             <span className="-mt-[4px] font-sans text-[12px] text-center">
               Bunn
@@ -30,7 +30,7 @@ export function AskAIContextDisplay({ contextText }: AskAIContextDisplayProps) {
             />
           </div>
         </div>
-        <div className="p-3 rounded-lg text-[14px] leading-[1.9] tracking-[0.5px] md:ml-[-40px] md:pl-[52px]">
+        <div className="md:ml-[-40px] md:pl-[52px] rounded-lg text-[14px] leading-[1.9] tracking-[0.5px]">
           <AIContentRenderer content={contextText} />
         </div>
       </div>

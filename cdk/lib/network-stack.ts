@@ -12,6 +12,7 @@ interface NetworkStackProps extends cdk.StackProps {
 export class NetworkStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
   public readonly dbSecurityGroup: ec2.SecurityGroup;
+  public readonly redisSecurityGroup: ec2.SecurityGroup;
   public readonly appSecurityGroup: ec2.SecurityGroup;
   public readonly lambdaSecurityGroup: ec2.SecurityGroup;
 
@@ -52,6 +53,14 @@ export class NetworkStack extends cdk.Stack {
       allowAllOutbound: false,
     });
 
+    // Redis 安全组
+    this.redisSecurityGroup = new ec2.SecurityGroup(this, 'RedisSecurityGroup', {
+      vpc: this.vpc,
+      securityGroupName: `${appName}-redis-sg`,
+      description: 'Security group for ElastiCache Redis',
+      allowAllOutbound: false,
+    });
+
     // 应用安全组 (ECS)
     this.appSecurityGroup = new ec2.SecurityGroup(this, 'AppSecurityGroup', {
       vpc: this.vpc,
@@ -80,6 +89,20 @@ export class NetworkStack extends cdk.Stack {
       this.lambdaSecurityGroup,
       ec2.Port.tcp(5432),
       'Allow Lambda to access PostgreSQL'
+    );
+
+    // 允许应用访问 Redis
+    this.redisSecurityGroup.addIngressRule(
+      this.appSecurityGroup,
+      ec2.Port.tcp(6379),
+      'Allow ECS to access Redis'
+    );
+
+    // 允许 Lambda 访问 Redis
+    this.redisSecurityGroup.addIngressRule(
+      this.lambdaSecurityGroup,
+      ec2.Port.tcp(6379),
+      'Allow Lambda to access Redis'
     );
 
     // 允许 ALB 访问应用

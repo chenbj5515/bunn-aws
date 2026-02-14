@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { NetworkStack } from '../lib/network-stack';
 import { DatabaseStack } from '../lib/database-stack';
+import { CacheStack } from '../lib/cache-stack';
 import { AppStack } from '../lib/app-stack';
 import { BatchStack } from '../lib/batch-stack';
 
@@ -19,11 +20,13 @@ import { BatchStack } from '../lib/batch-stack';
  * │  └─────────┘     │  (Next.js 容器)   │                       │
  * │                  └──────────────────┘                       │
  * │                         │                                    │
- * │                         ▼                                    │
- * │                  ┌──────────────────┐                       │
- * │                  │  RDS PostgreSQL  │                       │
- * │                  └──────────────────┘                       │
- * │                         ▲                                    │
+ * │              ┌──────────┴──────────┐                        │
+ * │              ▼                     ▼                        │
+ * │  ┌──────────────────┐  ┌──────────────────┐                │
+ * │  │  RDS PostgreSQL  │  │ ElastiCache Redis│                │
+ * │  └──────────────────┘  └──────────────────┘                │
+ * │              ▲                     ▲                        │
+ * │              └──────────┬──────────┘                        │
  * │  ┌─────────────┐        │                                    │
  * │  │ EventBridge │───▶ Lambda (Batch)                         │
  * │  └─────────────┘                                            │
@@ -55,27 +58,40 @@ const databaseStack = new DatabaseStack(app, `${appName}-database`, {
   securityGroup: networkStack.dbSecurityGroup,
 });
 
-// 3. 应用栈 - ECS Fargate (Next.js)
+// 3. 缓存栈 - ElastiCache Redis
+const cacheStack = new CacheStack(app, `${appName}-cache`, {
+  env,
+  appName,
+  vpc: networkStack.vpc,
+  securityGroup: networkStack.redisSecurityGroup,
+});
+
+// 4. 应用栈 - ECS Fargate (Next.js)
 const appStack = new AppStack(app, `${appName}-app`, {
   env,
   appName,
   vpc: networkStack.vpc,
   securityGroup: networkStack.appSecurityGroup,
   databaseUrl: databaseStack.databaseUrl,
+  redisUrl: cacheStack.redisUrl,
 });
 
-// 4. 批处理栈 - Lambda (Batch 任务)
+// 5. 批处理栈 - Lambda (Batch 任务)
 const batchStack = new BatchStack(app, `${appName}-batch`, {
   env,
   appName,
   vpc: networkStack.vpc,
   securityGroup: networkStack.lambdaSecurityGroup,
   databaseUrl: databaseStack.databaseUrl,
+  redisUrl: cacheStack.redisUrl,
 });
 
 // 添加依赖关系
 databaseStack.addDependency(networkStack);
+cacheStack.addDependency(networkStack);
 appStack.addDependency(databaseStack);
+appStack.addDependency(cacheStack);
 batchStack.addDependency(databaseStack);
+batchStack.addDependency(cacheStack);
 
 app.synth();

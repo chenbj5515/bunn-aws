@@ -68,12 +68,21 @@ export const updateAskAIStateAtom = atom(
 
 /**
  * 初始化卡片的问 AI 状态
- * RSC 作为唯一数据源，直接使用预加载的消息
+ * 只在 store 中没有该卡片状态时才初始化，避免覆盖运行时产生的新消息
  */
 export const initializeAskAIAtom = atom(
   null,
-  (_get, set, payload: { cardId: string; messages?: AskAIMessage[] }) => {
+  (get, set, payload: { cardId: string; messages?: AskAIMessage[] }) => {
     const { cardId, messages: preloadedMessages } = payload;
+    
+    // 检查 store 中是否已经有该卡片的状态
+    const map = get(askAIStateMapAtom);
+    const existingState = map.get(cardId);
+    
+    // 如果已经有状态且有消息，不覆盖（保留运行时产生的新消息）
+    if (existingState && existingState.messages.length > 0) {
+      return;
+    }
     
     // 有预加载消息时显示历史
     if (preloadedMessages && preloadedMessages.length > 0) {

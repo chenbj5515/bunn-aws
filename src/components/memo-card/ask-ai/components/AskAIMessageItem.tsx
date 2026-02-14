@@ -38,7 +38,7 @@ export function AskAIMessageItem({
 
         {/* 消息内容 */}
         <div
-          className={`p-3 rounded-lg text-[14px] leading-[1.9] tracking-[0.5px] ${
+          className={`rounded-lg text-[14px] leading-[1.9] tracking-[0.5px] ${
             isAssistant ? "md:ml-[-40px] md:pl-[52px]" : ""
           }`}
         >

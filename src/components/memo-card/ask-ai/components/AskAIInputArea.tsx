@@ -83,7 +83,7 @@ export function AskAIInputArea({ memoCard }: AskAIInputAreaProps) {
           onCompositionEnd={handleCompositionEnd}
           placeholder={!showLimit ? t("placeholder") : ""}
           disabled={isDisabled}
-          className={`flex-1 h-10 ${
+          className={`flex-1 h-10 bg-white border-gray-200 focus:border-gray-300 focus:shadow-sm focus:ring-0 transition-all duration-200 ${
             !sessionData?.user || showLimit
               ? "opacity-60 cursor-not-allowed bg-gray-100"
               : ""

@@ -1,11 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { useSetAtom } from 'jotai';
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
+import { useAtomValue } from 'jotai';
 import { VideoList } from './video-list';
 import { useVideoSearch } from '../_hooks/use-video-search';
-import { setCurrentVideoAtom } from '../_store';
+import { channelDetailAtom } from '../_store';
 import { VideoTitle } from './video-title';
 import { SearchInput } from './search-input';
 
@@ -16,11 +16,11 @@ import { SearchInput } from './search-input';
 export function VideoTitleBar() {
   const t = useTranslations('channels');
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const router = useRouter();
+  const params = useParams();
   const isReadOnly = searchParams.get('rp') === '1';
 
-  const setCurrentVideo = useSetAtom(setCurrentVideoAtom);
+  const channelDetail = useAtomValue(channelDetailAtom);
 
   const {
     inputRef,
@@ -37,12 +37,12 @@ export function VideoTitleBar() {
     handleBlur,
   } = useVideoSearch();
 
-  // 处理视频选择
-  const handleVideoSelect = (videoId: string, videoTitle: string | null) => {
-    setCurrentVideo({ videoId, videoTitle });
-    const sp = new URLSearchParams(searchParams);
-    sp.set('videoId', videoId);
-    router.replace(`${pathname}?${sp.toString()}`);
+  // 处理视频选择 - 使用嵌套路由导航
+  const handleVideoSelect = (videoId: string, _videoTitle: string | null) => {
+    const locale = params.locale as string;
+    const channelId = channelDetail?.channelId || params.channelId as string;
+    // 导航到新的视频路由
+    router.push(`/${locale}/channels/${encodeURIComponent(channelId)}/${encodeURIComponent(videoId)}`);
   };
 
   // 显示标题还是搜索框：有视频ID、有标题、且不在选择模式时显示标题

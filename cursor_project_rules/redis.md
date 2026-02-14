@@ -1,6 +1,38 @@
 关于redis的信息都记录在这里，包括有哪些键值对，这些键值对代表什么，类型是什么等。
 如果有任何变更都要把最新的信息更新到这个文件。
 
+# Redis 配置说明
+
+## 客户端配置
+
+使用 `ioredis` 作为 Redis 客户端（替代之前的 Upstash REST API），支持标准 Redis 协议。
+
+- **客户端文件**: `src/lib/redis/index.ts`
+- **环境变量**: `REDIS_URL`（格式：`redis://host:port`）
+
+## 环境配置
+
+| 环境 | Redis 服务 | 连接方式 |
+|-----|-----------|---------|
+| 本地开发 | Docker Redis | `redis://localhost:6379` |
+| 线上环境 | AWS ElastiCache | `redis://<endpoint>:6379` |
+
+### 本地开发
+
+```bash
+# 启动本地 Redis
+docker compose up -d redis
+
+# 或者启动全部服务
+pnpm docker:up
+```
+
+### 线上环境
+
+CDK 会自动配置 ElastiCache Redis 并将 `REDIS_URL` 注入到 ECS/Lambda 环境变量中。
+
+---
+
 # Redis 键值对详细说明
 
 本文档记录了系统中使用的所有Redis键值对，按功能分类整理。所有键都与用户ID关联，并根据用户类型（免费/付费）和时间周期（每日/每月/订阅周期）进行区分。

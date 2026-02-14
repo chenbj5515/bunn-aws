@@ -89,8 +89,9 @@ export const ChannelsClient: FC<ChannelsClientProps> = ({ channels: initialChann
   // 点击频道
   const handleChannelClick = (channelId: string, firstVideoId: string | null) => {
     const locale = pathname.split('/')[1];
+    // 使用嵌套路由：/channels/[channelId]/[videoId]
     const url = firstVideoId
-      ? `/${locale}/channels/${encodeURIComponent(channelId)}?videoId=${encodeURIComponent(firstVideoId)}`
+      ? `/${locale}/channels/${encodeURIComponent(channelId)}/${encodeURIComponent(firstVideoId)}`
       : `/${locale}/channels/${encodeURIComponent(channelId)}`;
     router.push(url);
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter, useParams, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,8 +34,6 @@ export function AddVideoDropdown({
 }: AddVideoDropdownProps) {
   const router = useRouter();
   const params = useParams();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const locale = params.locale as string;
   const t = safariMode ? useTranslations('safari') : null;
 
@@ -103,13 +101,12 @@ export function AddVideoDropdown({
         }
 
         if (safariMode) {
-          // safari模式：跳转到channel详情页
-          router.push(`/${locale}/channels/${encodeURIComponent(videoInfo.channelId)}?videoId=${encodeURIComponent(videoId)}`);
+          // safari模式：跳转到 channel/video 详情页
+          router.push(`/${locale}/channels/${encodeURIComponent(videoInfo.channelId)}/${encodeURIComponent(videoId)}`);
         } else {
-          // channels模式：跳转到当前频道的视频
-          const params = new URLSearchParams(searchParams);
-          params.set('videoId', videoId);
-          router.push(`${pathname}?${params.toString()}`);
+          // channels模式：跳转到当前频道的视频（使用嵌套路由）
+          const currentChannelId = channelId || params.channelId as string;
+          router.push(`/${locale}/channels/${encodeURIComponent(currentChannelId)}/${encodeURIComponent(videoId)}`);
         }
       } else {
         console.error(result.message || '添加失败');

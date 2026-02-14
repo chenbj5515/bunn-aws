@@ -42,7 +42,6 @@ export function AvatarSpeechBubble({
   const [uploading, setUploading] = useState<boolean>(false);
   const avatarImgRef = useRef<HTMLImageElement | null>(null);
   const [showLimit, setShowLimit] = useState<boolean>(false);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [hintPos, setHintPos] = useState<{ top: number; left: number; placeBelow: boolean }>({ top: 0, left: 0, placeBelow: false });
 
   const updateHintPosition = () => {
@@ -77,29 +76,6 @@ export function AvatarSpeechBubble({
   useEffect(() => {
     setLocalAvatar(avatarUrl || '/icon/youtube.png');
   }, [avatarUrl]);
-
-  // 检查管理员权限
-  useEffect(() => {
-    async function checkAdmin() {
-      try {
-        const response = await fetch('/api/user/check-admin', {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsAdmin(data.isAdmin);
-        }
-      } catch (error) {
-        console.error('检查管理员权限失败:', error);
-        setIsAdmin(false);
-      }
-    }
-
-    checkAdmin();
-  }, []);
-
 
   // 点击头像显示提示
   const handleAvatarClick = () => {

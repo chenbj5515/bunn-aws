@@ -11,6 +11,7 @@ import { VideoTitleBar } from '../video-title-bar';
 import TvPlayerSection from '../tv-player-section';
 import { MemoCardModal } from '../memo-card-modal';
 import CaptureDialog from '../capture-dialog';
+import { useChannelContext } from '../channel-provider';
 
 // Hooks
 import { useKeyboardControl } from './_hooks/use-keyboard-control';
@@ -18,9 +19,7 @@ import { useKeyboardControl } from './_hooks/use-keyboard-control';
 // Store
 import {
   store,
-  type ChannelDetail,
   type MemoCardWithChannel,
-  type VideoInfo,
   videoViewerStateAtom,
   channelDetailAtom,
   memoCardListAtom,
@@ -29,6 +28,7 @@ import {
   showLimitRateAtom,
   closeLimitRateAtom,
   initializeVideoViewerAtom,
+  setMemoCardListAtom,
 } from '../../_store';
 
 // ============================================
@@ -36,12 +36,12 @@ import {
 // ============================================
 
 interface VideoViewerClientProps {
-  channelDetail: ChannelDetail;
+  /** 当前视频的记忆卡片列表（从 page.tsx 传入） */
   memoCardList: MemoCardWithChannel[];
+  /** 当前视频 ID */
   initialVideoId: string;
+  /** 当前视频标题 */
   initialVideoTitle?: string | null;
-  videosList: VideoInfo[];
-  eligibleForQuestionEntry?: boolean;
 }
 
 // ============================================
@@ -49,13 +49,13 @@ interface VideoViewerClientProps {
 // ============================================
 
 function VideoViewerClientInner({
-  channelDetail,
   memoCardList,
   initialVideoId,
   initialVideoTitle,
-  videosList,
-  eligibleForQuestionEntry = false,
 }: VideoViewerClientProps) {
+  // 从 ChannelProvider 获取共享数据（由 layout.tsx 提供）
+  const { channelDetail, videosList, eligibleForQuestionEntry } = useChannelContext();
+
   // 初始化 store
   useHydrateAtoms(
     [
@@ -73,14 +73,16 @@ function VideoViewerClientInner({
   // 写入状态
   const closeLimitRate = useSetAtom(closeLimitRateAtom);
   const initializeVideoViewer = useSetAtom(initializeVideoViewerAtom);
+  const setMemoCardList = useSetAtom(setMemoCardListAtom);
 
-  // 初始化视频查看器状态（通过 key 触发重新挂载来处理软导航）
   useEffect(() => {
     initializeVideoViewer({
       videoId: initialVideoId,
       videoTitle: initialVideoTitle ?? null,
       videos: videosList,
     });
+    // 更新记忆卡片列表（切换视频时需要同步更新）
+    setMemoCardList(memoCardList);
   }, []);
 
   // 键盘控制

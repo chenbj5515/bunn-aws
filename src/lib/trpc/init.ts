@@ -8,13 +8,6 @@ import type { Context } from "./context";
  */
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
-  experimental: {
-    /**
-     * 启用 async generator 流式响应支持
-     * 用于 streamChat 等流式 API
-     */
-    iterablesAndDeferreds: true,
-  },
 });
 
 /**
