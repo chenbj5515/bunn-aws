@@ -55,6 +55,7 @@ export const MemoCardModal: FC = () => {
   // 关闭弹窗
   const handleClose = () => {
     hideMemoCardModal();
+    history.replaceState(null, '', location.pathname);
   };
 
   // 删除卡片
@@ -77,6 +78,7 @@ export const MemoCardModal: FC = () => {
       videoPlayer.playVideo();
     }
     hideMemoCardModal();
+    history.replaceState(null, '', location.pathname);
   };
 
   const isVisible = showMemoCard && selectedMemoCard;

@@ -53,6 +53,7 @@ export default function TvPlayerSection() {
   const handleMarkerClick = (markerId: string) => {
     showMemoCardModal(markerId);
     videoPlayerRef.current?.pauseVideo();
+    history.replaceState(null, '', `?cardId=${markerId}`);
   };
 
   return (

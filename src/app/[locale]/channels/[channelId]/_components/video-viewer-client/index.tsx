@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { Provider, useSetAtom, useAtomValue } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { AddVideoDropdown } from '@/components/add-video-dropdown';
@@ -27,8 +27,7 @@ import {
   createInitialVideoViewerState,
   showLimitRateAtom,
   closeLimitRateAtom,
-  initializeVideoViewerAtom,
-  setMemoCardListAtom,
+  videoPlayerRefAtom,
 } from '../../_store';
 
 // ============================================
@@ -56,7 +55,21 @@ function VideoViewerClientInner({
   // 从 ChannelProvider 获取共享数据（由 layout.tsx 提供）
   const { channelDetail, videosList, eligibleForQuestionEntry } = useChannelContext();
 
-  // 初始化 store
+  // 组件挂载时同步重置 store 状态
+  // 由于外层使用 key={initialVideoId}，切换视频时组件会重新挂载，所以只需在挂载时执行
+  useLayoutEffect(() => {
+    // 清理旧的播放器引用
+    store.set(videoPlayerRefAtom, null);
+    // 重置视频查看器状态
+    store.set(videoViewerStateAtom, createInitialVideoViewerState(initialVideoId, initialVideoTitle ?? null, videosList));
+    // 更新频道相关数据
+    store.set(channelDetailAtom, channelDetail);
+    store.set(memoCardListAtom, memoCardList);
+    store.set(eligibleForQuestionEntryAtom, eligibleForQuestionEntry);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 初始化 store（用于首次加载时的 SSR hydration）
   useHydrateAtoms(
     [
       [videoViewerStateAtom, createInitialVideoViewerState(initialVideoId, initialVideoTitle ?? null, videosList)],
@@ -72,18 +85,6 @@ function VideoViewerClientInner({
 
   // 写入状态
   const closeLimitRate = useSetAtom(closeLimitRateAtom);
-  const initializeVideoViewer = useSetAtom(initializeVideoViewerAtom);
-  const setMemoCardList = useSetAtom(setMemoCardListAtom);
-
-  useEffect(() => {
-    initializeVideoViewer({
-      videoId: initialVideoId,
-      videoTitle: initialVideoTitle ?? null,
-      videos: videosList,
-    });
-    // 更新记忆卡片列表（切换视频时需要同步更新）
-    setMemoCardList(memoCardList);
-  }, []);
 
   // 键盘控制
   useKeyboardControl();

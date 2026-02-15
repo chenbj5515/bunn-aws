@@ -42,11 +42,11 @@ export const DeleteChannelPopover: FC<DeleteChannelPopoverProps> = ({
       align="center" 
       sideOffset={12}
       className="relative flex flex-col justify-end p-6"
-      style={{ width: 268, height: 158 }}
+      style={{ width: 268, height: 168 }}
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <p className="top-[42px] left-6 right-6 absolute flex justify-center items-center gap-1.5 text-black text-[15px] whitespace-nowrap">
+      <p className="top-[52px] left-6 right-6 absolute flex justify-center items-center gap-1.5 text-black text-[15px] whitespace-nowrap">
         <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
         {deleteWarningText}
       </p>
