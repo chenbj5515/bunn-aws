@@ -48,14 +48,14 @@ export function AskAIInput({
       <button
         onClick={onGrammarAnalysis}
         disabled={disabled}
-        className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-white shadow-neumorphic hover:shadow-neumorphic-button-hover rounded-full text-sm text-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 bg-white hover:bg-white disabled:opacity-50 shadow-neumorphic hover:shadow-neumorphic-button-hover px-3 py-1.5 rounded-full text-black text-sm transition-all duration-200 disabled:cursor-not-allowed"
       >
         <Sparkles className="w-3.5 h-3.5" />
-        <span>一键语法分析</span>
+        <span>{t('quickButton')}</span>
       </button>
 
       {/* 输入框 */}
-      <div className="relative flex items-center bg-white rounded-xl border border-gray-200 focus-within:border-gray-300 focus-within:shadow-sm transition-all duration-200">
+      <div className="relative flex items-center bg-white focus-within:shadow-sm border border-gray-200 focus-within:border-gray-300 rounded-xl transition-all duration-200">
         <input
           ref={inputRef}
           type="text"
@@ -66,7 +66,7 @@ export function AskAIInput({
           onCompositionEnd={() => setIsComposing(false)}
           placeholder={t('placeholder')}
           disabled={disabled}
-          className="flex-1 bg-transparent px-4 py-3 text-[15px] placeholder-gray-400 outline-none disabled:cursor-not-allowed"
+          className="flex-1 bg-transparent px-4 py-3 outline-none text-[15px] disabled:cursor-not-allowed placeholder-gray-400"
         />
         <button
           onClick={handleSubmit}

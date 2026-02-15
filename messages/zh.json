@@ -942,6 +942,7 @@
   },
   "grammarAnalysis": {
     "title": "语法分析助手",
+    "quickButton": "语法分析",
     "placeholder": "输入你的问题...",
     "close": "关闭",
     "initialMessage": "正在分析原文的语法结构和单词用法，请稍候...",

@@ -948,6 +948,7 @@
   },
   "grammarAnalysis": {
     "title": "Grammar Analysis",
+    "quickButton": "Grammar Analysis",
     "placeholder": "Enter your question...",
     "close": "Close",
     "initialMessage": "Analyzing the grammar structure and word usage of the original text, please wait...",
