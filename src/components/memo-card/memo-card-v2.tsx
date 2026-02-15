@@ -9,8 +9,6 @@ import { getTranslationByLocale } from "@/lib/translation-utils";
 import { getTimeAgo } from "./utils";
 import { RecordingControls } from "./recording-controls";
 import { Dictation } from "@/components/dictation";
-import { ContextButton } from "./context-button";
-import { GrammarAnalysisDialog } from "./grammar-analysis-dialog";
 import { AvatarSpeechBubble } from "@/components/avatar-speech-bubble";
 import { translateContext } from "./translate-context";
 import { updateMemoCardTranslation } from "./server-functions/update-translation";
@@ -80,8 +78,6 @@ export function MemoCard(props: MemoCardProps) {
 
   const translationTextRef = useRef<HTMLDivElement>(null);
   const prevTranslationTextRef = useRef<string>("");
-  const [showGrammarDialog, setShowGrammarDialog] = useState(false);
-
   const [isDictationFocused, setIsDictationFocused] = useState(false);
 
 
@@ -128,12 +124,6 @@ export function MemoCard(props: MemoCardProps) {
           {createTime ? getTimeAgo(createTime.toString(), locale) : ""}
         </div>
       )}
-      {/* 右上角：仅问号按钮 */}
-      <ContextButton
-        contextUrl={contextUrl}
-        onGrammarAnalysis={() => setShowGrammarDialog(true)}
-        showOnlyHelp
-      />
 
       {/* 顶部：头像 + 原文气泡（含小TTS） */}
       <div className="mb-[16px]">
@@ -229,14 +219,6 @@ export function MemoCard(props: MemoCardProps) {
           />
         ) : null}
       </div>
-
-      {showGrammarDialog && setDisplayCards && (
-        <GrammarAnalysisDialog
-          memoCard={{ id, originalText, translation }}
-          setDisplayCards={setDisplayCards}
-          onClose={() => setShowGrammarDialog(false)}
-        />
-      )}
     </Card>
   );
 }

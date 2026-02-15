@@ -351,26 +351,6 @@ export function OriginalText({
         }
     };
 
-    // 下划线颜色数组 - 包含多种颜色以避免相邻下划线颜色相同
-    const underlineColors = [
-        '#3b82f6B2', // 皇家蓝 (70% 透明度)
-        '#8b5cf6B2', // 紫色 (70% 透明度)
-        '#16a34aB2', // 绿色 (70% 透明度)
-        '#FFD700B2', // 黄色 (70% 透明度)
-        '#FFA500B2', // 橙色 (70% 透明度)
-        '#00C853B2', // 深绿色 (70% 透明度)
-        '#2979FFB2', // 深蓝色 (70% 透明度)
-        '#AA00FFB2', // 深紫色 (70% 透明度)
-        '#CCFF00B2'  // 闪电色 (70% 透明度)
-    ];
-
-    // 根据单词在句子中的位置获取颜色，确保相邻单词颜色不同
-    const getUnderlineColorByPosition = (wordIndex: number) => {
-        // 使用简单的哈希算法，确保相同位置的单词总是得到相同颜色
-        // 但相邻单词会得到不同颜色
-        return underlineColors[wordIndex % underlineColors.length];
-    };
-
     // 递归渲染KanaPronunciation的JSX
     const renderKanaPronunciation = (data: KanaPronunciationData | null, wordIndex: number = 0) => {
         if (!data) return null;
@@ -378,33 +358,16 @@ export function OriginalText({
         if (data.tag === 'ruby') {
             const translation = getRubyTranslation(data.text || '');
             const hasTranslation = translation !== '';
+            // has-translation 类用于 CSS hover 下划线样式
             const rubyClassName = [
                 'relative z-999 cursor-pointer',
                 hasTranslation ? 'has-translation' : '',
-                hideUnderline && hoverUnderlineOnHover && hasTranslation ? 'hover:underline' : '',
             ]
                 .filter(Boolean)
                 .join(' ');
 
-            let rubyStyle: React.CSSProperties | undefined;
-
-            if (!hideUnderline) {
-                // 默认彩色波浪下划线
-                rubyStyle = {
-                    textDecorationLine: 'underline',
-                    textDecorationStyle: 'wavy',
-                    textDecorationColor: getUnderlineColorByPosition(wordIndex),
-                    textDecorationThickness: '2px',
-                };
-            } else if (!hoverUnderlineOnHover) {
-                // 完全隐藏所有下划线
-                rubyStyle = {
-                    textDecorationLine: 'none',
-                    textDecorationStyle: 'solid',
-                    textDecorationColor: 'transparent',
-                    textDecorationThickness: '0px',
-                };
-            }
+            // 不再需要内联样式
+            const rubyStyle: React.CSSProperties | undefined = undefined;
             return (
                 <ruby
                     key={Math.random()}

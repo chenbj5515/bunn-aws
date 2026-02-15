@@ -246,3 +246,24 @@ main,
     cursor: pointer !important;
   }
 }
+
+/* 默写功能：对错判定颜色样式（放在 @layer 外以提高优先级） */
+.text-wrong {
+  /* 漏写的原文：红色，表示"你漏了这个" */
+  color: #ef4444 !important;
+  text-decoration: none !important;
+}
+
+.text-correct {
+  /* 用户多写的内容：橙色 + 删除线，表示"这个多余了" */
+  color: #f97316 !important;
+  text-decoration: line-through !important;
+}
+
+/* Ruby 单词：hover 时显示灰色下划线 */
+ruby.has-translation:hover {
+  text-decoration: underline !important;
+  text-decoration-color: #9ca3af !important;
+  text-decoration-thickness: 1.5px !important;
+  text-underline-offset: 2px !important;
+}

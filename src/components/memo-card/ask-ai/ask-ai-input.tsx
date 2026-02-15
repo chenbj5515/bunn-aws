@@ -48,7 +48,7 @@ export function AskAIInput({
       <button
         onClick={onGrammarAnalysis}
         disabled={disabled}
-        className="flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 border border-purple-200 rounded-full text-sm text-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-white shadow-neumorphic hover:shadow-neumorphic-button-hover rounded-full text-sm text-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Sparkles className="w-3.5 h-3.5" />
         <span>一键语法分析</span>

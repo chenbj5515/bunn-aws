@@ -1,7 +1,11 @@
 "use client";
 
 import { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
+import { useSession } from '@/lib/auth-client';
+import { Avatar } from '@/components/ui/avatar';
+import { AIContentRenderer } from '../ai-content-renderer';
 import type { AskAIMessage } from '@/app/[locale]/channels/[channelId]/_store/types';
 
 interface AskAIChatPreviewProps {
@@ -14,9 +18,12 @@ interface AskAIChatPreviewProps {
  * 展示对话历史预览，点击展开完整弹窗
  */
 export function AskAIChatPreview({ messages, onClick }: AskAIChatPreviewProps) {
+  const { data: sessionData } = useSession();
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [hasOverflow, setHasOverflow] = useState(false);
+
+  const userImage = sessionData?.user?.image?.toString();
 
   // 检测内容是否溢出
   useEffect(() => {
@@ -33,17 +40,6 @@ export function AskAIChatPreview({ messages, onClick }: AskAIChatPreviewProps) {
     return () => window.removeEventListener('resize', checkOverflow);
   }, [messages]);
 
-  // 简化消息内容，移除 markdown 标记
-  const simplifyContent = (content: string): string => {
-    return content
-      .replace(/#{1,6}\s/g, '') // 移除标题标记
-      .replace(/\*\*/g, '')     // 移除粗体标记
-      .replace(/\*/g, '')       // 移除斜体标记
-      .replace(/`/g, '')        // 移除代码标记
-      .replace(/\n+/g, ' ')     // 换行替换为空格
-      .trim();
-  };
-
   return (
     <div
       ref={containerRef}
@@ -51,16 +47,13 @@ export function AskAIChatPreview({ messages, onClick }: AskAIChatPreviewProps) {
       className="relative bg-white rounded-xl border border-gray-200 p-4 h-[140px] overflow-hidden cursor-pointer shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200"
     >
       {/* 对话内容 */}
-      <div ref={contentRef} className="space-y-2 text-[14px] leading-relaxed">
+      <div ref={contentRef} className="space-y-3">
         {messages.map((msg, idx) => (
-          <div key={msg.id || idx} className="flex gap-2">
-            <span className={`font-medium shrink-0 ${msg.role === 'user' ? 'text-blue-600' : 'text-purple-600'}`}>
-              {msg.role === 'user' ? '你:' : 'Bunn:'}
-            </span>
-            <span className="text-gray-700 line-clamp-2">
-              {simplifyContent(msg.content)}
-            </span>
-          </div>
+          <PreviewMessageItem
+            key={msg.id || idx}
+            message={msg}
+            userImage={userImage}
+          />
         ))}
       </div>
 
@@ -73,5 +66,67 @@ export function AskAIChatPreview({ messages, onClick }: AskAIChatPreviewProps) {
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * 预览消息项组件
+ */
+function PreviewMessageItem({
+  message,
+  userImage,
+}: {
+  message: AskAIMessage;
+  userImage?: string;
+}) {
+  const isAssistant = message.role === 'assistant';
+
+  return (
+    <div className={`flex ${isAssistant ? 'justify-start' : 'justify-end'}`}>
+      <div className={`flex ${isAssistant ? 'flex-row' : 'flex-row-reverse'} max-w-[90%] gap-2`}>
+        {/* 头像 */}
+        <div className="shrink-0">
+          {isAssistant ? (
+            <PreviewAssistantAvatar />
+          ) : (
+            <PreviewUserAvatar image={userImage} />
+          )}
+        </div>
+
+        {/* 消息内容 */}
+        <div className="text-[13px] leading-[1.7] text-gray-700">
+          <AIContentRenderer content={message.content} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 预览框 AI 头像（小尺寸）
+ */
+function PreviewAssistantAvatar() {
+  return (
+    <div className="flex flex-col items-center">
+      <span className="text-[10px] text-gray-500">Bunn</span>
+      <Image
+        src="/assets/logo.jpeg"
+        alt="Bunn"
+        width={24}
+        height={24}
+        className="rounded-[3px] w-[24px] h-[24px]"
+      />
+    </div>
+  );
+}
+
+/**
+ * 预览框用户头像（小尺寸）
+ */
+function PreviewUserAvatar({ image }: { image?: string }) {
+  return (
+    <Avatar className="w-6 h-6">
+      {image && <img src={image} alt="User" />}
+    </Avatar>
   );
 }
