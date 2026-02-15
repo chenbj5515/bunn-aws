@@ -842,7 +842,10 @@
     "yourChannels": "你的YouTube频道",
     "noChannelsFound": "未找到频道。添加YouTube笔记以在此处查看频道。",
     "switchToEditMode": "切换到编辑模式",
-    "switchToLockedMode": "切换到锁定模式"
+    "switchToLockedMode": "切换到锁定模式",
+    "deleteWarning": "这会删除频道相关的所有数据",
+    "confirmDelete": "确认删除",
+    "deleting": "删除中..."
   },
   "ChannelDetail": {
     "backToChannels": "返回频道",

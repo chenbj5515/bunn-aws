@@ -65,6 +65,7 @@ export async function insertMemoCard(
     channelId: ctx.channelId,
     videoId: ctx.videoId,
     rubyTranslations: Object.keys(rubyTranslations).length > 0 ? rubyTranslations : null,
+    avatarUrl: ctx.avatarUrl || null,
   }).returning();
 
   if (!newCard) return null;

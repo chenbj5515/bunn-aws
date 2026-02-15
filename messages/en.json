@@ -853,7 +853,10 @@
     "yourChannels": "Your YouTube Channels",
     "noChannelsFound": "No channels found. Add YouTube notes to see channels here.",
     "switchToEditMode": "Switch to Edit Mode",
-    "switchToLockedMode": "Switch to Locked Mode"
+    "switchToLockedMode": "Switch to Locked Mode",
+    "deleteWarning": "This will delete all data related to this channel",
+    "confirmDelete": "Confirm Delete",
+    "deleting": "Deleting..."
   },
   "ChannelDetail": {
     "backToChannels": "Back to Channels",

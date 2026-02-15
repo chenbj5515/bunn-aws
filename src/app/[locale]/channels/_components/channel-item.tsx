@@ -4,10 +4,11 @@ import { FC, useState, useRef } from 'react';
 import Image from 'next/image';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { motion } from 'framer-motion';
-import { Trash } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { updateChannelName } from '../_server-functions/update-channel-name';
 import { deleteChannel } from '../_server-functions/delete-channel';
 import type { Channel, ChannelPosition } from './channels-client';
+import { DeleteChannelPopover } from './delete-channel-popover';
 
 // ============================================
 // 类型定义
@@ -34,8 +35,11 @@ export const ChannelItem: FC<ChannelItemProps> = ({
   onClick,
   onError,
 }) => {
+  const t = useTranslations('Channels');
   const [isHovered, setIsHovered] = useState(false);
   const [editingName, setEditingName] = useState(channel.channelName);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const isDraggingRef = useRef(false);
   const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -70,9 +74,9 @@ export const ChannelItem: FC<ChannelItemProps> = ({
     await updateChannelName(channel.channelId, editingName);
   };
 
-  // 删除频道
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  // 确认删除频道
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
     onDelete(channel.channelId);
 
     try {
@@ -82,6 +86,9 @@ export const ChannelItem: FC<ChannelItemProps> = ({
       }
     } catch (error) {
       onError(error instanceof Error ? error.message : '删除频道失败');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -104,11 +111,21 @@ export const ChannelItem: FC<ChannelItemProps> = ({
         {/* 头像 */}
         <motion.div
           className="relative rounded-full w-[80px] h-[80px]"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={showDeleteConfirm ? undefined : { scale: 1.1 }}
+          whileTap={showDeleteConfirm ? undefined : { scale: 0.95 }}
         >
           <Avatar avatarUrl={channel.avatarUrl} channelName={channel.channelName} />
-          {isHovered && <DeleteButton onClick={handleDelete} />}
+          {(isHovered || showDeleteConfirm) && (
+            <DeleteChannelPopover
+              open={showDeleteConfirm}
+              onOpenChange={setShowDeleteConfirm}
+              isDeleting={isDeleting}
+              onConfirm={handleConfirmDelete}
+              deleteWarningText={t('deleteWarning')}
+              confirmDeleteText={t('confirmDelete')}
+              deletingText={t('deleting')}
+            />
+          )}
         </motion.div>
 
         {/* 名称输入框 */}
@@ -154,13 +171,3 @@ const Avatar: FC<{ avatarUrl?: string | null; channelName: string }> = ({ avatar
   );
 };
 
-const DeleteButton: FC<{ onClick: (e: React.MouseEvent) => void }> = ({ onClick }) => (
-  <div
-    className="-top-2 -right-2 z-20 absolute bg-white hover:bg-red-50 shadow-md p-2 rounded-full cursor-pointer"
-    onClick={onClick}
-    onMouseDown={(e) => e.stopPropagation()}
-    title="删除频道"
-  >
-    <Trash className="w-4 h-4 text-red-500" />
-  </div>
-);
