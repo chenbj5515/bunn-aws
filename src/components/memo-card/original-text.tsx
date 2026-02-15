@@ -306,12 +306,12 @@ export function OriginalText({
                             style={{ padding: '2px' }}
                         >
                             <img
-                                src={selectedCharacter.avatarUrl || '/icon/youtube.png'}
+                                src={selectedCharacter.avatarUrl || '/images/youtube.png'}
                                 alt={selectedCharacter.name}
                                 className="inline-block mr-1 rounded-full w-10 h-10 object-cover"
                                 onError={(e) => {
                                     // 图片加载失败时使用占位图
-                                    (e.target as HTMLImageElement).src = '/icon/youtube.png';
+                                    (e.target as HTMLImageElement).src = '/images/youtube.png';
                                 }}
                             />：
                             <span className="-top-5 left-[33%] absolute text-gray-600 text-xs text-center whitespace-nowrap -translate-x-1/2">

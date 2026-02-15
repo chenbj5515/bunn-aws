@@ -22,7 +22,7 @@ export function AskAIContextDisplay({ contextText }: AskAIContextDisplayProps) {
               Bunn
             </span>
             <Image
-              src="/assets/logo.jpeg"
+              src="/images/logo.jpeg"
               alt="Bunn"
               width={32}
               height={32}

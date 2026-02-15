@@ -25,19 +25,19 @@ export function ChannelDock({ className }: ChannelDockProps) {
     {
       id: "channels_01",
       name: "マリマリマリー",
-      image: "/assets/slogans/channels_01.png",
+      image: "/images/channels_01.png",
       url: "https://www.youtube.com/@marymarymary80s"
     },
     {
       id: "channels_02",
       name: "ピグマリオン",
-      image: "/assets/slogans/channels_02.png",
+      image: "/images/channels_02.png",
       url: "https://www.youtube.com/@pygmalion_123"
     },
     {
       id: "channels_03",
       name: "私立パラの丸高校",
-      image: "/assets/slogans/channels_03.png",
+      image: "/images/channels_03.png",
       url: "https://www.youtube.com/@parako"
     }
   ];

@@ -36,7 +36,7 @@ export function AvatarSpeechBubble({
 }: AvatarSpeechBubbleProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const t = useTranslations('memoCards');
-  const [localAvatar, setLocalAvatar] = useState<string>(avatarUrl || '/icon/youtube.png');
+  const [localAvatar, setLocalAvatar] = useState<string>(avatarUrl || '/images/youtube.png');
   const [showHint, setShowHint] = useState<boolean>(false);
   const [hintKey, setHintKey] = useState<'pasteHint' | 'noImage'>('pasteHint');
   const [uploading, setUploading] = useState<boolean>(false);
@@ -74,7 +74,7 @@ export function AvatarSpeechBubble({
   };
 
   useEffect(() => {
-    setLocalAvatar(avatarUrl || '/icon/youtube.png');
+    setLocalAvatar(avatarUrl || '/images/youtube.png');
   }, [avatarUrl]);
 
   // 点击头像显示提示

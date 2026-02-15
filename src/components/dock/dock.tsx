@@ -18,7 +18,15 @@ interface AppIconData {
     backgroundColor?: string;
 }
 
-export function Dock() {
+interface DockProps {
+    isLoggedIn?: boolean;
+}
+
+export function Dock({ isLoggedIn = false }: DockProps) {
+    // 未登录时不显示 Dock
+    if (!isLoggedIn) {
+        return null;
+    }
     const router = useRouter()
     const params = useParams()
     const locale = params.locale || "zh"
@@ -29,19 +37,19 @@ export function Dock() {
     const appIcons: AppIconData[] = [
         {
             name: "Card",
-            icon: "/icon/card.png",
+            icon: "/images/card.png",
             onClick: () => router.push(`/${locale}/daily-task`),
             tooltip: t('dailyTasks')
         },
         {
             name: "YouTube",
-            icon: "/icon/youtube.png",
+            icon: "/images/youtube.png",
             onClick: () => router.push(`/${locale}/channels`),
             tooltip: t('youtube')
         },
         {
             name: "Safari",
-            icon: "/assets/red.png",
+            icon: "/images/red.png",
             onClick: () => router.push(`/${locale}/safari`),
             tooltip: t('safari')
         },

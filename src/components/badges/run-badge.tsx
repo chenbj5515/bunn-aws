@@ -129,7 +129,7 @@ export function RunBadge({
             }}
           >
             <img 
-              src="/icon/brand.png" 
+              src="/images/brand.png" 
               alt="Bunn" 
               style={{ 
                 width: size === 'xs' ? '42%' : size === 'sm' ? '42%' : size === 'lg' ? '42%' : '42%',

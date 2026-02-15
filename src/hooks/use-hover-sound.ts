@@ -29,7 +29,7 @@ type HoverHandlers = {
   onTouchStart: TouchEventHandler;
 };
 
-const DEFAULT_SRC = "/assets/audios/hover.m4a";
+const DEFAULT_SRC = "/audios/hover.m4a";
 const DEFAULT_VOLUME = 1;
 const DEFAULT_PLAYBACK_RATE = 1;
 const DEFAULT_PLAY_FROM_START = true;

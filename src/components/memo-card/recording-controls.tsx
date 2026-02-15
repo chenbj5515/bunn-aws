@@ -255,7 +255,7 @@ export function RecordingControls({ weakBorder = false, setDisplayCards, id }: R
                     className={`flex justify-center items-center bg-[rgb(247, 247, 247)] ${state === "recording" ? "shadow-neumorphic-button-hover" : "shadow-neumorphic"} hover:shadow-neumorphic-button-hover rounded-full w-[64px] h-[64px] transition-all cursor-pointer`}
                 >
                     {state === "idle" && (
-                        <Image src="/icon/microphone.png" alt="mic" width={32} height={32} />
+                        <Image src="/images/microphone.png" alt="mic" width={32} height={32} />
                     )}
 
                     {state === "recording" && (

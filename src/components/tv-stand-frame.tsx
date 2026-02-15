@@ -29,7 +29,7 @@ export function TvStandFrame({ children, marginTop = 0 }: TvStandFrameProps) {
       {/* 支腿 */}
       <div className="bottom-[-60px] left-[15%] absolute">
         <Image 
-          src="/assets/tv-stand-left.png" 
+          src="/images/tv-stand-left.png" 
           alt="TV Stand Left" 
           width={120} 
           height={120}
@@ -38,7 +38,7 @@ export function TvStandFrame({ children, marginTop = 0 }: TvStandFrameProps) {
       </div>
       <div className="right-[15%] bottom-[-60px] absolute">
         <Image 
-          src="/assets/tv-stand-right.png" 
+          src="/images/tv-stand-right.png" 
           alt="TV Stand Right" 
           width={120} 
           height={120}

@@ -10,11 +10,11 @@ export function MessageBubble({ avatarUrl, avatarAlt, text }: MessageBubbleProps
       <div className="flex items-start gap-3 max-w-[80%]">
         {/* 角色头像 */}
         <img
-          src={avatarUrl || '/icon/youtube.png'}
+          src={avatarUrl || '/images/youtube.png'}
           alt={avatarAlt}
           className="border border-[#e5e7eb] rounded-full w-16 h-16 object-cover"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = '/icon/youtube.png';
+            (e.target as HTMLImageElement).src = '/images/youtube.png';
           }}
         />
         {/* 消息气泡 */}

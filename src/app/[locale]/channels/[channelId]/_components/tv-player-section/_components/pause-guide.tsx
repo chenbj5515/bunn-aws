@@ -115,7 +115,7 @@ const GuideImage = forwardRef<HTMLImageElement, GuideImageProps>(({ positionClas
   return (
     <img
       ref={ref}
-      src="/assets/slogans/indicator-left.png"
+      src="/images/indicator-left.png"
       alt="指示箭头"
       className={`${positionClass} bottom-[150px] absolute w-[206px] h-[128px] translate-x-[20px] pointer-events-none`}
     />

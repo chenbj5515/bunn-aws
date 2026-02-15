@@ -110,7 +110,7 @@ function PreviewAssistantAvatar() {
     <div className="flex flex-col items-center">
       <span className="text-[10px] text-gray-500">Bunn</span>
       <Image
-        src="/assets/logo.jpeg"
+        src="/images/logo.jpeg"
         alt="Bunn"
         width={24}
         height={24}

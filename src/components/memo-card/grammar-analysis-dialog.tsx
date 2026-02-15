@@ -276,7 +276,7 @@ export function GrammarAnalysisDialog({ memoCard, setDisplayCards, onClose, isMo
                               <div className="flex flex-col items-center">
                                 <span className="-mt-[4px] font-sans text-[12px] text-center">Bunn</span>
                                 <Image
-                                  src="/assets/logo.jpeg"
+                                  src="/images/logo.jpeg"
                                   alt="Bunn"
                                   width={32}
                                   height={32}
@@ -312,7 +312,7 @@ export function GrammarAnalysisDialog({ memoCard, setDisplayCards, onClose, isMo
                                   <>
                                     <span className="-mt-[4px] font-sans text-[12px] text-center">Bunn</span>
                                     <Image
-                                      src="/assets/logo.jpeg"
+                                      src="/images/logo.jpeg"
                                       alt="Bunn"
                                       width={32}
                                       height={32}

@@ -13,6 +13,7 @@ import { LoadingButton } from "@/components/ui/loading-button"
 import * as recMod from './lib/recorder'
 import { Separator } from "@/components/ui/separator"
 import { createPortalSession } from "./server-functions/create-portal-session"
+import { revalidateAfterLogout } from "./server-functions/logout-action"
 import React, { type ReactElement } from "react"
 import dayjs from "dayjs"
 import { UserBadge } from "@/components/badges/user-badge"
@@ -175,6 +176,7 @@ export default function UserPanel({ user, subscription, initialAchievementPoints
 
     async function handleLogout() {
         await signOut()
+        await revalidateAfterLogout() // 清除服务端缓存，确保获取最新的登录状态
         router.push(`/${locale}/home`)
     }
 
@@ -645,7 +647,7 @@ export default function UserPanel({ user, subscription, initialAchievementPoints
                 <div className="group relative flex items-center hover:bg-gray-100 rounded-md h-12 overflow-hidden transition-colors duration-200 cursor-pointer" onClick={handlePlaySample}>
                     <div className="z-1 relative flex items-center py-2 w-full">
                         <div className="group relative mr-3 w-10 h-10">
-                            <img src="/assets/fresh-haruka.png" alt="fresh-haruka" className="rounded-md w-10 h-10" />
+                            <img src="/images/fresh-haruka.png" alt="fresh-haruka" className="rounded-md w-10 h-10" />
                             <div className={`absolute inset-0 bg-[#00000033] backdrop-blur-sm rounded-md pointer-events-none ${(isSamplePlaying || isSamplePaused) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-200`} />
                             <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
                                 {isSamplePlaying && !isSamplePaused ? (
@@ -688,7 +690,7 @@ export default function UserPanel({ user, subscription, initialAchievementPoints
                         <div className="group relative flex items-center hover:bg-gray-100 rounded-md h-12 overflow-hidden transition-colors duration-200 cursor-pointer" onClick={handlePlayMESample}>
                             <div className="z-1 relative flex items-center py-2 w-full">
                                 <div className="group relative mr-3 w-10 h-10">
-                                    <img src="/assets/me.png" alt="me" className="rounded-md w-10 h-10" />
+                                    <img src="/images/me.png" alt="me" className="rounded-md w-10 h-10" />
                                     <div className={`absolute inset-0 bg-[#00000033] backdrop-blur-sm rounded-md pointer-events-none ${(isMESamplePlaying || isMESamplePaused || isMESampleLoading) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-200`} />
                                     <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
                                         {isMESampleLoading ? (

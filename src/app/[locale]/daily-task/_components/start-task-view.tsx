@@ -17,7 +17,7 @@ export function StartTaskView({ onStart }: StartTaskViewProps) {
 
     return (
         <div className="flex justify-center items-center bg-gray-50 w-full h-full">
-            <div className="space-y-8 -mt-16 text-center">
+            <div className="space-y-[42px] -mt-16 text-center">
                 <TypingAnimation
                     startOnView={true}
                     className="font-bold text-black text-5xl"
@@ -25,11 +25,12 @@ export function StartTaskView({ onStart }: StartTaskViewProps) {
                 >
                     {tDaily("startPrompt")}
                 </TypingAnimation>
-                <div className={`flex justify-center opacity-0 mt-[22px] ${CSS_ANIMATION_CLASSES.FADE_IN_UP}`}>
+                <div className={`flex justify-center opacity-0 mt-[42px] ${CSS_ANIMATION_CLASSES.FADE_IN_UP}`}>
                     <CtaButton
                         text={tDaily("letsGo")}
                         baseColor="#16a34a"
                         onClick={onStart}
+                        width={180}
                     />
                 </div>
             </div>

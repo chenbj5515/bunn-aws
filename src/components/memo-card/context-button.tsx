@@ -61,7 +61,7 @@ export const ContextButton: FC<ContextButtonProps> = ({
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <Image
-                src="/icon/play-audio.svg"
+                src="/images/play-audio.svg"
                 alt="play audio"
                 width={24}
                 height={20}
@@ -104,7 +104,7 @@ export const ContextButton: FC<ContextButtonProps> = ({
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <Image
-                src="/icon/play-audio.svg"
+                src="/images/play-audio.svg"
                 alt="play audio"
                 width={24}
                 height={20}
@@ -128,7 +128,7 @@ export const ContextButton: FC<ContextButtonProps> = ({
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <Image
-                    src="/icon/play-audio.svg"
+                    src="/images/play-audio.svg"
                     alt="play audio"
                     width={24}
                     height={20}
@@ -169,7 +169,7 @@ export const ContextButton: FC<ContextButtonProps> = ({
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
           <Image
-            src="/icon/play-audio.svg"
+            src="/images/play-audio.svg"
             alt="play audio"
             width={24}
             height={20}

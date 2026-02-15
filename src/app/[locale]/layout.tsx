@@ -4,8 +4,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
-import Header from "@/components/header";
-import { Dock } from "@/components/dock/dock";
+import { HeaderProvider } from "@/components/header-provider";
+import { FooterWrapper } from "@/components/footer-wrapper";
+import { DockProvider } from "@/components/dock/dock-provider";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -22,6 +23,11 @@ export const metadata: Metadata = {
   title: "Bunn AWS - Full Stack Application",
   description:
     "A full-stack application built with Next.js, TailwindCSS, next-intl, Drizzle ORM, and Better Auth",
+  icons: {
+    icon: "/images/logo.jpeg",
+    shortcut: "/images/logo.jpeg",
+    apple: "/images/logo.jpeg",
+  },
 };
 
 // Generate static params for all locales
@@ -54,9 +60,12 @@ export default async function LocaleLayout({ children, params }: Props) {
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          <Dock />
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <HeaderProvider />
+            <DockProvider />
+            <main className="flex-1">{children}</main>
+            <FooterWrapper />
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>

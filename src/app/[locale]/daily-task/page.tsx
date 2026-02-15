@@ -78,9 +78,11 @@ export default async function DailyTaskPage() {
         });
 
     return (
-        <DailyTaskClient 
-            extendedMemoCards={result} 
-            initialAchievementPoints={initialAchievementPoints}
-        />
+        <div className="h-[calc(100vh-64px)]">
+            <DailyTaskClient 
+                extendedMemoCards={result} 
+                initialAchievementPoints={initialAchievementPoints}
+            />
+        </div>
     );
 }
