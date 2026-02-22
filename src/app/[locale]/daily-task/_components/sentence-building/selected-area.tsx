@@ -20,7 +20,7 @@ export function SelectedArea({
   onTokenClick,
 }: SelectedAreaProps) {
   return (
-    <div className="min-h-[54px]">
+    <div className="pb-2.5">
       <div className="flex flex-wrap items-start">
         {selectedSegmentIds.map((segmentId) => {
           const segment = availableSegments.find((s) => s.id === segmentId);
@@ -31,11 +31,12 @@ export function SelectedArea({
               key={`selected-${segmentId}`}
               onClick={showResult ? undefined : () => onTokenClick(segmentId)}
               className={`
-                shrink-0 bg-blue-50 shadow-neumorphic-weak px-3 py-2 border border-blue-300 rounded-lg
-                font-medium text-blue-700 text-lg m-1
+                shrink-0 bg-white px-3 py-2 border border-[#E1E8F0] rounded-xl m-1
+                text-[18px] font-medium text-[#333C4E]
+                transition-all duration-200 ease-out
                 ${showResult
-                  ? 'cursor-default'
-                  : 'hover:bg-blue-100 hover:shadow-neumorphic-button-hover cursor-pointer transition-all duration-200'
+                  ? 'cursor-default shadow-[0_2px_4px_rgba(0,0,0,0.05)]'
+                  : 'cursor-pointer shadow-[0_2px_4px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_4px_12px_rgba(180,180,180,0.4)] hover:border-[#ccc]'
                 }
               `}
             >

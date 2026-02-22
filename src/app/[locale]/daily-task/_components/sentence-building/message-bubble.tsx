@@ -27,7 +27,7 @@ export function MessageBubble({
         <img
           src={avatarUrl || '/images/youtube.png'}
           alt={avatarAlt}
-          className="shrink-0 border border-[#e5e7eb] rounded-full w-16 h-16 object-cover"
+          className="border border-[#e5e7eb] rounded-full w-16 h-16 object-cover shrink-0"
           onError={(e) => {
             (e.target as HTMLImageElement).src = '/images/youtube.png';
           }}
@@ -42,7 +42,7 @@ export function MessageBubble({
               <button
                 onClick={onPlayTTS}
                 disabled={isPlaying}
-                className="flex shrink-0 justify-center items-center hover:bg-gray-50 rounded-full w-9 h-9 transition-colors"
+                className="flex justify-center items-center hover:bg-gray-50 rounded-full w-9 h-9 transition-colors shrink-0"
               >
                 <svg
                   className={`w-6 h-6 text-[#0034df] ${isPlaying ? 'animate-pulse' : ''}`}
@@ -53,7 +53,7 @@ export function MessageBubble({
                 </svg>
               </button>
             )}
-            <span className="font-system-ui text-base leading-relaxed">
+            <span className="text-base leading-relaxed" style={{ fontFamily: "inherit" }}>
               {translation}
             </span>
           </div>

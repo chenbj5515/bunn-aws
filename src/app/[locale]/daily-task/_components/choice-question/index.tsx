@@ -134,7 +134,7 @@ export function ChoiceQuestion({ memoCard, onComplete }: ChoiceQuestionProps) {
   }
 
   return (
-    <div className="flex flex-col bg-[#f4f4f4] mx-auto p-4 rounded-2xl w-[435px] min-h-[600px]">
+    <div className="flex flex-col bg-white mx-auto p-4 rounded-2xl w-[435px] min-h-[600px]">
       {/* 原文消息气泡 */}
       <MessageBubble
         avatarUrl={memoCard.avatarUrl || ''}

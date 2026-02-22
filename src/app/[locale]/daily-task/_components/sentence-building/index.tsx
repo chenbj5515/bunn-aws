@@ -198,7 +198,7 @@ export function SentenceBuilding({ memoCard, onComplete }: SentenceBuildingProps
   // 没有分词数据：显示错误提示
   if (!hasWordSegmentation) {
     return (
-      <div className="flex flex-col justify-center items-center bg-[#f4f4f4] mx-auto p-8 rounded-2xl w-[435px] min-h-[300px]">
+      <div className="flex flex-col justify-center items-center bg-white mx-auto p-8 rounded-[24px] w-[500px] min-h-[300px]" style={{ fontFamily: "'PingFang SC', 'Hiragino Sans', system-ui, sans-serif" }}>
         <p className="text-gray-500 text-lg">{t('noSegmentationData')}</p>
       </div>
     );
@@ -207,14 +207,17 @@ export function SentenceBuilding({ memoCard, onComplete }: SentenceBuildingProps
   // 加载中状态
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center bg-[#f4f4f4] mx-auto p-8 rounded-2xl w-[435px] min-h-[300px]">
+      <div className="flex flex-col justify-center items-center bg-white mx-auto p-8 rounded-[24px] w-[500px] min-h-[300px]" style={{ fontFamily: "'PingFang SC', 'Hiragino Sans', system-ui, sans-serif" }}>
         <div className="border-4 border-gray-300 border-t-blue-500 rounded-full w-8 h-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col bg-[#f4f4f4] mx-auto p-4 rounded-2xl max-w-3xl min-h-[600px]">
+    <div
+      className="flex flex-col bg-white mx-auto p-8 rounded-[24px] w-[500px] min-h-[600px]"
+      style={{ fontFamily: "'PingFang SC', 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', system-ui, sans-serif" }}
+    >
       {/* 头像气泡区 - 展示翻译 */}
       <MessageBubble
         avatarUrl={memoCard.avatarUrl || ""}
@@ -227,7 +230,7 @@ export function SentenceBuilding({ memoCard, onComplete }: SentenceBuildingProps
       {/* 主要内容区域 */}
       <div className="flex flex-col flex-1 gap-4 mt-6">
         {/* 提示文本 */}
-        <p className="font-medium text-xl text-center">{t('characterSaid', { character: 'TA' })}</p>
+        <p className="text-xl text-center text-[#4a5568] font-medium mb-5">{t('characterSaid', { character: 'TA' })}</p>
 
         {/* 选中区 */}
         <SelectedArea
@@ -238,7 +241,7 @@ export function SentenceBuilding({ memoCard, onComplete }: SentenceBuildingProps
         />
 
         {/* 间隔线 */}
-        <hr className="border-[#e5e7eb] border-0 border-t" />
+        <hr className="border-[#D1D9E6] border-0 border-t-2 border-dashed my-1" />
 
         {/* 备选区 */}
         <AvailableArea
