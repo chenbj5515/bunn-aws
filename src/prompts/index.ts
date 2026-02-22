@@ -16,15 +16,12 @@ export {
 } from './subtitles';
 export type { SubtitleResult } from './subtitles';
 
-// 记忆卡片（翻译和注音）
+// 记忆卡片（翻译和分词）
 export {
   getTranslationPrompt,
-  getRubyPrompt,
-  getRubyTranslationsPrompt,
+  getSegmentationPrompt,
   processTranslationContent,
-  processRubyContent,
-  extractRubyItems,
-  processRubyTranslationsContent,
+  processSegmentationContent,
 } from './memo-card';
 export type { TranslationResult } from './memo-card';
 

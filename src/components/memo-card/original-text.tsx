@@ -63,36 +63,30 @@ const debounce = <F extends (...args: any[]) => any>(func: F, wait: number) => {
     };
 };
 
-type KanaPronunciationData = {
-    tag: string;
-    children?: (string | { tag: string; text: string; rt: string })[];
-    text?: string;
-    rt?: string;
-};
+import type { WordSegmentationV2, Segment } from "@/types/extended-memo-card";
 
 interface OriginalTextProps {
     selectedCharacter?: Character | null;
     isFocused?: boolean;
     originalTextRef?: React.MutableRefObject<HTMLDivElement | null>;
-    rubyOriginalTextRecord?: any;
-    rubyTranslationRecord?: any;
+    wordSegmentation?: WordSegmentationV2 | null;
     id?: string;
     onOpenCharacterDialog?: () => void;
     onRemoveCharacter?: () => void;
     isInChannelsOrTimeline?: boolean;
-    noOffset?: boolean; // 控制是否移除42px的左侧偏移
-    tooltipTheme?: 'default' | 'frosted'; // 控制单词悬浮窗的主题样式
-    hideUnderline?: boolean; // 控制是否隐藏ruby单词的下划波浪线
-    hoverUnderlineOnHover?: boolean; // 控制在隐藏彩色下划线时，hover 是否显示普通下划线
+    noOffset?: boolean;
+    tooltipTheme?: 'default' | 'frosted';
+    hideUnderline?: boolean;
+    hoverUnderlineOnHover?: boolean;
     className?: string;
+    originalText?: string;
 }
 
 export function OriginalText({
     selectedCharacter,
     isFocused = false,
     originalTextRef,
-    rubyOriginalTextRecord,
-    rubyTranslationRecord = {},
+    wordSegmentation,
     id,
     onOpenCharacterDialog,
     onRemoveCharacter,
@@ -102,6 +96,7 @@ export function OriginalText({
     hideUnderline = false,
     hoverUnderlineOnHover = false,
     className,
+    originalText,
 }: OriginalTextProps) {
     const t = useTranslations('memoCard');
     const locale = useLocale();
@@ -112,26 +107,16 @@ export function OriginalText({
     // 使用传入的 ref 或本地创建的 ref
     const effectiveRef = originalTextRef || localOriginalTextRef;
 
-    // 根据当前语言获取Ruby元素的翻译
-    const getRubyTranslation = (word: string): string => {
-        const translationData = rubyTranslationRecord[word];
-        if (!translationData) return '';
-
-        // 如果是新格式（对象格式），根据locale获取翻译
-        if (typeof translationData === 'object' && translationData !== null) {
-            // 对于zh-TW，如果没有专门的翻译，使用zh的翻译
-            if (locale === 'zh-TW' && !translationData['zh-TW']) {
-                return translationData['zh'] || translationData['en'] || '';
-            }
-            return translationData[locale] || translationData['en'] || '';
+    // 根据当前语言获取 segment 的翻译
+    const getSegmentTranslation = (segment: Segment): string => {
+        if (!segment.translations) return '';
+        
+        const translations = segment.translations;
+        // 对于 zh-TW，如果没有专门的翻译，使用 zh 的翻译
+        if (locale === 'zh-TW' && !translations['zh-TW']) {
+            return translations['zh'] || translations['en'] || '';
         }
-
-        // 如果是旧格式（字符串格式），直接返回（向后兼容）
-        if (typeof translationData === 'string') {
-            return translationData;
-        }
-
-        return '';
+        return translations[locale as keyof typeof translations] || translations['en'] || '';
     };
 
     // Tooltip 相关状态
@@ -188,16 +173,17 @@ export function OriginalText({
     };
 
     // 显示单词tooltip
-    const showTooltip = (word: string, meaning: string, kanaPronunciation: string, event: React.MouseEvent) => {
+    const showTooltip = (segment: Segment, event: React.MouseEvent) => {
         const element = event.currentTarget as HTMLElement;
         const rect = element.getBoundingClientRect();
+        const meaning = getSegmentTranslation(segment);
 
         // 直接使用相对于视口的锚点信息，后续由 Tooltip 自己做防溢出布局
         setGlobalTooltipState({
             ownerId: instanceId as number,
-            word,
+            word: segment.word,
             meaning,
-            kanaPronunciation: kanaPronunciation || undefined,
+            kanaPronunciation: segment.ruby || undefined,
             anchorRect: {
                 top: rect.top,
                 left: rect.left,
@@ -351,14 +337,13 @@ export function OriginalText({
         }
     };
 
-    // 递归渲染KanaPronunciation的JSX
-    const renderKanaPronunciation = (data: KanaPronunciationData | null, wordIndex: number = 0) => {
-        if (!data) return null;
+    // 渲染单个 segment
+    const renderSegment = (segment: Segment, index: number) => {
+        const hasRuby = !!segment.ruby;
+        const hasTranslation = !!segment.translations;
+        const translation = getSegmentTranslation(segment);
 
-        if (data.tag === 'ruby') {
-            const translation = getRubyTranslation(data.text || '');
-            const hasTranslation = translation !== '';
-            // has-translation 类用于 CSS hover 下划线样式
+        if (hasRuby) {
             const rubyClassName = [
                 'relative z-999 cursor-pointer',
                 hasTranslation ? 'has-translation' : '',
@@ -366,50 +351,45 @@ export function OriginalText({
                 .filter(Boolean)
                 .join(' ');
 
-            // 不再需要内联样式
-            const rubyStyle: React.CSSProperties | undefined = undefined;
             return (
                 <ruby
-                    key={Math.random()}
-                    onClick={() => handleRubyClick(data.rt || data.text || '')}
-                    onMouseEnter={hasTranslation ?
-                        (e) => showTooltip(data.text || '', translation, data.rt || '', e) :
-                        undefined
-                    }
+                    key={index}
+                    onClick={() => handleRubyClick(segment.ruby || segment.word)}
+                    onMouseEnter={hasTranslation ? (e) => showTooltip(segment, e) : undefined}
                     className={rubyClassName}
-                    style={rubyStyle}
                 >
-                    {data.text}
-                    <rt>{data.rt}</rt>
+                    {segment.word}
+                    <rt>{segment.ruby}</rt>
                 </ruby>
             );
         }
 
-        if (data.tag === 'span' && data.children) {
-            let rubyIndex = 0; // 跟踪ruby元素的索引
-            return (
-                <span>
-                    {renderOriginalTextLabel()}
-                    {data.children.map((child, index) => {
-                        if (typeof child === 'string') {
-                            return <React.Fragment key={index}>{child}</React.Fragment>;
-                        } else {
-                            // 只为ruby元素递增索引，确保每个ruby元素有唯一的索引
-                            const currentIndex = child.tag === 'ruby' ? rubyIndex++ : wordIndex;
-                            return renderKanaPronunciation(child, currentIndex);
-                        }
-                    })}
-                </span>
-            );
-        }
+        return <React.Fragment key={index}>{segment.word}</React.Fragment>;
+    };
 
-        return null;
+    // 渲染所有 segments
+    const renderSegments = (segments: Segment[]) => {
+        return (
+            <span>
+                {renderOriginalTextLabel()}
+                {segments.map((segment, index) => renderSegment(segment, index))}
+            </span>
+        );
     };
 
     // 使用useMemo缓存渲染结果
     const memoizedRenderedContent = useMemo(() => {
-        return renderKanaPronunciation(rubyOriginalTextRecord);
-    }, [selectedCharacter, isHoveringCharacter, rubyOriginalTextRecord]);
+        if (wordSegmentation?.segments) {
+            return renderSegments(wordSegmentation.segments);
+        }
+        // 如果没有 wordSegmentation，显示原始文本
+        return (
+            <span>
+                {renderOriginalTextLabel()}
+                {originalText || ''}
+            </span>
+        );
+    }, [selectedCharacter, isHoveringCharacter, wordSegmentation, originalText]);
 
     return (
         <div ref={containerRef} className={`relative ${noOffset ? 'w-full' : 'w-[calc(100%-42px)]'}`}>

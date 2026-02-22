@@ -32,24 +32,25 @@ export const extractSubtitlesOutput = z.union([
 export type ExtractSubtitlesInput = z.infer<typeof extractSubtitlesInput>;
 export type ExtractSubtitlesOutput = z.infer<typeof extractSubtitlesOutput>;
 
-// --- 翻译和注音 ---
-export const translateAndRubyInput = z.object({
+// --- 翻译和分词 ---
+import { wordSegmentationV2Schema } from '@/types/extended-memo-card';
+
+export const translateAndSegmentInput = z.object({
   text: z.string().min(1, '文本不能为空').max(1000, '文本过长'),
   fallbackLocale: z.string().default('zh'),
 });
 
-export const translateAndRubyOutput = z.union([
+export const translateAndSegmentOutput = z.union([
   z.object({
     errorCode: z.null(),
     translation: z.record(z.string(), z.string()),
-    rubyHtml: z.string(),
-    rubyTranslations: z.record(z.string(), z.record(z.string(), z.string())),
+    wordSegmentation: wordSegmentationV2Schema,
   }),
   z.object({ errorCode: z.number() }),
 ]);
 
-export type TranslateAndRubyInput = z.infer<typeof translateAndRubyInput>;
-export type TranslateAndRubyOutput = z.infer<typeof translateAndRubyOutput>;
+export type TranslateAndSegmentInput = z.infer<typeof translateAndSegmentInput>;
+export type TranslateAndSegmentOutput = z.infer<typeof translateAndSegmentOutput>;
 
 // --- 单词干扰项 ---
 export const generateWordDistractionsInput = z.object({

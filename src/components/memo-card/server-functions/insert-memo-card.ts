@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db/index";
 import { memoCard, userActionLogs } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
+import type { WordSegmentationV2 } from "@/types/extended-memo-card";
 
 // ============================================
 // Types
@@ -43,8 +44,7 @@ function schedulePostProcessing(
 export async function insertMemoCard(
   originalText: string,
   translation: Record<string, string> | string,
-  pronunciation: string,
-  rubyTranslations: Record<string, Record<string, string>>,
+  wordSegmentation: WordSegmentationV2,
   contextUrl: string,
   ctx: YouTubeContext
 ) {
@@ -57,14 +57,13 @@ export async function insertMemoCard(
     reviewTimes: 0,
     translation: typeof translation === 'string' ? translation : JSON.stringify(translation),
     userId: session.user.id,
-    kanaPronunciation: pronunciation ? JSON.parse(pronunciation) : null,
+    wordSegmentation,
     createTime: sql`CURRENT_TIMESTAMP`,
     updateTime: sql`CURRENT_TIMESTAMP`,
     contextUrl,
     platform: 'youtube',
     channelId: ctx.channelId,
     videoId: ctx.videoId,
-    rubyTranslations: Object.keys(rubyTranslations).length > 0 ? rubyTranslations : null,
     avatarUrl: ctx.avatarUrl || null,
   }).returning();
 

@@ -7,14 +7,14 @@
 
 import { router } from '../../init';
 import { extractSubtitles } from './subtitles';
-import { translateAndRuby } from './memo-card';
+import { translateAndSegment } from './memo-card';
 import { generateWordDistractions } from './word-distractions';
 import { generateMultilingualMeaning } from './multilingual-meaning';
 import { translateQuestion } from './translate-question';
 
 export const aiRouter = router({
   extractSubtitles,
-  translateAndRuby,
+  translateAndSegment,
   generateWordDistractions,
   generateMultilingualMeaning,
   translateQuestion,

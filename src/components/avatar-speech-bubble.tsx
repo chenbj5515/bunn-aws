@@ -8,20 +8,16 @@ import { uploadFile } from '@/lib/upload';
 import { updateMemoCardAvatarUrl } from '@/components/memo-card/server-functions/update-avatar-url';
 import InlineLimitBanner from '@/components/ui/inline-limit-banner';
 import { OriginalText } from '@/components/memo-card/original-text';
+import type { WordSegmentationV2 } from '@/types/extended-memo-card';
 
 interface AvatarSpeechBubbleProps {
   avatarUrl?: string | null;
   displayName?: string | null;
   originalText?: string | null;
   showBlur?: boolean;
-  /** 记忆卡片ID，用于关联新创建的角色 */
   memoCardId?: string;
-  /** 上传成功后的回调（可选） */
   onAvatarUpdated?: (url: string) => void;
-  /** ruby 原文结构化数据（可选） */
-  rubyOriginalTextRecord?: any;
-  /** ruby 翻译记录（可选） */
-  rubyTranslationRecord?: any;
+  wordSegmentation?: WordSegmentationV2 | null;
 }
 
 export function AvatarSpeechBubble({
@@ -31,8 +27,7 @@ export function AvatarSpeechBubble({
   showBlur = false,
   memoCardId,
   onAvatarUpdated,
-  rubyOriginalTextRecord,
-  rubyTranslationRecord,
+  wordSegmentation,
 }: AvatarSpeechBubbleProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const t = useTranslations('memoCards');
@@ -224,17 +219,13 @@ export function AvatarSpeechBubble({
               </svg>
             </button>
             <div className="text-black text-base leading-loose">
-              {rubyOriginalTextRecord ? (
-                <OriginalText
-                  rubyOriginalTextRecord={rubyOriginalTextRecord}
-                  rubyTranslationRecord={rubyTranslationRecord}
-                  id={memoCardId}
-                  noOffset
-                  tooltipTheme="default"
-                />
-              ) : (
-                <span>{originalText || ''}</span>
-              )}
+              <OriginalText
+                wordSegmentation={wordSegmentation}
+                originalText={originalText || ''}
+                id={memoCardId}
+                noOffset
+                tooltipTheme="default"
+              />
             </div>
           </div>
         </div>

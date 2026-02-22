@@ -2,12 +2,14 @@
  * 记忆卡片相关 Prompt
  * 
  * 包含：
- * - 翻译 Prompt
- * - Ruby 注音 Prompt
+ * - 整句翻译 Prompt
+ * - 分词分析 Prompt（分词 + Ruby + 词汇翻译）
  */
 
+import type { Segment, WordSegmentationV2 } from '@/types/extended-memo-card';
+
 /**
- * 获取多语言翻译 Prompt
+ * 获取整句多语言翻译 Prompt
  */
 export function getTranslationPrompt(text: string): string {
   return `请将以下日文句子翻译成英文、简体中文和繁体中文，返回JSON格式：
@@ -19,31 +21,46 @@ export function getTranslationPrompt(text: string): string {
 }
 
 /**
- * 获取 Ruby 注音 Prompt
+ * 获取分词分析 Prompt（一次性完成分词、Ruby 注音、词汇翻译）
  */
-export function getRubyPrompt(text: string): string {
-  return `请将这个日语文本「${text}」转换为Ruby注音格式，使用JSON表示，注意三点：
-1. 所有汉字都要转化，注意你这里经常漏掉汉字的转化，避免这一点。
-2. 如果一个词是外来词，那么ruby中不是假名的注音而应该是英文原文。
-3. 如果一个词是英文，那么不要对这个词进行任何处理，注意这里你经常把英文也加上了ruby，避免这一点。
+export function getSegmentationPrompt(text: string): string {
+  return `请对以下日语句子进行分词分析，返回JSON格式。
 
-示例如下，
-输入是「Ubie では「Ubie Vitals」というデザインシステムに則って UI 開発を行っています。」
-输出目标下面这样的JSON结构：
+句子：「${text}」
+
+要求：
+1. 分词粒度要合理，保持语义完整性（如「食べられる」「していた」保持完整，不要过度拆分）
+2. 每个词标注词性 type：noun/verb/adjective/adverb/particle/auxiliary/conjunction/interjection/prefix/suffix/symbol/foreign/unknown
+3. 包含汉字的词添加 ruby 字段（平假名注音）
+4. 外来语（カタカナ词）的 ruby 用英文原文（如 デザイン → design）
+5. 对 N2 水平日语学习者值得翻译的词（尤其名词、动词）添加 translations 字段，特别常用的词可以略过
+6. 助词、标点等不需要 translations
+
+返回格式：
 {
-	"tag": "span",
-	"children": [
-		"Ubie では「Ubie Vitals」という",
-		{ "tag": "ruby", "text": "デザイン", "rt": "design" },
-		{ "tag": "ruby", "text": "システム", "rt": "system" },
-		"に",
-		{ "tag": "ruby", "text": "則って", "rt": "のっとって" },
-		" UI ",
-		{ "tag": "ruby", "text": "開発", "rt": "かいはつ" },
-		"を行っています。"
-	]
+  "segments": [
+    { "word": "...", "type": "..." },
+    { "word": "...", "type": "...", "ruby": "..." },
+    { "word": "...", "type": "...", "ruby": "...", "translations": { "en": "...", "zh": "...", "zh-TW": "..." } }
+  ]
 }
-注意，只需要返回JSON结构，不要返回任何其他内容。`;
+
+示例输入：「デザインシステムに則って開発を行っています。」
+示例输出：
+{
+  "segments": [
+    { "word": "デザイン", "type": "noun", "ruby": "design", "translations": { "en": "design", "zh": "设计", "zh-TW": "設計" } },
+    { "word": "システム", "type": "noun", "ruby": "system", "translations": { "en": "system", "zh": "系统", "zh-TW": "系統" } },
+    { "word": "に", "type": "particle" },
+    { "word": "則って", "type": "verb", "ruby": "のっとって", "translations": { "en": "in accordance with", "zh": "遵循", "zh-TW": "遵循" } },
+    { "word": "開発", "type": "noun", "ruby": "かいはつ", "translations": { "en": "development", "zh": "开发", "zh-TW": "開發" } },
+    { "word": "を", "type": "particle" },
+    { "word": "行っています", "type": "verb", "ruby": "おこなっています" },
+    { "word": "。", "type": "symbol" }
+  ]
+}
+
+注意：只返回JSON，不要任何其他内容。`;
 }
 
 /**
@@ -57,7 +74,7 @@ export interface TranslationResult {
 }
 
 /**
- * 处理翻译结果
+ * 处理整句翻译结果
  */
 export function processTranslationContent(
   rawContent: string,
@@ -79,75 +96,78 @@ export function processTranslationContent(
   }
 }
 
-/**
- * 处理 Ruby 注音结果
- */
-export function processRubyContent(rawContent: string): string {
-  const content = rawContent.trim();
-  // 移除可能的 markdown 代码块标记
-  if (content.startsWith('```')) {
-    return content.replace(/^```(?:json|html)?\s*|\s*```$/g, '').trim();
-  }
-  return content;
-}
-
 // ============================================
-// Ruby Translations (单词翻译)
+// 分词结果处理
 // ============================================
 
-interface RubyItem {
-  text: string;
-  reading: string;
+/**
+ * AI 返回的分词原始结果
+ */
+interface SegmentationRawResult {
+  segments: Array<{
+    word: string;
+    type: string;
+    ruby?: string;
+    translations?: {
+      en: string;
+      zh: string;
+      'zh-TW': string;
+    };
+  }>;
 }
 
 /**
- * 从 Ruby JSON 中提取需要翻译的词汇
+ * 处理分词结果，转换为 WordSegmentationV2 格式
  */
-export function extractRubyItems(rubyJson: string): RubyItem[] {
-  try {
-    const data = JSON.parse(rubyJson);
-    if (!data.children || !Array.isArray(data.children)) return [];
-
-    return data.children
-      .filter((child: any) => child?.tag === 'ruby' && child.text && child.rt)
-      .map((child: any) => ({ text: child.text, reading: child.rt }));
-  } catch {
-    return [];
-  }
-}
-
-/**
- * 获取 Ruby 词汇翻译 Prompt
- */
-export function getRubyTranslationsPrompt(originalText: string, rubyItems: RubyItem[]): string {
-  return `在下面句子的上下文中，请翻译以下单词到英文、简体中文和繁体中文，注意翻译结果要是在上下文中的意思：
-
-句子: ${originalText}
-
-单词列表:
-${rubyItems.map(item => `- ${item.text}（读音：${item.reading}）`).join('\n')}
-
-请以JSON格式返回每个单词的翻译，格式如下：
-{
-  "单词1": {"en": "english", "zh": "简体中文", "zh-TW": "繁體中文"},
-  "单词2": {"en": "english", "zh": "简体中文", "zh-TW": "繁體中文"}
-}
-
-只返回 JSON，不要任何其他内容。`;
-}
-
-/**
- * 处理 Ruby 翻译结果
- */
-export function processRubyTranslationsContent(
-  rawContent: string
-): Record<string, Record<string, string>> {
+export function processSegmentationContent(
+  rawContent: string,
+  model: string
+): WordSegmentationV2 | null {
   try {
     const content = rawContent.trim();
+    // 移除可能的 markdown 代码块标记
     const jsonStr = content.replace(/^```json?\s*|\s*```$/g, '').trim();
     const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : {};
+    
+    if (!jsonMatch) return null;
+    
+    const rawResult: SegmentationRawResult = JSON.parse(jsonMatch[0]);
+    
+    if (!rawResult.segments || !Array.isArray(rawResult.segments) || rawResult.segments.length === 0) {
+      return null;
+    }
+
+    // 验证并转换 segments
+    const validTypes = [
+      'noun', 'verb', 'adjective', 'adverb', 'particle', 'auxiliary',
+      'conjunction', 'interjection', 'prefix', 'suffix', 'symbol', 'foreign', 'unknown'
+    ];
+
+    const segments: Segment[] = rawResult.segments.map(seg => {
+      const type = validTypes.includes(seg.type) ? seg.type : 'unknown';
+      const result: Segment = {
+        word: seg.word,
+        type: type as Segment['type'],
+      };
+      if (seg.ruby) {
+        result.ruby = seg.ruby;
+      }
+      if (seg.translations) {
+        result.translations = seg.translations;
+      }
+      return result;
+    });
+
+    return {
+      version: 2,
+      segments,
+      metadata: {
+        source: 'ai',
+        segmentedAt: new Date().toISOString(),
+        model,
+      },
+    };
   } catch {
-    return {};
+    return null;
   }
 }

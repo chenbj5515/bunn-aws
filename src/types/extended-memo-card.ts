@@ -16,42 +16,83 @@ export interface Word {
 }
 
 // ============================================
-// WordSegmentation 类型定义与校验
+// WordSegmentation 类型定义与校验 (Version 2)
 // ============================================
 
-export const sentenceSegmentTypeSchema = z.enum(['word', 'phrase', 'particle', 'other']);
-export type SentenceSegmentType = z.infer<typeof sentenceSegmentTypeSchema>;
-
 /**
- * 数据库中存储的原始分词格式（来自 AI 分词）
+ * 词性类型
  */
-export const rawWordSegmentSchema = z.object({
-    word: z.string().min(1),
-    kana: z.string(),
-    meaning: z.string(),
-    position: z.tuple([z.number(), z.number()]),
-    wordType: z.string(),
-});
-export type RawWordSegment = z.infer<typeof rawWordSegmentSchema>;
+export const segmentTypeSchema = z.enum([
+    'noun',        // 名词
+    'verb',        // 动词
+    'adjective',   // 形容词
+    'adverb',      // 副词
+    'particle',    // 助词（は、が、を等）
+    'auxiliary',   // 助动词
+    'conjunction', // 接续词
+    'interjection',// 感叹词
+    'prefix',      // 接头词
+    'suffix',      // 接尾词
+    'symbol',      // 符号/标点
+    'foreign',     // 外来语
+    'unknown',     // 未知
+]);
+export type SegmentType = z.infer<typeof segmentTypeSchema>;
 
 /**
- * wordSegmentation 字段的数据格式（数据库存储格式）
+ * 多语言翻译
+ */
+export const segmentTranslationsSchema = z.object({
+    en: z.string(),
+    zh: z.string(),
+    'zh-TW': z.string(),
+});
+export type SegmentTranslations = z.infer<typeof segmentTranslationsSchema>;
+
+/**
+ * 单个分词片段
+ */
+export const segmentSchema = z.object({
+    word: z.string().min(1),
+    type: segmentTypeSchema,
+    ruby: z.string().optional(),
+    translations: segmentTranslationsSchema.optional(),
+});
+export type Segment = z.infer<typeof segmentSchema>;
+
+/**
+ * 元数据
+ */
+export const segmentationMetadataSchema = z.object({
+    source: z.enum(['ai', 'manual']),
+    segmentedAt: z.string(),
+    model: z.string().optional(),
+});
+export type SegmentationMetadata = z.infer<typeof segmentationMetadataSchema>;
+
+/**
+ * wordSegmentation 字段的数据格式（Version 2）
  * 存储在数据库 memo_card.word_segmentation (jsonb)
  */
-export const wordSegmentationSchema = z.object({
-    words: z.array(rawWordSegmentSchema).min(1),
-    source: z.string().optional(),
-    segmentedAt: z.string().optional(),
+export const wordSegmentationV2Schema = z.object({
+    version: z.literal(2),
+    segments: z.array(segmentSchema).min(1),
+    metadata: segmentationMetadataSchema,
 });
-export type WordSegmentation = z.infer<typeof wordSegmentationSchema>;
+export type WordSegmentationV2 = z.infer<typeof wordSegmentationV2Schema>;
 
 /**
- * 组件内部使用的标准化分词格式
+ * 兼容类型：可以是新版本或 null
+ */
+export type WordSegmentation = WordSegmentationV2 | null;
+
+/**
+ * 组件内部使用的标准化分词格式（用于 SentenceBuilding 等组件）
  */
 export const wordSegmentSchema = z.object({
     id: z.string(),
     text: z.string().min(1),
-    type: sentenceSegmentTypeSchema,
+    type: segmentTypeSchema,
 });
 export type WordSegment = z.infer<typeof wordSegmentSchema>;
 
@@ -61,7 +102,7 @@ export interface SentenceSegmentWithAudio extends WordSegment {
 
 export interface ExtendedMemoCard extends Omit<InferSelectModel<typeof memoCard>, 'translation' | 'wordSegmentation'> {
     translation: Record<string, string> | string;
-    wordSegmentation: WordSegmentation | null;
+    wordSegmentation: WordSegmentation;
     words: Word[];
     characterAvatarUrl?: string | null;
     channelAvatarUrl?: string | null;

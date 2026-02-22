@@ -17,6 +17,7 @@ import type { AppLocale, LocalizedText, RequiredLocalizedText } from "@/types/lo
 import { AskAISection } from "./ask-ai";
 import type { Character } from "./types";
 import type { MemoCardWithChannel, MemoCardMessage } from "@/app/[locale]/channels/[channelId]/_store/types";
+import type { WordSegmentationV2 } from "@/types/extended-memo-card";
 
 /** 上下文信息类型 */
 type ContextInfo = RequiredLocalizedText[];
@@ -67,8 +68,7 @@ export function MemoCard(props: MemoCardProps) {
     hideCreateTime = false,
     contextUrl,
     characterName,
-    rubyTranslations,
-    kanaPronunciation,
+    wordSegmentation,
     setDisplayCards,
     characterAvatarUrl,
     channelAvatarUrl,
@@ -133,8 +133,7 @@ export function MemoCard(props: MemoCardProps) {
           originalText={originalText || ''}
           showBlur={isDictationFocused}
           memoCardId={id}
-          rubyOriginalTextRecord={kanaPronunciation ?? undefined}
-          rubyTranslationRecord={rubyTranslations ?? undefined}
+          wordSegmentation={wordSegmentation as WordSegmentationV2 | null | undefined}
         />
       </div>
 

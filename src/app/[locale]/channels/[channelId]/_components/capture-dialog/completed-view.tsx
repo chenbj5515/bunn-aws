@@ -9,6 +9,7 @@ import { OriginalText } from '@/components/memo-card/original-text';
 import { getTranslationByLocale } from '@/lib/translation-utils';
 import { captureStateAtom, closeCaptureAtom, CaptureStage } from '../../_store';
 import { FadeItem } from './fade-item';
+import type { WordSegmentationV2 } from '@/types/extended-memo-card';
 
 export default function CompletedView() {
   const tSubtitle = useTranslations('subtitleCapture');
@@ -47,8 +48,8 @@ export default function CompletedView() {
       <div className="mb-12 w-full text-center">
         <div className="text-[20px] text-white">
           <OriginalText
-            rubyOriginalTextRecord={cardData.kanaPronunciation ?? {}}
-            rubyTranslationRecord={cardData.rubyTranslations ?? {}}
+            wordSegmentation={cardData.wordSegmentation as WordSegmentationV2 | null | undefined}
+            originalText={cardData.originalText || ''}
             id={cardData.id}
             noOffset={true}
           />

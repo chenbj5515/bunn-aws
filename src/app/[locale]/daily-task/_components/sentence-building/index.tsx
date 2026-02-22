@@ -22,24 +22,19 @@ import { ActionPanel } from './action-panel';
 // ============================================
 
 /**
- * 将数据库中的原始分词格式转换为组件内部使用的标准格式
+ * 将数据库中的 WordSegmentationV2 格式转换为组件内部使用的 WordSegment 格式
  */
 function convertToWordSegments(memoCard: ExtendedMemoCard): WordSegment[] {
   const wordSegmentation = memoCard.wordSegmentation;
   if (!wordSegmentation) return [];
 
-  // 处理新格式：{ words: [...], source, segmentedAt }
-  if ('words' in wordSegmentation && Array.isArray(wordSegmentation.words)) {
-    return wordSegmentation.words.map((raw, index) => ({
+  // WordSegmentationV2 格式：{ version: 2, segments: [...], metadata: {...} }
+  if (wordSegmentation.version === 2 && Array.isArray(wordSegmentation.segments)) {
+    return wordSegmentation.segments.map((seg, index) => ({
       id: `segment-${index}`,
-      text: raw.word,
-      type: (raw.wordType === 'other' ? 'word' : raw.wordType) as WordSegment['type'],
+      text: seg.word,
+      type: seg.type,
     }));
-  }
-
-  // 处理旧格式：{ segments: [...] }（兼容性）
-  if ('segments' in wordSegmentation && Array.isArray(wordSegmentation.segments)) {
-    return wordSegmentation.segments;
   }
 
   return [];
@@ -188,14 +183,12 @@ export function SentenceBuilding({ memoCard, onComplete }: SentenceBuildingProps
     return translation[locale] || translation.zh || translation.en || '';
   };
 
-  // 检查是否有分词数据（支持新旧两种格式）
+  // 检查是否有分词数据（WordSegmentationV2 格式）
   const hasWordSegmentation = (() => {
     const ws = memoCard.wordSegmentation;
     if (!ws) return false;
-    // 新格式：{ words: [...] }
-    if ('words' in ws && Array.isArray(ws.words) && ws.words.length > 0) return true;
-    // 旧格式：{ segments: [...] }
-    if ('segments' in ws && Array.isArray(ws.segments) && ws.segments.length > 0) return true;
+    // WordSegmentationV2 格式：{ version: 2, segments: [...] }
+    if (ws.version === 2 && Array.isArray(ws.segments) && ws.segments.length > 0) return true;
     return false;
   })();
   

@@ -148,8 +148,8 @@ export const createMemoCardAtom = atom(
 
       const processedText = preprocessText(text);
 
-      // AI 翻译
-      const aiResult = await trpc.ai.translateAndRuby.mutate({
+      // AI 翻译 + 分词
+      const aiResult = await trpc.ai.translateAndSegment.mutate({
         text: processedText,
         fallbackLocale: locale,
       });
@@ -166,8 +166,7 @@ export const createMemoCardAtom = atom(
       const cardJson = await insertMemoCard(
         text,
         aiResult.translation,
-        aiResult.rubyHtml,
-        aiResult.rubyTranslations,
+        aiResult.wordSegmentation,
         urlWithTimestamp,
         {
           channelId: channelDetail.channelId,
