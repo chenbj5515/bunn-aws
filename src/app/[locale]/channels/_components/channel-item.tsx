@@ -33,7 +33,6 @@ export const ChannelItem: FC<ChannelItemProps> = ({
   onPositionChange,
   onDelete,
   onClick,
-  onError,
 }) => {
   const t = useTranslations('Channels');
   const [isHovered, setIsHovered] = useState(false);
@@ -74,7 +73,6 @@ export const ChannelItem: FC<ChannelItemProps> = ({
     await updateChannelName(channel.channelId, editingName);
   };
 
-  // 确认删除频道
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     onDelete(channel.channelId);
@@ -82,10 +80,10 @@ export const ChannelItem: FC<ChannelItemProps> = ({
     try {
       const result = await deleteChannel(channel.channelId);
       if (!result.success) {
-        onError(result.message || '删除频道失败');
+        toast.error(result.message || t('deleteFailed'));
       }
     } catch (error) {
-      onError(error instanceof Error ? error.message : '删除频道失败');
+      toast.error(error instanceof Error ? error.message : t('deleteFailed'));
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);

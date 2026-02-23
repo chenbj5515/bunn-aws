@@ -7,6 +7,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { HeaderProvider } from "@/components/header-provider";
 import { FooterWrapper } from "@/components/footer-wrapper";
 import { DockProvider } from "@/components/dock/dock-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -66,6 +67,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             <main className="flex-1">{children}</main>
             <FooterWrapper />
           </div>
+          <Toaster position="top-center" />
         </NextIntlClientProvider>
       </body>
     </html>

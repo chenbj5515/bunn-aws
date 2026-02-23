@@ -29,7 +29,7 @@ export default async function DailyTaskPage() {
         .limit(MEMO_CARD_LIMIT);
 
     if (memoCardRecords.length === 0) {
-        return <div>暂无卡片</div>;
+        redirect("/getting-started");
     }
 
     const memoCardIds = memoCardRecords.map(r => r.id);

@@ -378,7 +378,13 @@
     "footer": {
       "col1": "Our tools and strategies surface issues before they slow you down, keeping a steady study rhythm.",
       "col2": "We leverage automation and semantic analysis to boost efficiency, reduce friction, and keep your workflow smooth."
-    }
+    },
+    "importSuccess": "Successfully imported {count} memory cards!",
+    "importFailed": "Failed to import data. Please try again later.",
+    "noNewCards": "You already have all available sample data",
+    "unauthorized": "Please login first",
+    "noAdmin": "Administrator not found",
+    "internalError": "An error occurred during import"
   },
   "pricing": {
     "title": "Pricing Plans",

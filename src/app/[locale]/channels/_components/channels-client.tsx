@@ -62,7 +62,6 @@ export const ChannelsClient: FC<ChannelsClientProps> = ({ channels: initialChann
 
   const [channels, setChannels] = useState(initialChannels);
   const [positions, setPositions] = useState(savedPositions);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // 客户端挂载时从 Cookie 读取最新位置（解决后退时缓存问题）
   useEffect(() => {
@@ -71,6 +70,14 @@ export const ChannelsClient: FC<ChannelsClientProps> = ({ channels: initialChann
       setPositions(JSON.parse(cookie));
     }
   }, []);
+
+  // 当所有频道被删除时跳转到 getting-started 页面
+  useEffect(() => {
+    if (channels.length === 0) {
+      const locale = pathname.split('/')[1];
+      router.push(`/${locale}/getting-started`);
+    }
+  }, [channels.length]);
 
   // 更新单个频道位置
   const handlePositionChange = (channelId: string, position: ChannelPosition) => {
@@ -107,10 +114,8 @@ export const ChannelsClient: FC<ChannelsClientProps> = ({ channels: initialChann
           onPositionChange={handlePositionChange}
           onDelete={handleDeleteChannel}
           onClick={handleChannelClick}
-          onError={setErrorMessage}
         />
       ))}
-      <ErrorToast message={errorMessage} onClose={() => setErrorMessage(null)} />
     </div>
   );
 };
