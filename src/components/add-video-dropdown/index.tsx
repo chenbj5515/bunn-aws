@@ -16,12 +16,10 @@ import { addVideo, getYouTubeVideoInfo } from './server-functions/videos';
 import { parseYouTubeUrl } from '@/lib/youtube';
 
 interface AddVideoDropdownProps {
-  // safari模式：跳转到新频道，显示ChannelDock和封面预览
+  // safari模式：跳转到新频道，显示ChannelDock
   safariMode?: boolean;
   // channels模式：在当前频道添加视频
   channelId?: string;
-  // 管理员权限
-  isCoverAdmin?: boolean;
   // 禁用空格键激活触发器（避免与全局播放/暂停冲突）
   disableSpaceActivation?: boolean;
 }
@@ -29,7 +27,6 @@ interface AddVideoDropdownProps {
 export function AddVideoDropdown({
   safariMode = true,
   channelId,
-  isCoverAdmin = false,
   disableSpaceActivation = true
 }: AddVideoDropdownProps) {
   const router = useRouter();
@@ -40,8 +37,6 @@ export function AddVideoDropdown({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [videoUrlInput, setVideoUrlInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
 
   const handleAddVideo = async () => {
     if (!videoUrlInput.trim()) {
@@ -79,26 +74,8 @@ export function AddVideoDropdown({
       );
 
       if (result.success) {
-        // 3. 如果是封面管理员且选择了封面，从剪贴板上传封面并设置缩略图
-        if (isCoverAdmin && coverFile) {
-          try {
-            const formData = new FormData();
-            formData.append('file', coverFile);
-            formData.append('videoId', videoId);
-            await fetch('/api/videos/thumbnail', { method: 'POST', body: formData });
-          } catch (e) {
-            console.error('封面上传失败', e);
-          }
-        }
-
-        // 4. 跳转逻辑
         setIsDropdownOpen(false);
         setVideoUrlInput('');
-        if (isCoverAdmin) {
-          if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
-          setCoverPreviewUrl(null);
-          setCoverFile(null);
-        }
 
         if (safariMode) {
           // safari模式：跳转到 channel/video 详情页
@@ -117,56 +94,6 @@ export function AddVideoDropdown({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleCancelAddVideo = () => {
-    setIsDropdownOpen(false);
-    setVideoUrlInput('');
-    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
-    setCoverPreviewUrl(null);
-    setCoverFile(null);
-  };
-
-  const pickCoverFromClipboard = async () => {
-    // 从剪贴板读取图片的逻辑（复用自cards.tsx）
-    const readImageFromClipboard = async (): Promise<File | null> => {
-      const clipboardObj: any = navigator.clipboard as any;
-      if (!clipboardObj || typeof clipboardObj.read !== 'function') {
-        console.error('当前浏览器不支持从剪贴板读取图片');
-        return null;
-      }
-      try {
-        const items = await clipboardObj.read();
-        for (const item of items) {
-          for (const type of item.types) {
-            if (type.startsWith('image/')) {
-              const blob = await item.getType(type);
-              const ext = (type.split('/')?.[1]) || 'png';
-              return new File([blob], `clipboard.${ext}`, { type });
-            }
-          }
-        }
-        console.error('剪贴板中没有图片');
-        return null;
-      } catch (err) {
-        console.error('读取剪贴板失败:', err);
-        return null;
-      }
-    };
-
-    const file = await readImageFromClipboard();
-    if (!file) return;
-    if (!file.type.startsWith('image/')) return;
-    if (file.size > 5 * 1024 * 1024) return;
-    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
-    setCoverFile(file);
-    setCoverPreviewUrl(URL.createObjectURL(file));
-  };
-
-  const clearCover = () => {
-    if (coverPreviewUrl) URL.revokeObjectURL(coverPreviewUrl);
-    setCoverPreviewUrl(null);
-    setCoverFile(null);
   };
 
   return (
@@ -210,26 +137,6 @@ export function AddVideoDropdown({
                 }}
               />
             </div>
-
-            {safariMode && isCoverAdmin && (
-              <div>
-                <label className="block mb-2 font-medium text-sm">
-                  {t?.('addVideo.coverPreview')}
-                </label>
-                {coverPreviewUrl ? (
-                  <div className="flex items-center gap-2">
-                    <img src={coverPreviewUrl} alt="cover preview" className="rounded w-16 h-16 object-cover" />
-                    <Button size="sm" variant="outline" onClick={clearCover}>
-                      {t?.('addVideo.removeCover')}
-                    </Button>
-                  </div>
-                ) : (
-                  <Button size="sm" variant="secondary" onClick={pickCoverFromClipboard} className="w-full">
-                    {t?.('addVideo.coverFromClipboard')}
-                  </Button>
-                )}
-              </div>
-            )}
 
             <Button
               onClick={handleAddVideo}
