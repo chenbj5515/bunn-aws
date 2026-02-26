@@ -74,7 +74,7 @@ sed "s/DOMAIN_NAME/$DOMAIN/g" nginx/conf.d/app.conf.template > nginx/conf.d/app.
 
 # 启动数据库和 Redis
 log_info "启动数据库服务..."
-docker compose -f docker-compose.prod.yml up -d postgres redis
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d postgres redis
 
 # 等待数据库健康
 log_info "等待数据库就绪..."
@@ -82,11 +82,11 @@ sleep 10
 
 # 构建并启动应用
 log_info "构建应用镜像..."
-docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml --env-file .env.production build app
 
 # 启动所有服务
 log_info "启动所有服务..."
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 
 # 等待应用启动
 log_info "等待应用启动..."
@@ -94,7 +94,7 @@ sleep 15
 
 # 运行数据库迁移
 log_info "运行数据库迁移..."
-docker compose -f docker-compose.prod.yml exec -T app node -e "
+docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app node -e "
 const { execSync } = require('child_process');
 try {
     execSync('npx drizzle-kit migrate', { stdio: 'inherit' });
@@ -105,7 +105,7 @@ try {
 
 # 检查服务状态
 log_info "检查服务状态..."
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml --env-file .env.production ps
 
 echo ""
 log_info "=========================================="
