@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { updateChannelName } from '../_server-functions/update-channel-name';
 import { deleteChannel } from '../_server-functions/delete-channel';
 import type { Channel, ChannelPosition } from './channels-client';
