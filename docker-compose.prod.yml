@@ -1,6 +1,6 @@
 # ===========================================
 # 生产环境 Docker Compose 配置
-# 包含: PostgreSQL + Redis + Next.js + Nginx + 自动 SSL
+# 包含: PostgreSQL + Redis + Next.js + Nginx + Let's Encrypt
 # 使用: docker compose -f docker-compose.prod.yml up -d
 # ===========================================
 
@@ -62,24 +62,40 @@ services:
       - bunn-network
     # 不对外暴露端口，通过 Nginx 访问
 
-  # Nginx 反向代理（Cloudflare 模式，SSL 由 Cloudflare 处理）
+  # Nginx 反向代理（80/443）
   nginx:
     image: nginx:alpine
     container_name: bunn-nginx
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
     depends_on:
       - app
     networks:
       - bunn-network
 
+  # Let's Encrypt 证书续期（后台循环）
+  certbot:
+    image: certbot/certbot:latest
+    container_name: bunn-certbot
+    restart: unless-stopped
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: /bin/sh
+    command: -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $$!; done"
+
 volumes:
   postgres_data:
   redis_data:
+  letsencrypt:
+  certbot_www:
 
 networks:
   bunn-network:

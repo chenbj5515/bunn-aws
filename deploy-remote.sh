@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ===========================================
-# 远程部署脚本 - 从本地一键部署到 VPS（Cloudflare 模式）
+# 远程部署脚本 - 从本地一键部署到 VPS（Let's Encrypt HTTPS）
 # 使用方法: ./deploy-remote.sh user@vps-ip yourdomain.com
 # 示例: ./deploy-remote.sh root@45.32.59.167 bunn.ink
 # ===========================================
@@ -42,6 +42,7 @@ REMOTE_DIR="/opt/bunn-aws"
 log_info "=========================================="
 log_info "远程部署到 $VPS_HOST"
 log_info "域名: $DOMAIN"
+log_info "模式: Let's Encrypt HTTPS"
 log_info "=========================================="
 
 # 检查本地 .env.production 是否存在

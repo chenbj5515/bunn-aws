@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # ===========================================
-# Bunn AWS VPS 一键部署脚本（Cloudflare 模式）
+# Bunn AWS VPS 一键部署脚本（Let's Encrypt HTTPS）
 # 使用方法: ./deploy.sh yourdomain.com
-# SSL 由 Cloudflare 提供，无需 Let's Encrypt
 # ===========================================
 
 set -e
@@ -35,7 +34,7 @@ fi
 
 DOMAIN=$1
 
-log_info "开始部署 Bunn AWS 到 $DOMAIN（Cloudflare 模式）"
+log_info "开始部署 Bunn AWS 到 $DOMAIN（Let's Encrypt 模式）"
 
 # 检查是否为 root 用户
 if [ "$EUID" -ne 0 ]; then
@@ -68,9 +67,16 @@ if [ ! -f ".env.production" ]; then
     exit 1
 fi
 
-# 替换 Nginx 配置中的域名
+# 读取 Let's Encrypt 邮箱（优先 .env.production）
+LETSENCRYPT_EMAIL=$(grep '^LETSENCRYPT_EMAIL=' .env.production | cut -d'=' -f2- | tr -d '"' || true)
+if [ -z "$LETSENCRYPT_EMAIL" ]; then
+    LETSENCRYPT_EMAIL="admin@$DOMAIN"
+    log_warn "未在 .env.production 中设置 LETSENCRYPT_EMAIL，临时使用: $LETSENCRYPT_EMAIL"
+fi
+
+# 先生成 HTTP 引导配置（用于签发证书）
 log_info "配置 Nginx..."
-sed "s/DOMAIN_NAME/$DOMAIN/g" nginx/conf.d/app.conf.template > nginx/conf.d/app.conf
+sed "s/DOMAIN_NAME/$DOMAIN/g" nginx/conf.d/app.bootstrap.conf.template > nginx/conf.d/app.conf
 
 # 启动数据库和 Redis
 log_info "启动数据库服务..."
@@ -92,6 +98,24 @@ docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 log_info "等待应用启动..."
 sleep 15
 
+# 签发/续签证书
+SSL_ENABLED=false
+log_info "申请/更新 Let's Encrypt 证书..."
+if docker compose -f docker-compose.prod.yml --env-file .env.production run --rm certbot certonly \
+    --webroot -w /var/www/certbot \
+    --email "$LETSENCRYPT_EMAIL" \
+    --agree-tos --no-eff-email --non-interactive --keep-until-expiring \
+    -d "$DOMAIN"; then
+    SSL_ENABLED=true
+    log_info "证书申请成功，切换到 HTTPS 配置..."
+    sed "s/DOMAIN_NAME/$DOMAIN/g" nginx/conf.d/app.conf.template > nginx/conf.d/app.conf
+    docker compose -f docker-compose.prod.yml --env-file .env.production exec -T nginx nginx -s reload
+    # 启动续签服务
+    docker compose -f docker-compose.prod.yml --env-file .env.production up -d certbot
+else
+    log_warn "证书申请失败，当前保持 HTTP 配置运行。"
+fi
+
 # 运行数据库迁移
 log_info "运行数据库迁移..."
 docker compose -f docker-compose.prod.yml --env-file .env.production exec -T app node -e "
@@ -112,7 +136,12 @@ log_info "=========================================="
 log_info "部署完成！"
 log_info "=========================================="
 echo ""
-echo "访问地址: https://$DOMAIN"
+if [ "$SSL_ENABLED" = "true" ]; then
+    echo "访问地址: https://$DOMAIN"
+else
+    echo "访问地址: http://$DOMAIN"
+    echo "（证书申请失败，请检查 80 端口、防火墙、DNS 后重试）"
+fi
 echo ""
 echo "常用命令:"
 echo "  查看日志: docker compose -f docker-compose.prod.yml logs -f"
@@ -121,10 +150,10 @@ echo "  重启服务: docker compose -f docker-compose.prod.yml restart"
 echo "  停止服务: docker compose -f docker-compose.prod.yml down"
 echo "  更新部署: git pull && docker compose -f docker-compose.prod.yml up -d --build"
 echo ""
-log_warn "Cloudflare 设置提醒:"
+log_warn "HTTPS 部署提醒:"
 echo "  1. 确保 DNS 记录 A @ 指向 VPS IP: 45.32.59.167"
-echo "  2. 确保 Cloudflare SSL/TLS 模式设置为 'Full'"
-echo "  3. 确保代理状态为橙色云朵（已开启）"
+echo "  2. 确保 80/443 端口在云防火墙与系统防火墙放通"
+echo "  3. 建议在 .env.production 中设置 LETSENCRYPT_EMAIL"
 echo ""
 log_warn "OAuth 回调地址提醒:"
 echo "  1. GitHub: https://$DOMAIN/api/auth/callback/github"
