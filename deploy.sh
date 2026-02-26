@@ -101,7 +101,7 @@ sleep 15
 # 签发/续签证书
 SSL_ENABLED=false
 log_info "申请/更新 Let's Encrypt 证书..."
-if docker compose -f docker-compose.prod.yml --env-file .env.production run --rm certbot certonly \
+if docker compose -f docker-compose.prod.yml --env-file .env.production run --rm --entrypoint certbot certbot certonly \
     --webroot -w /var/www/certbot \
     --email "$LETSENCRYPT_EMAIL" \
     --agree-tos --no-eff-email --non-interactive --keep-until-expiring \
