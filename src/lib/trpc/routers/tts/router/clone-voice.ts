@@ -125,7 +125,7 @@ export const cloneVoice = rateLimitedProcedure
           .set({
             ttsVoiceId: customVoiceId,
             preferredTTSVoice: "custom",
-            updatedAt: new Date().toISOString(),
+            updatedAt: new Date(),
           })
           .where(eq(userTable.id, userId));
       } catch (dbError) {

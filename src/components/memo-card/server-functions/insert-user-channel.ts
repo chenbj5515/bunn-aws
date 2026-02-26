@@ -30,13 +30,12 @@ export async function insertUserChannel(userId: string, channelId: string): Prom
         }
         
         // 添加新的关联记录
-        const result = await db.insert(userChannels)
-            .values({
-                userId,
-                channelId
-            });
-            
-        return result.rowCount !== undefined && result.rowCount > 0;
+        await db.insert(userChannels).values({
+            userId,
+            channelId
+        });
+
+        return true;
     } catch (error) {
         console.error("添加用户-频道关联时出错:", error);
         return false;

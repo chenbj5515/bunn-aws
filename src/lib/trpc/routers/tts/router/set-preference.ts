@@ -49,7 +49,7 @@ export const setPreference = protectedProcedure
               .set({
                 preferredTTSVoice: preferred,
                 ttsVoiceId: voiceId,
-                updatedAt: new Date().toISOString(),
+                updatedAt: new Date(),
               })
               .where(eq(userTable.id, userId));
           } else if (preferred === "haruka") {
@@ -57,7 +57,7 @@ export const setPreference = protectedProcedure
               .update(userTable)
               .set({
                 preferredTTSVoice: preferred,
-                updatedAt: new Date().toISOString(),
+                updatedAt: new Date(),
               })
               .where(eq(userTable.id, userId));
           }

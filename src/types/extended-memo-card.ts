@@ -1,6 +1,7 @@
 import { memoCard } from '@/lib/db/schema';
 import type { InferSelectModel } from 'drizzle-orm';
 import { z } from 'zod';
+import type { QuestionType } from './memo-card';
 
 export interface Word {
     word: string;
@@ -108,7 +109,7 @@ export interface ExtendedMemoCard extends Omit<InferSelectModel<typeof memoCard>
     channelAvatarUrl?: string | null;
     characterName?: string | null;
     wordCardCount?: number;
-    questionType: string | null;
+    questionType: QuestionType | null;
     currentContextInfo?: string;
     hasQuestionAnswerSubmission: boolean;
     lastQuestionAnswerSubmittedAt: string | null;

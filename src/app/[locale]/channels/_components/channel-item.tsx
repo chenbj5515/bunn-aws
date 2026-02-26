@@ -21,7 +21,6 @@ interface ChannelItemProps {
   onPositionChange: (channelId: string, position: ChannelPosition) => void;
   onDelete: (channelId: string) => void;
   onClick: (channelId: string, firstVideoId: string | null) => void;
-  onError: (message: string | null) => void;
 }
 
 // ============================================

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 
-export default function GuidePage() {
+function GuidePageContent() {
   const t = useTranslations("guide");
   const searchParams = useSearchParams();
 
@@ -180,5 +180,13 @@ export default function GuidePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GuidePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <GuidePageContent />
+    </Suspense>
   );
 }

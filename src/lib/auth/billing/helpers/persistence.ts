@@ -107,9 +107,9 @@ async function upsertSubscriptionUsage(params: {
   const { userId, subscriptionId, periodKey, delta } = params;
 
   // 时间范围：periodKey 用日期范围，否则用当前时间
-  const now = new Date().toISOString();
-  const startTime = periodKey ? `${periodKey}T00:00:00.000Z` : now;
-  const endTime = periodKey ? `${periodKey}T23:59:59.999Z` : now;
+  const nowIso = new Date().toISOString();
+  const startTime = periodKey ? `${periodKey}T00:00:00.000Z` : nowIso;
+  const endTime = periodKey ? `${periodKey}T23:59:59.999Z` : nowIso;
 
   // 生成 delta 字段的初始值
   const deltaValues = Object.fromEntries(
@@ -130,7 +130,6 @@ async function upsertSubscriptionUsage(params: {
       startTime,
       endTime,
       ...deltaValues,
-      updatedAt: now,
     })
     .onConflictDoUpdate({
       target: subscriptionId

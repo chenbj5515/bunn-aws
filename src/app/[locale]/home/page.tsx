@@ -3,14 +3,13 @@
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function LandingPage() {
   const router = useRouter();
   const t = useTranslations();
   const locale = useLocale();
-  const searchParams = useSearchParams();
 
   return (
     <div className="min-h-screen">

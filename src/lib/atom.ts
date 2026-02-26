@@ -1,5 +1,6 @@
-import { ContextContent } from '@/components/input-box';
 import { atom } from 'jotai';
+
+type ContextContent = Record<string, unknown>;
 
 export interface ILoaclCard {
     key: number;

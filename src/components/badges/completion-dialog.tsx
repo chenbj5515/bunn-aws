@@ -75,7 +75,10 @@ export function CompletionDialog({
   
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-linear-to-tr from-slate-50 via-slate-100 to-slate-200 border-white/20 sm:max-w-md" hideCloseButton={true}>
+      <DialogContent
+        className="bg-linear-to-tr from-slate-50 via-slate-100 to-slate-200 border-white/20 sm:max-w-md"
+        showCloseButton={false}
+      >
         <DialogTitle className="sr-only">
           {hasLeveledUp ? tBadges('levelUp') : tBadges('completed')}
         </DialogTitle>

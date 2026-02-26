@@ -89,7 +89,6 @@ export function CompletionInline({
                 <NumberTicker
                   value={finalPoints}
                   startValue={initialPoints}
-                  duration={3200}
                   className="font-bold text-[38px] text-black tracking-tighter whitespace-pre-wrap"
                 />
               </div>

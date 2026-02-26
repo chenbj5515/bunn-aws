@@ -4,14 +4,9 @@ import { db } from '@/lib/db';
 import { memoCard } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { getSession } from '@/lib/auth';
+import type { RequiredLocalizedText } from '@/types/locale';
 
-interface ContextInfo {
-  en?: string;
-  zh?: string;
-  'zh-TW'?: string;
-}
-
-export async function updateContextInfo(memoCardId: string, contextInfo: ContextInfo[]) {
+export async function updateContextInfo(memoCardId: string, contextInfo: RequiredLocalizedText[]) {
   try {
     const session = await getSession();
 

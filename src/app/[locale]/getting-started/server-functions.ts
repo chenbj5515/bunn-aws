@@ -79,6 +79,7 @@ export async function cloneSampleCards(targetLocale: string = 'zh') {
 
     // 插入视频记录
     const selectedVideoIds = [...new Set(selectedCards.map(c => c.videoId).filter(Boolean))];
+    const nowIso = new Date().toISOString();
     const videosToInsert = selectedVideoIds
       .map(videoId => sampleVideos.find(v => v.videoId === videoId))
       .filter(Boolean)
@@ -87,8 +88,8 @@ export async function cloneSampleCards(targetLocale: string = 'zh') {
         userId,
         channelId: v!.channelId,
         videoTitle: v!.videoTitle,
-        createTime: new Date().toISOString(),
-        updateTime: new Date().toISOString()
+        createTime: nowIso,
+        updateTime: nowIso
       }));
 
     if (videosToInsert.length > 0) {

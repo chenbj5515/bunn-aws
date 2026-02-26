@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useTranslations } from 'next-intl'
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -8,7 +8,7 @@ import { signIn } from "@/lib/auth-client"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { lobster } from "@/font"
 
-export default function LoginPage() {
+function LoginPageContent() {
     const t = useTranslations('login');
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -127,3 +127,11 @@ export default function LoginPage() {
         </div>
     )
 } 
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen" />}>
+            <LoginPageContent />
+        </Suspense>
+    );
+}

@@ -1,7 +1,8 @@
 import { del, put } from '@vercel/blob';
 import { v4 as uuidv4 } from 'uuid';
-import { getSession, trackUsage } from '@/lib/auth';
-import { validateUserAndTokenLimit } from '@/utils/error-handling';
+import { getSession } from '@/lib/auth';
+import { checkLimit } from '@/lib/auth/billing/limit';
+import { trackUsage } from '@/lib/auth/billing/track';
 
 // 上传结果接口（服务端）
 export interface UploadResult {
@@ -106,13 +107,12 @@ export async function uploadToBlob(
 
     // 费用相关：统一限流检查（token cost / blob cost 聚合的入口）
     {
-      const validation = await validateUserAndTokenLimit();
-      if (!validation.isValid && validation.errorResponse) {
-        const { response, status } = validation.errorResponse;
+      const withinLimit = await checkLimit();
+      if (!withinLimit) {
         return {
           success: false,
-          message: response.error,
-          status,
+          message: '已超出用量限制，请稍后再试或升级订阅',
+          status: 429,
         };
       }
     }
