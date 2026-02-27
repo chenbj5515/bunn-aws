@@ -33,6 +33,7 @@ if [ -z "$1" ]; then
 fi
 
 DOMAIN=$1
+WWW_DOMAIN="www.$DOMAIN"
 
 log_info "开始部署 Bunn AWS 到 $DOMAIN（Let's Encrypt 模式）"
 
@@ -105,7 +106,7 @@ if docker compose -f docker-compose.prod.yml --env-file .env.production run --rm
     --webroot -w /var/www/certbot \
     --email "$LETSENCRYPT_EMAIL" \
     --agree-tos --no-eff-email --non-interactive --keep-until-expiring \
-    -d "$DOMAIN"; then
+    -d "$DOMAIN" -d "$WWW_DOMAIN"; then
     SSL_ENABLED=true
     log_info "证书申请成功，切换到 HTTPS 配置..."
     sed "s/DOMAIN_NAME/$DOMAIN/g" nginx/conf.d/app.conf.template > nginx/conf.d/app.conf
@@ -158,3 +159,4 @@ echo ""
 log_warn "OAuth 回调地址提醒:"
 echo "  1. GitHub: https://$DOMAIN/api/auth/callback/github"
 echo "  2. Google: https://$DOMAIN/api/auth/callback/google"
+echo "  3. www 将自动 301 到主域名: https://$DOMAIN"

@@ -18,7 +18,25 @@ function toOrigin(value: string | undefined) {
 const SITE_TRUSTED_ORIGINS = [
   toOrigin(process.env.NEXT_PUBLIC_BASE_URL),
   toOrigin(process.env.NEXT_PUBLIC_SITE_URL),
+  toOrigin(process.env.BETTER_AUTH_URL),
 ].filter(Boolean) as string[];
+
+const TRUSTED_ORIGINS = Array.from(new Set([
+  `chrome-extension://${CHROME_EXTENSION_ID}`,
+  ...SITE_TRUSTED_ORIGINS,
+]));
+
+console.info('[auth][env]', {
+  hasBetterAuthSecret: !!process.env.BETTER_AUTH_SECRET,
+  hasGithubClientId: !!process.env.GITHUB_CLIENT_ID,
+  hasGithubClientSecret: !!process.env.GITHUB_CLIENT_SECRET,
+  hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+  hasGoogleClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+  nextPublicBaseUrl: process.env.NEXT_PUBLIC_BASE_URL || null,
+  nextPublicSiteUrl: process.env.NEXT_PUBLIC_SITE_URL || null,
+  betterAuthUrl: process.env.BETTER_AUTH_URL || null,
+  trustedOrigins: TRUSTED_ORIGINS,
+});
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
@@ -56,8 +74,7 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: [
-    `chrome-extension://${CHROME_EXTENSION_ID}`,
-    ...SITE_TRUSTED_ORIGINS,
+    ...TRUSTED_ORIGINS,
   ],
 });
 

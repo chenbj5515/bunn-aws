@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
+import { auth } from "@/lib/auth";
 
 // 创建 next-intl 中间件
 const intlMiddleware = createMiddleware(routing);
@@ -9,10 +10,10 @@ const intlMiddleware = createMiddleware(routing);
 // 公开路由（无需登录即可访问）
 const PUBLIC_ROUTES = ["/home", "/pricing", "/guide", "/login"];
 
-// Session cookie 名称
-const SESSION_COOKIE_NAME = "better-auth.session_token";
+// 受保护路由（未登录时需要跳转到 home）
+const PROTECTED_ROUTES = ["/daily-task", "/channels", "/getting-started"];
 
-export default function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 先执行 intl 中间件
@@ -27,25 +28,33 @@ export default function middleware(request: NextRequest) {
       pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`)
   );
 
-  // 检查用户是否已登录（通过 cookie 检查）
-  const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
-  const isLoggedIn = !!sessionCookie?.value;
+  // 检查是否是受保护路由
+  const isProtectedRoute = PROTECTED_ROUTES.some(
+    (route) =>
+      pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`)
+  );
 
   const locale = pathname.match(/^\/(en|zh)/)?.[1] || "en";
+  const isRootOrHome =
+    pathWithoutLocale === "/home" ||
+    pathWithoutLocale === "/" ||
+    pathWithoutLocale === "";
+
+  // 仅在需要登录态判断的路径上查询 session，避免无意义的 auth 开销
+  let isLoggedIn = false;
+  if (isRootOrHome || isProtectedRoute) {
+    const session = await auth.api.getSession({ headers: request.headers });
+    isLoggedIn = !!session?.user?.id;
+  }
 
   // 如果已登录且访问 home 或根路径，重定向到每日任务
-  if (
-    isLoggedIn &&
-    (pathWithoutLocale === "/home" ||
-      pathWithoutLocale === "/" ||
-      pathWithoutLocale === "")
-  ) {
+  if (isLoggedIn && isRootOrHome) {
     const dailyTaskUrl = new URL(`/${locale}/daily-task`, request.url);
     return NextResponse.redirect(dailyTaskUrl);
   }
 
-  // 如果未登录且不是公开路由，重定向到 home
-  if (!isLoggedIn && !isPublicRoute) {
+  // 如果未登录且访问受保护路由，重定向到 home
+  if (!isLoggedIn && isProtectedRoute && !isPublicRoute) {
     const homeUrl = new URL(`/${locale}/home`, request.url);
     return NextResponse.redirect(homeUrl);
   }

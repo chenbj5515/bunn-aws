@@ -8,7 +8,7 @@ upstream nextjs {
 # HTTP -> HTTPS
 server {
     listen 80;
-    server_name DOMAIN_NAME;
+    server_name DOMAIN_NAME www.DOMAIN_NAME;
 
     # Let's Encrypt HTTP-01 challenge
     location /.well-known/acme-challenge/ {
@@ -21,8 +21,9 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
-    server_name DOMAIN_NAME;
+    listen 443 ssl;
+    http2 on;
+    server_name DOMAIN_NAME www.DOMAIN_NAME;
 
     ssl_certificate /etc/letsencrypt/live/DOMAIN_NAME/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/DOMAIN_NAME/privkey.pem;
@@ -30,6 +31,11 @@ server {
     ssl_prefer_server_ciphers on;
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 1d;
+
+    # 统一主域，避免 www 与裸域分裂
+    if ($host = www.DOMAIN_NAME) {
+        return 301 https://DOMAIN_NAME$request_uri;
+    }
 
     # 反向代理到 Next.js
     location / {
@@ -45,6 +51,9 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Request-Id $request_id;
         
         proxy_cache_bypass $http_upgrade;
         proxy_read_timeout 86400;
