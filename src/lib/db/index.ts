@@ -3,7 +3,7 @@ import postgres from "postgres";
 import * as schema from "./schema";
 
 /**
- * 数据库连接层 - 支持多环境
+ * 数据库连接层 - 支持多环境()
  * 
  * 统一使用 postgres-js 驱动（标准 PostgreSQL）
  */
