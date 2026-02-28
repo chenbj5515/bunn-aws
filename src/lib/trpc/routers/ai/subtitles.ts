@@ -20,7 +20,7 @@ export const extractSubtitles = rateLimitedProcedure
     const { imageBase64 } = input;
 
     const { text, usage } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: openai('gpt-5'),
       messages: [{
         role: 'user',
         content: [
@@ -33,7 +33,7 @@ export const extractSubtitles = rateLimitedProcedure
     after(() => trackUsage({
       inputTokens: usage.inputTokens ?? 0,
       outputTokens: usage.outputTokens ?? 0,
-      model: 'gpt-4o-mini',
+      model: 'gpt-5',
     }));
 
     const processed = processSubtitlesContent(text);
