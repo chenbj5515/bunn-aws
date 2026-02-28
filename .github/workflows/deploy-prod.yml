@@ -79,6 +79,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
           GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -94,6 +95,7 @@ jobs:
             --build-arg GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
             --build-arg GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET}" \
             --secret id=BETTER_AUTH_SECRET,env=BETTER_AUTH_SECRET \
+            --secret id=DATABASE_URL,env=DATABASE_URL \
             -t "${{ steps.tags.outputs.image_sha }}" \
             -t "${{ steps.tags.outputs.image_latest }}" \
             .

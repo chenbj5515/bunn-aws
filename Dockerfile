@@ -50,9 +50,10 @@ ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
 ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 ENV GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 
-# 构建应用
+# 构建应用（auth/db 初始化会在 build 阶段执行，需注入必要 secrets）
 RUN --mount=type=secret,id=BETTER_AUTH_SECRET \
-    sh -ec 'export BETTER_AUTH_SECRET="$(cat /run/secrets/BETTER_AUTH_SECRET)"; pnpm build'
+    --mount=type=secret,id=DATABASE_URL \
+    sh -ec 'export BETTER_AUTH_SECRET="$(cat /run/secrets/BETTER_AUTH_SECRET)"; export DATABASE_URL="$(cat /run/secrets/DATABASE_URL)"; pnpm build'
 
 # Stage 3: 生产运行
 FROM node:20-alpine AS runner

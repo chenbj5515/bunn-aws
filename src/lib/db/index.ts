@@ -12,7 +12,10 @@ import * as schema from "./schema";
  * - 本地/RDS: 使用 postgres-js 驱动（标准 PostgreSQL）
  */
 
-const databaseUrl = process.env.DATABASE_URL!;
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is required for build/runtime database initialization");
+}
 const isNeonDatabase = databaseUrl.includes("neon.tech");
 
 // 根据环境创建数据库连接
