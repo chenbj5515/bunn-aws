@@ -7,16 +7,23 @@
 services:
   # PostgreSQL 数据库
   postgres:
+    # 使用轻量 alpine 版本，减少镜像体积
     image: postgres:16-alpine
     container_name: bunn-postgres
+    # 容器异常退出时自动重启
     restart: unless-stopped
     environment:
+      # 数据库用户名（可在 .env.production 覆盖）
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      # 必填：数据库密码；没配置会直接报错阻止启动（避免空密码上线）
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在 .env.production 中设置 POSTGRES_PASSWORD}
+      # 数据库名（可在 .env.production 覆盖）
       POSTGRES_DB: ${POSTGRES_DB:-bunn_db}
     volumes:
+      # 把数据库数据持久化到 Docker 卷，重启容器不会丢数据
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
+      # 检查数据库是否已准备好接受连接
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-bunn_db}"]
       interval: 10s
       timeout: 5s
@@ -29,10 +36,13 @@ services:
     image: redis:7-alpine
     container_name: bunn-redis
     restart: unless-stopped
+    # 开启 AOF 持久化，降低数据丢失风险
     command: redis-server --appendonly yes
     volumes:
+      # Redis 数据卷持久化
       - redis_data:/data
     healthcheck:
+      # 返回 PONG 代表 Redis 正常
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
@@ -42,18 +52,22 @@ services:
 
   # Next.js 应用
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # 由 deploy.sh / CI 传入 APP_IMAGE，指向本次发布镜像
+    image: ${APP_IMAGE:?请设置 APP_IMAGE，例如 ghcr.io/<owner>/bunn-aws:latest}
     container_name: bunn-app
     restart: unless-stopped
     environment:
+      # 告诉 Node 当前是生产环境
       - NODE_ENV=production
+      # 应用内使用容器网络地址连接 Postgres（主机名是 service 名 postgres）
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-bunn_db}
+      # 应用内连接 Redis（主机名是 service 名 redis）
       - REDIS_URL=redis://redis:6379
     env_file:
+      # 应用其他环境变量从该文件读取
       - .env.production
     depends_on:
+      # app 会等待数据库和 Redis 健康后再启动，减少冷启动失败
       postgres:
         condition: service_healthy
       redis:
@@ -68,14 +82,21 @@ services:
     container_name: bunn-nginx
     restart: unless-stopped
     ports:
+      # 对公网开放 80（HTTP）
       - "80:80"
+      # 对公网开放 443（HTTPS）
       - "443:443"
     volumes:
+      # Nginx 主配置（只读）
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # 站点配置目录（只读）
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # 挂载证书目录（certbot 和 nginx 共用）
       - letsencrypt:/etc/letsencrypt
+      # certbot 的 webroot 目录（证书验证文件会写到这里）
       - certbot_www:/var/www/certbot
     depends_on:
+      # 先有 app 再起 nginx，避免上游还没起来
       - app
     networks:
       - bunn-network
@@ -89,14 +110,20 @@ services:
       - letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     entrypoint: /bin/sh
+    # 每 12 小时尝试续期一次；成功后由 nginx 读取更新后的证书
     command: -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $$!; done"
 
 volumes:
+  # Postgres 数据持久化卷
   postgres_data:
+  # Redis 数据持久化卷
   redis_data:
+  # Let's Encrypt 证书文件持久化卷
   letsencrypt:
+  # certbot webroot 持久化卷
   certbot_www:
 
 networks:
   bunn-network:
+    # bridge 是单机 Docker 最常见网络模式
     driver: bridge

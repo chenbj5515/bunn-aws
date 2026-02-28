@@ -1,0 +1,109 @@
+name: Deploy Production
+
+# 触发条件：
+# 1) 推送到 main 自动触发
+# 2) 在 GitHub Actions 页面手动触发（可传 image_tag）
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Optional custom image tag (defaults to commit SHA)"
+        required: false
+        type: string
+
+permissions:
+  # 允许读取仓库代码
+  contents: read
+  # 允许向 GHCR（GitHub Container Registry）推送镜像
+  packages: write
+
+jobs:
+  deploy:
+    # GitHub 提供的临时 Linux 机器
+    runs-on: ubuntu-latest
+    env:
+      # 生产域名，可在仓库 Variables 里覆盖
+      PROD_DOMAIN: ${{ vars.PROD_DOMAIN || 'bunn.ink' }}
+      # VPS 上部署目录（脚本和 compose 文件会同步到这里）
+      REMOTE_DIR: /opt/bunn-aws
+    steps:
+      - name: Checkout source (without marketplace action)
+        env:
+          # GITHUB_TOKEN 用于拉取当前 commit 代码
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 初始化一个最小 git 工作区并检出当前触发的 commit
+          rm -rf .git
+          git init .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --depth=1 origin "${GITHUB_SHA}"
+          git checkout --force FETCH_HEAD
+
+      - name: Compute image tags
+        id: tags
+        run: |
+          # 统一转小写，避免 GHCR 因大小写导致路径异常
+          OWNER_LC="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          REPO_LC="$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')"
+          IMAGE_BASE="ghcr.io/${OWNER_LC}/${REPO_LC}"
+
+          # 手动触发时可指定自定义 tag；否则默认用 commit SHA
+          TAG_INPUT="${{ github.event.inputs.image_tag }}"
+          if [ -n "$TAG_INPUT" ]; then
+            IMAGE_SHA="${IMAGE_BASE}:${TAG_INPUT}"
+          else
+            IMAGE_SHA="${IMAGE_BASE}:sha-${GITHUB_SHA}"
+          fi
+
+          # 同时维护 latest，方便应急或首发
+          IMAGE_LATEST="${IMAGE_BASE}:latest"
+
+          # 输出给后续步骤使用
+          echo "image_sha=$IMAGE_SHA" >> "$GITHUB_OUTPUT"
+          echo "image_latest=$IMAGE_LATEST" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GHCR
+        run: |
+          # 登录镜像仓库，后续 docker push 才有权限
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push image
+        run: |
+          # 使用仓库根目录 Dockerfile 构建镜像，并打两个标签（sha + latest）
+          docker build -t "${{ steps.tags.outputs.image_sha }}" -t "${{ steps.tags.outputs.image_latest }}" .
+          # 推送到 GHCR，VPS 将从这里拉取新镜像
+          docker push "${{ steps.tags.outputs.image_sha }}"
+          docker push "${{ steps.tags.outputs.image_latest }}"
+
+      - name: Setup SSH key
+        env:
+          # 用于连接 VPS 的私钥（放在 GitHub Secrets）
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          # 写入私钥并设置权限
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # 预先记录服务器指纹，避免首次连接交互确认
+          ssh-keyscan -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy image on VPS
+        run: |
+          # 1) 确保 VPS 目标目录存在
+          ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ${REMOTE_DIR}/nginx/conf.d"
+          # 2) 同步部署所需文件到 VPS
+          scp -P "${{ secrets.VPS_PORT || 22 }}" deploy.sh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/deploy.sh"
+          scp -P "${{ secrets.VPS_PORT || 22 }}" docker-compose.prod.yml "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/docker-compose.prod.yml"
+          scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/nginx.conf "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/nginx.conf"
+          scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/conf.d/app.conf.template "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/conf.d/app.conf.template"
+          scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/conf.d/app.bootstrap.conf.template "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/conf.d/app.bootstrap.conf.template"
+          # 3) 授权脚本执行权限
+          ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "chmod +x ${REMOTE_DIR}/deploy.sh"
+          # 4) 远程执行 deploy.sh，传入域名和本次镜像
+          ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "cd ${REMOTE_DIR} && ./deploy.sh deploy --domain ${PROD_DOMAIN} --image ${{ steps.tags.outputs.image_sha }}"
