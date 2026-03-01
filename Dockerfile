@@ -67,11 +67,14 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # 复制构建产物
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# 设置文件权限
+# 预创建运行时缓存目录，避免 Next.js 写入 .next/cache 时权限不足
+RUN mkdir -p /app/.next/cache && chown -R nextjs:nodejs /app/.next
+
+# 使用非 root 用户运行
 USER nextjs
 
 # 暴露端口

@@ -150,8 +150,6 @@ export default async function VideoViewerPage({
     fetchVideoTitle(videoId, session.user.id),
   ]);
 
-  console.log(memoCardsData, "memoCardsData========")
-
   return (
     <VideoViewerClient
       memoCardList={memoCardsData}
