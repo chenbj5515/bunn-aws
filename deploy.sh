@@ -22,7 +22,6 @@ DEFAULT_APP_IMAGE="ghcr.io/baijinchen/bunn-aws:latest"
 MODE=""
 DOMAIN=""
 APP_IMAGE=""
-SKIP_HEALTHCHECK=false
 
 # 统一日志函数，方便在 CI 和 SSH 会话中快速定位问题
 log_info() {
@@ -41,8 +40,8 @@ usage() {
     cat <<'EOF'
 Usage:
   ./deploy.sh init --domain <domain> [--image <image>]
-  ./deploy.sh deploy --image <image> [--domain <domain>] [--skip-healthcheck]
-  ./deploy.sh rollback --image <image> [--domain <domain>] [--skip-healthcheck]
+  ./deploy.sh deploy --image <image> [--domain <domain>]
+  ./deploy.sh rollback --image <image> [--domain <domain>]
 
 Examples:
   ./deploy.sh init --domain bunn.ink --image ghcr.io/baijinchen/bunn-aws:latest
@@ -71,10 +70,6 @@ parse_args() {
             --image)
                 APP_IMAGE="${2:-}"
                 shift 2
-                ;;
-            --skip-healthcheck)
-                SKIP_HEALTHCHECK=true
-                shift
                 ;;
             -h|--help)
                 usage
@@ -200,33 +195,8 @@ deployed_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 }
 
-# 发布后健康检查：
-# - 有域名时检查 https://domain
-# - 无域名时检查本机 http://127.0.0.1
-run_healthcheck() {
-    if [ "$SKIP_HEALTHCHECK" = "true" ]; then
-        log_warn "已跳过健康检查（--skip-healthcheck）"
-        return
-    fi
-
-    local target_url
-    target_url="http://127.0.0.1"
-    if [ -n "$DOMAIN" ]; then
-        target_url="https://$DOMAIN"
-    fi
-
-    log_info "执行健康检查: $target_url"
-    # curl -f: HTTP 4xx/5xx 视为失败
-    if curl -fsS -o /dev/null --max-time 15 "$target_url"; then
-        log_info "健康检查通过"
-    else
-        log_error "健康检查失败: $target_url"
-        exit 1
-    fi
-}
-
 # init 模式：一台新 VPS 的首次部署
-# 主要做：防火墙 -> 启服务 -> 申请证书 -> 健康检查
+# 主要做：防火墙 -> 启服务 -> 申请证书
 run_init() {
     if [ -z "$DOMAIN" ]; then
         log_error "init 模式必须传入 --domain"
@@ -247,7 +217,6 @@ run_init() {
 
     # 证书失败不阻塞首发，先保证站点可用
     request_certificate || true
-    run_healthcheck
     write_release_info
     compose_prod ps
 
@@ -270,7 +239,6 @@ run_deploy_like() {
     compose_prod up -d app
     compose_prod ps
 
-    run_healthcheck
     write_release_info
 
     log_info "发布完成: $APP_IMAGE"
