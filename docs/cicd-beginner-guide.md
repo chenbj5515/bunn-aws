@@ -34,7 +34,7 @@
 4. `init` 会做这些事：
    - 启动 `postgres`、`redis`、`app`、`nginx`
    - 首次申请 HTTPS 证书（Let's Encrypt）
-   - 尝试数据库迁移与健康检查
+   - 执行健康检查
 
 > 说明：`init` 是一次性开荒动作。只要环境不重建，后续不需要重复执行。
 
@@ -52,7 +52,7 @@
 7. `deploy.sh` 在 VPS 上执行：
    - `docker compose pull app`（拉新镜像）
    - `docker compose up -d app`（重建 app 容器）
-   - 可选数据库迁移、健康检查
+   - 健康检查
    - 写 `.release` 记录这次上线信息
 
 ---

@@ -22,7 +22,6 @@ DEFAULT_APP_IMAGE="ghcr.io/baijinchen/bunn-aws:latest"
 MODE=""
 DOMAIN=""
 APP_IMAGE=""
-SKIP_MIGRATE=false
 SKIP_HEALTHCHECK=false
 
 # 统一日志函数，方便在 CI 和 SSH 会话中快速定位问题
@@ -42,8 +41,8 @@ usage() {
     cat <<'EOF'
 Usage:
   ./deploy.sh init --domain <domain> [--image <image>]
-  ./deploy.sh deploy --image <image> [--domain <domain>] [--skip-migrate] [--skip-healthcheck]
-  ./deploy.sh rollback --image <image> [--domain <domain>] [--skip-migrate] [--skip-healthcheck]
+  ./deploy.sh deploy --image <image> [--domain <domain>] [--skip-healthcheck]
+  ./deploy.sh rollback --image <image> [--domain <domain>] [--skip-healthcheck]
 
 Examples:
   ./deploy.sh init --domain bunn.ink --image ghcr.io/baijinchen/bunn-aws:latest
@@ -72,10 +71,6 @@ parse_args() {
             --image)
                 APP_IMAGE="${2:-}"
                 shift 2
-                ;;
-            --skip-migrate)
-                SKIP_MIGRATE=true
-                shift
                 ;;
             --skip-healthcheck)
                 SKIP_HEALTHCHECK=true
@@ -205,23 +200,6 @@ deployed_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 EOF
 }
 
-# 在 app 容器内尝试执行数据库迁移
-# 失败时只告警不中断（避免影响纯前端变更发布）
-run_migration() {
-    if [ "$SKIP_MIGRATE" = "true" ]; then
-        log_warn "已跳过数据库迁移（--skip-migrate）"
-        return
-    fi
-
-    log_info "尝试执行数据库迁移（容器内 pnpm db:migrate）..."
-    # 仅当镜像内有 pnpm 且包含迁移上下文时才会真正执行
-    if compose_prod exec -T app sh -lc "command -v pnpm >/dev/null 2>&1 && pnpm db:migrate"; then
-        log_info "数据库迁移完成"
-    else
-        log_warn "未执行数据库迁移（镜像内无 pnpm 或未包含迁移上下文），请按需手动迁移"
-    fi
-}
-
 # 发布后健康检查：
 # - 有域名时检查 https://domain
 # - 无域名时检查本机 http://127.0.0.1
@@ -248,7 +226,7 @@ run_healthcheck() {
 }
 
 # init 模式：一台新 VPS 的首次部署
-# 主要做：防火墙 -> 启服务 -> 申请证书 -> 迁移 -> 健康检查
+# 主要做：防火墙 -> 启服务 -> 申请证书 -> 健康检查
 run_init() {
     if [ -z "$DOMAIN" ]; then
         log_error "init 模式必须传入 --domain"
@@ -269,7 +247,6 @@ run_init() {
 
     # 证书失败不阻塞首发，先保证站点可用
     request_certificate || true
-    run_migration
     run_healthcheck
     write_release_info
     compose_prod ps
@@ -293,7 +270,6 @@ run_deploy_like() {
     compose_prod up -d app
     compose_prod ps
 
-    run_migration
     run_healthcheck
     write_release_info
 
