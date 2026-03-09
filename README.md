@@ -9,7 +9,7 @@
 - **next-intl 4** - 国际化支持（中文/英文）
 - **Drizzle ORM** - 类型安全的 TypeScript ORM
 - **Better Auth** - 现代化的身份认证解决方案
-- **Neon PostgreSQL** - Serverless PostgreSQL 数据库
+- **PostgreSQL 16** - 通过 Docker 自托管，开发/生产环境均使用容器管理
 
 ## 快速开始
 
@@ -19,20 +19,28 @@
 pnpm install
 ```
 
-### 2. 配置环境变量
-
-复制 `.env.example` 到 `.env.local` 并填写必要的配置：
+### 2. 启动本地数据库（Docker）
 
 ```bash
-cp .env.example .env.local
+# 启动 PostgreSQL 和 Redis
+docker compose up -d postgres redis
 ```
 
-必需的环境变量：
+默认连接信息：
+- PostgreSQL：`postgresql://postgres:postgres@localhost:5432/bunn_db`
+- Redis：`redis://localhost:6379`
+
+### 3. 配置环境变量
+
+复制 `.env.development` 到 `.env.local`：
+
+```bash
+cp .env.development .env.local
+```
+
+在 `.env.local` 中追加以下配置：
 
 ```env
-# 数据库连接 (推荐使用 Neon: https://neon.tech)
-DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
-
 # Better Auth 密钥 (使用 openssl rand -base64 32 生成)
 BETTER_AUTH_SECRET="your-secret-key"
 BETTER_AUTH_URL="http://localhost:3000"
@@ -41,7 +49,7 @@ BETTER_AUTH_URL="http://localhost:3000"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-### 3. 初始化数据库
+### 4. 初始化数据库
 
 ```bash
 # 推送 schema 到数据库
@@ -52,7 +60,7 @@ pnpm db:generate
 pnpm db:migrate
 ```
 
-### 4. 启动开发服务器
+### 5. 启动开发服务器
 
 ```bash
 pnpm dev
@@ -132,7 +140,7 @@ pnpm db:studio    # 打开 Drizzle Studio
 ### 数据库
 
 - 类型安全的 Drizzle ORM
-- PostgreSQL 支持（推荐 Neon）
+- PostgreSQL 16，通过 Docker 容器自托管
 - 自动迁移生成
 - Drizzle Studio 可视化管理
 

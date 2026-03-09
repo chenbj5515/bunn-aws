@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
@@ -7,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { OriginalText } from '@/components/memo-card/original-text';
 import { getTranslationByLocale } from '@/lib/translation-utils';
+import { updateMemoCardTranslationInDB } from '@/components/memo-card/server-functions/update-translation';
 import { captureStateAtom, closeCaptureAtom, CaptureStage } from '../../_store';
 import { FadeItem } from './fade-item';
 import type { WordSegmentationV2 } from '@/types/extended-memo-card';
@@ -21,9 +23,21 @@ export default function CompletedView() {
   const cardData = state.stage === CaptureStage.Completed ? state.cardData : null;
   const imageUrl = state.stage === CaptureStage.Completed ? state.imageUrl : '';
 
+  const initialTranslation = cardData ? getTranslationByLocale(cardData.translation, locale) : '';
+  const [translationText, setTranslationText] = useState(initialTranslation);
+
   const handleClose = () => {
     closeCapture();
     router.refresh();
+  };
+
+  const handleTranslationBlur = async () => {
+    if (!cardData) return;
+    const original = cardData.translation;
+    const translationObj: Record<string, string> = typeof original === 'string'
+      ? { [locale]: translationText }
+      : { ...original, [locale]: translationText };
+    await updateMemoCardTranslationInDB(cardData.id, translationObj);
   };
 
   if (!cardData) return null;
@@ -59,9 +73,13 @@ export default function CompletedView() {
 
     <FadeItem delay={0.16}>
       <div className="mb-12 w-full text-left">
-        <div className="text-[20px] text-white/90 whitespace-pre-wrap">
-          {getTranslationByLocale(cardData.translation, locale)}
-        </div>
+        <textarea
+          value={translationText}
+          onChange={(e) => setTranslationText(e.target.value)}
+          onBlur={handleTranslationBlur}
+          rows={3}
+          className="w-full bg-white/10 focus:bg-white/15 border border-white/20 focus:border-white/40 rounded-lg px-3 py-2 text-[20px] text-white/90 whitespace-pre-wrap resize-none outline-none transition-colors duration-150 placeholder:text-white/40"
+        />
       </div>
     </FadeItem>
 

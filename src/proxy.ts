@@ -34,7 +34,12 @@ export default async function proxy(request: NextRequest) {
       pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`)
   );
 
-  const locale = pathname.match(/^\/(en|zh)/)?.[1] || "en";
+  // 从路径中提取 locale，根路径 / 时从 intl 中间件的重定向目标中获取
+  let locale = pathname.match(/^\/(en|zh)/)?.[1];
+  if (!locale) {
+    const redirectLocation = response.headers.get("location");
+    locale = redirectLocation?.match(/^\/(en|zh)/)?.[1] ?? "en";
+  }
   const isRootOrHome =
     pathWithoutLocale === "/home" ||
     pathWithoutLocale === "/" ||
@@ -51,6 +56,12 @@ export default async function proxy(request: NextRequest) {
   if (isLoggedIn && isRootOrHome) {
     const dailyTaskUrl = new URL(`/${locale}/daily-task`, request.url);
     return NextResponse.redirect(dailyTaskUrl);
+  }
+
+  // 如果未登录且访问根路径（/ 或 /en 或 /zh），重定向到 home
+  if (!isLoggedIn && (pathWithoutLocale === "/" || pathWithoutLocale === "")) {
+    const homeUrl = new URL(`/${locale}/home`, request.url);
+    return NextResponse.redirect(homeUrl);
   }
 
   // 如果未登录且访问受保护路由，重定向到 home
