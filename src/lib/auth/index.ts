@@ -3,8 +3,15 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/lib/db/index';
 import * as schema from '@/lib/db/schema';
 import { cache } from 'react';
+import { initUserSettings } from './helpers/init-user-settings';
 
 const CHROME_EXTENSION_ID = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || 'lmepenbgdgfihjehjnanphnfhobclghl';
+
+/** 备选头像池：当 OAuth 未返回头像时随机分配 */
+const AVATAR_POOL = [
+  '/profiles/01.png', '/profiles/02.png', '/profiles/03.png', '/profiles/04.png', '/profiles/05.png',
+  '/profiles/06.png', '/profiles/07.png', '/profiles/08.png', '/profiles/09.png', '/profiles/10.png',
+];
 
 function toOrigin(value: string | undefined) {
   if (!value) return null;
@@ -45,6 +52,23 @@ export const auth = betterAuth({
     provider: 'pg',
     schema: schema,
   }),
+
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          if (!user.image || user.image.trim() === '') {
+            const idx = Math.floor(Math.random() * AVATAR_POOL.length);
+            return { data: { ...user, image: AVATAR_POOL[idx] } };
+          }
+          return { data: user };
+        },
+        after: async (user) => {
+          await initUserSettings(user.id);
+        },
+      },
+    },
+  },
 
   emailAndPassword: {
     enabled: true,
