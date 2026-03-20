@@ -53,6 +53,17 @@ export const auth = betterAuth({
     schema: schema,
   }),
 
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false,
+      },
+    },
+  },
+
   databaseHooks: {
     user: {
       create: {

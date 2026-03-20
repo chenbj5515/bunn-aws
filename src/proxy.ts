@@ -78,6 +78,7 @@ export const config = {
   // - API routes (/api)
   // - Static files (/_next, /images, etc.)
   // - Files with extensions (.ico, .svg, etc.)
+  // - tableman routes (不需要国际化)
   matcher: [
     // Enable a redirect to a matching locale at the root
     "/",
@@ -88,6 +89,7 @@ export const config = {
 
     // Enable redirects that add missing locales
     // (e.g. `/pathnames` -> `/en/pathnames`)
-    "/((?!api|_next|_vercel|.*\\..*).*)",
+    // 排除 tableman 路径
+    "/((?!api|_next|_vercel|tableman|.*\\..*).*)",
   ],
 };
