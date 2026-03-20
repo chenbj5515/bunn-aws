@@ -26,7 +26,7 @@ export default function LandingPage() {
       `}</style>
 
       {/* Hero Section */}
-      <div className="relative flex flex-col justify-center items-center mx-auto px-6 pt-28 pb-[64px] max-w-7xl min-h-[85vh] text-center">
+      <div className="relative flex flex-col justify-start items-center mx-auto px-6 pt-[170px] pb-[64px] max-w-7xl min-h-[85vh] text-center">
         {/* Hero content */}
         <h1
           className={`${locale === "zh" ? "mb-12" : "mb-16"} font-bold text-[54px] leading-[1.3] tracking-tight max-w-5xl`}
