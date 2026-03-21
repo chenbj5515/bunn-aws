@@ -5,6 +5,21 @@ import { ERROR_CODES } from '@/server/constants';
 import { CaptureFailureReason } from "../types";
 
 // ============================================
+// Performance Logging
+// ============================================
+const PERF_LOG_PREFIX = '[Capture-Perf]';
+
+function perfLog(step: string, startTime?: number): number {
+  const now = performance.now();
+  if (startTime !== undefined) {
+    console.log(`${PERF_LOG_PREFIX} ${step} - 耗时: ${(now - startTime).toFixed(2)}ms`);
+  } else {
+    console.log(`${PERF_LOG_PREFIX} ${step} - 开始时间: ${now.toFixed(2)}ms`);
+  }
+  return now;
+}
+
+// ============================================
 // Result Types
 // ============================================
 
@@ -309,8 +324,17 @@ export async function captureScreenshot(
 export async function extractSubtitlesFromImage(
   imageBlob: Blob
 ): Promise<ExtractSubtitlesResult> {
+  const totalStart = perfLog(`extractSubtitlesFromImage 开始 (图片大小: ${(imageBlob.size / 1024).toFixed(2)}KB)`);
+  
+  const base64Start = perfLog('blobToBase64 开始');
   const imageBase64 = await blobToBase64(imageBlob);
+  perfLog(`blobToBase64 完成 (base64长度: ${imageBase64.length})`, base64Start);
+  
+  const apiStart = perfLog('trpc.ai.extractSubtitles API 请求开始');
   const result = await trpc.ai.extractSubtitles.mutate({ imageBase64 });
+  perfLog('trpc.ai.extractSubtitles API 请求完成', apiStart);
+  
+  perfLog('extractSubtitlesFromImage 总耗时', totalStart);
 
   if (result.errorCode !== null) {
     return {

@@ -11,16 +11,27 @@ import { extractSubtitlesInput, extractSubtitlesOutput } from './type';
 import { trackUsage } from '@/lib/auth/billing';
 import { ERROR_CODES } from '@/server/constants';
 
+const PERF_LOG_PREFIX = '[ExtractSubtitles-Perf]';
+
 export const extractSubtitles = rateLimitedProcedure
   .input(extractSubtitlesInput)
   .output(extractSubtitlesOutput)
   .mutation(async ({ input, ctx }) => {
-    if (ctx.rateLimited) return { errorCode: ERROR_CODES.TOKEN_LIMIT_EXCEEDED };
+    const totalStart = performance.now();
+    console.log(`${PERF_LOG_PREFIX} 服务端处理开始 (base64长度: ${input.imageBase64.length})`);
+    
+    if (ctx.rateLimited) {
+      console.log(`${PERF_LOG_PREFIX} 被限流，直接返回`);
+      return { errorCode: ERROR_CODES.TOKEN_LIMIT_EXCEEDED };
+    }
 
     const { imageBase64 } = input;
 
+    const aiStart = performance.now();
+    console.log(`${PERF_LOG_PREFIX} generateText (gpt-4o) 调用开始`);
+    
     const { text, usage } = await generateText({
-      model: openai('gpt-5'),
+      model: openai('gpt-4o'),
       messages: [{
         role: 'user',
         content: [
@@ -29,14 +40,22 @@ export const extractSubtitles = rateLimitedProcedure
         ],
       }],
     });
+    
+    const aiEnd = performance.now();
+    console.log(`${PERF_LOG_PREFIX} generateText (gpt-4o) 调用完成 - 耗时: ${(aiEnd - aiStart).toFixed(2)}ms`);
+    console.log(`${PERF_LOG_PREFIX} Token 使用: input=${usage.inputTokens}, output=${usage.outputTokens}`);
 
     after(() => trackUsage({
       inputTokens: usage.inputTokens ?? 0,
       outputTokens: usage.outputTokens ?? 0,
-      model: 'gpt-5',
+      model: 'gpt-4o',
     }));
 
+    const processStart = performance.now();
     const processed = processSubtitlesContent(text);
+    console.log(`${PERF_LOG_PREFIX} processSubtitlesContent 耗时: ${(performance.now() - processStart).toFixed(2)}ms`);
+    console.log(`${PERF_LOG_PREFIX} 服务端处理总耗时: ${(performance.now() - totalStart).toFixed(2)}ms`);
+    
     if (processed.ok) return { errorCode: null, subtitles: processed.subtitles };
     return { errorCode: subtitleKindToErrorCode(processed.kind) };
   });
