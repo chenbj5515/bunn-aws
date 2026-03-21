@@ -65,10 +65,30 @@ export function VideoProgressBarMulti({
   const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null); // 当前激活的标记ID（基于距离）
   const [lastSeekAt, setLastSeekAt] = useState(0); // 最近一次 seek 的时间戳，避免读取到瞬时0
 
-  const getValidMarkers = useCallback(() => {
-    return markers.filter((m) => {
-      const { startSec } = parseYouTubeUrl(m.contextUrl);
-      return startSec !== undefined && startSec !== null && startSec >= 0 && startSec <= duration;
+  // 计算卡片位置，确保相邻卡片有最小间隔
+  const validMarkersWithPosition = useMemo(() => {
+    const MIN_GAP_PERCENT = 6; // 最小间隔百分比（约60px在1000px宽度下）
+    
+    // 计算原始位置并排序
+    const sorted = markers
+      .map((m) => {
+        const { startSec } = parseYouTubeUrl(m.contextUrl);
+        return {
+          ...m,
+          startSec: startSec ?? -1,
+          originalLeft: duration > 0 ? ((startSec ?? 0) / duration) * 100 : 0,
+        };
+      })
+      .filter((m) => m.startSec >= 0 && m.startSec <= duration)
+      .sort((a, b) => a.startSec - b.startSec);
+
+    // 从左到右调整位置，确保最小间隔
+    let prevAdjustedLeft = -MIN_GAP_PERCENT;
+    return sorted.map((marker) => {
+      const minLeft = prevAdjustedLeft + MIN_GAP_PERCENT;
+      const adjustedLeft = Math.min(Math.max(marker.originalLeft, minLeft), 100);
+      prevAdjustedLeft = adjustedLeft;
+      return { ...marker, adjustedLeft };
     });
   }, [markers, duration]);
 
@@ -142,15 +162,14 @@ export function VideoProgressBarMulti({
 
     setMousePosition({ x: mouseX, y: mouseY });
 
-    // 计算鼠标到每个标记的距离，找到最近的一个
+    // 计算鼠标到每个标记的距离，找到最近的一个（使用调整后的位置）
     let closestMarkerId: string | null = null;
     let minDistance = Infinity;
     const activationThreshold = 60; // 激活距离阈值（像素）
 
-    const currentValidMarkers = getValidMarkers();
-    currentValidMarkers.forEach((m) => {
-      const { startSec } = parseYouTubeUrl(m.contextUrl);
-      const markerX = (startSec! / duration) * rect.width;
+    validMarkersWithPosition.forEach((m) => {
+      // 使用调整后的位置计算激活区域
+      const markerX = (m.adjustedLeft / 100) * rect.width;
       const markerY = -45; // 标记的Y位置（相对于进度条中心）
 
       const distance = Math.sqrt(
@@ -164,7 +183,7 @@ export function VideoProgressBarMulti({
     });
 
     setActiveMarkerId(closestMarkerId);
-  }, [isDragging, getValidMarkers, duration]);
+  }, [isDragging, validMarkersWithPosition]);
 
   const handleMouseLeaveProgress = useCallback(() => {
     setMousePosition(null);
@@ -212,14 +231,6 @@ export function VideoProgressBarMulti({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // 直接遍历所有markers，简化逻辑
-  const validMarkers = useMemo(() => {
-    return markers.filter((m) => {
-      const { startSec } = parseYouTubeUrl(m.contextUrl);
-      return startSec !== undefined && startSec !== null && startSec >= 0 && startSec <= duration;
-    });
-  }, [markers, duration]);
-
   return (
     <div className="right-0 bottom-0 left-0 z-2000 fixed bg-linear-to-t from-[#000000CC] to-transparent p-4">{/* 叠加在最顶层 */}
       <div className="flex justify-center mx-auto max-w-5xl">
@@ -254,16 +265,14 @@ export function VideoProgressBarMulti({
             <div className="top-1/2 -left-12 absolute font-sans text-white text-sm -translate-y-1/2">{formatTime(displayTime)}</div>
             <div className="top-1/2 -right-12 absolute font-sans text-white text-sm -translate-y-1/2">{formatTime(duration)}</div>
 
-            {/* 多卡片标记 - 直接遍历所有有效markers */}
-            {validMarkers.map((m, idx) => {
-              const { startSec } = parseYouTubeUrl(m.contextUrl);
-              const left = (startSec! / duration) * 100;
+            {/* 多卡片标记 - 遍历所有有效markers，使用调整后的位置 */}
+            {validMarkersWithPosition.map((m) => {
               const avatarUrl = m.avatarUrl;
               const isActive = activeMarkerId === m.id;
               const zIndex = isActive ? 4000 : 3000; // 激活的标记层级更高
 
               return (
-                <div key={m.id} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${left}%`, top: '-45px', zIndex }}>
+                <div key={m.id} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${m.adjustedLeft}%`, top: '-45px', zIndex }}>
                   <div className={`relative flex justify-center items-center bg-white rounded-full w-[52px] h-[52px] transition-transform cursor-pointer ${isActive ? 'scale-110' : 'scale-100'}`}
                     onMouseDown={(e) => {
                       e.stopPropagation();
@@ -271,11 +280,11 @@ export function VideoProgressBarMulti({
                       if (videoPlayerRef) {
                         // 获取当前播放状态
                         const currentState = videoPlayerRef.getPlayerState();
-                        // 跳转到标记时间点
-                        videoPlayerRef.seekTo(startSec!, true);
+                        // 跳转到原始标记时间点（使用 startSec 而不是 adjustedLeft）
+                        videoPlayerRef.seekTo(m.startSec, true);
                         // 立即更新本地 UI，避免短暂回到0再跳到目标，并设置 seek 保护窗口
-                        setCurrentTime(startSec!);
-                        setLastValidTime(startSec!);
+                        setCurrentTime(m.startSec);
+                        setLastValidTime(m.startSec);
                         setLastSeekAt(Date.now());
                         // 确保视频保持原来的播放状态（如果当前是暂停的，seekTo后仍然暂停）
                         // YouTube Player API 的 seekTo 不会改变播放状态，但这里添加保障措施
