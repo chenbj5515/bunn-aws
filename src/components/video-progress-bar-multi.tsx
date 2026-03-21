@@ -67,7 +67,7 @@ export function VideoProgressBarMulti({
 
   // 计算卡片位置，确保相邻卡片有最小间隔
   const validMarkersWithPosition = useMemo(() => {
-    const MIN_GAP_PERCENT = 6; // 最小间隔百分比（约60px在1000px宽度下）
+    const MIN_GAP_PERCENT = 1.2; // 最小间隔百分比（约12px在1000px宽度下）
     
     // 计算原始位置并排序
     const sorted = markers
