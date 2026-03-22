@@ -1,8 +1,6 @@
 'use client';
 
 import { X } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
 import InlineLimitBanner from '@/components/ui/inline-limit-banner';
 
 interface LimitRateProps {
@@ -12,32 +10,17 @@ interface LimitRateProps {
 }
 
 export function LimitRate({ show, onClose, className = '' }: LimitRateProps) {
-  const t = useTranslations('common');
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // 处理点击外部关闭
-  useEffect(() => {
-    if (!show) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [show, onClose]);
-
   if (!show) return null;
 
   return (
-    <div className="z-1002 fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
+    <div
+      className="z-1002 fixed inset-0 flex justify-center items-center bg-black bg-opacity-50"
+      onClick={onClose}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
       <div
-        ref={containerRef}
         className={`bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 ${className}`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-gray-900 text-lg" />
