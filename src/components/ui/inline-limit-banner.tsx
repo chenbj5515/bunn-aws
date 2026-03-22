@@ -40,6 +40,7 @@ export function InlineLimitBanner({ className = '', fontSizePx, upgradeClassName
               href={pricingHref}
               className={`${lobster.className} hover:opacity-80 underline ${upgradeClassName ?? ''}`}
               style={fontSizeStyle}
+              onClick={(e) => e.stopPropagation()}
             >
               {chunks}
             </Link>
