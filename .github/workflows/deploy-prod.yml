@@ -120,65 +120,122 @@ jobs:
           ssh-keyscan -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Generate .env.production for VPS
+        env:
+          # 所有需要同步到 VPS 的环境变量
+          # PostgreSQL
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          # Auth
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          AUTH_GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+          AUTH_GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          # Stripe
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_ID: ${{ secrets.STRIPE_PRICE_ID }}
+          STRIPE_PRICE_ID_ONE_MONTH_ACCESS: ${{ secrets.STRIPE_PRICE_ID_ONE_MONTH_ACCESS }}
+          # GitHub API
+          DEPLOY_GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ secrets.GITHUB_OWNER }}
+          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
+          GITHUB_WORKFLOW_FILENAME: ${{ secrets.GITHUB_WORKFLOW_FILENAME }}
+          # Upstash Redis
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          # OpenAI
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Google APIs
+          GOOGLE_VISION_API_KEY: ${{ secrets.GOOGLE_VISION_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          # Vercel Blob
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          # Microsoft TTS
+          PUBLIC_SUBSCRIPTION_KEY: ${{ secrets.PUBLIC_SUBSCRIPTION_KEY }}
+          PUBLIC_REGION: ${{ secrets.PUBLIC_REGION }}
+          NEXT_PUBLIC_SUBSCRIPTION_KEY: ${{ secrets.NEXT_PUBLIC_SUBSCRIPTION_KEY }}
+          NEXT_PUBLIC_REGION: ${{ secrets.NEXT_PUBLIC_REGION }}
+          # URLs
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          # Other
+          DEEPAI_API_KEY: ${{ secrets.DEEPAI_API_KEY }}
+          MIN_MAX_API_KEY: ${{ secrets.MIN_MAX_API_KEY }}
+          NEXT_PUBLIC_CHROME_EXTENSION_ID: ${{ secrets.NEXT_PUBLIC_CHROME_EXTENSION_ID }}
+          LETSENCRYPT_EMAIL: ${{ secrets.LETSENCRYPT_EMAIL }}
         run: |
           # 生成运行时环境变量文件（每次部署完整覆盖，确保与 GitHub Secrets 同步）
-          # 注意：DATABASE_URL 和 REDIS_URL 由 docker-compose 动态生成，不在此处配置
-          cat > .env.production.generated << 'EOF'
+          # 使用 shell 默认值语法处理未设置的变量
+          cat > .env.production.generated << EOF
           # ===========================================
           # 生产环境变量（由 CI/CD 自动生成，请勿手动编辑）
-          # 生成时间: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
           # ===========================================
+          NODE_ENV=production
 
-          # PostgreSQL（docker-compose 会覆盖 DATABASE_URL，这里只配置认证信息）
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'bunn_db' }}
+          # PostgreSQL
+          POSTGRES_USER=${POSTGRES_USER:-postgres}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+          POSTGRES_DB=${POSTGRES_DB:-bunn_db}
 
           # Auth
-          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
-          GITHUB_CLIENT_ID=${{ secrets.AUTH_GITHUB_CLIENT_ID }}
-          GITHUB_CLIENT_SECRET=${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
-          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+          BETTER_AUTH_URL=${BETTER_AUTH_URL}
+          JWT_SECRET=${JWT_SECRET:-${BETTER_AUTH_SECRET}}
+          GITHUB_CLIENT_ID=${AUTH_GITHUB_CLIENT_ID}
+          GITHUB_CLIENT_SECRET=${AUTH_GITHUB_CLIENT_SECRET}
+          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 
           # Stripe
-          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
-          STRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }}
-          STRIPE_PRICE_ID_ONE_MONTH_ACCESS=${{ secrets.STRIPE_PRICE_ID_ONE_MONTH_ACCESS }}
+          STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+          STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+          STRIPE_PRICE_ID=${STRIPE_PRICE_ID}
+          STRIPE_PRICE_ID_ONE_MONTH_ACCESS=${STRIPE_PRICE_ID_ONE_MONTH_ACCESS}
 
           # GitHub API (for builds page)
-          DEPLOY_GITHUB_TOKEN=${{ secrets.DEPLOY_GITHUB_TOKEN }}
+          DEPLOY_GITHUB_TOKEN=${DEPLOY_GITHUB_TOKEN}
+          GITHUB_OWNER=${GITHUB_OWNER:-chenbj5515}
+          GITHUB_REPO=${GITHUB_REPO:-youtube-channel-banner-crawler}
+          GITHUB_WORKFLOW_FILENAME=${GITHUB_WORKFLOW_FILENAME:-crawler.yml}
 
           # Upstash Redis
-          UPSTASH_REDIS_REST_URL=${{ secrets.UPSTASH_REDIS_REST_URL }}
-          UPSTASH_REDIS_REST_TOKEN=${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+          UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
 
           # OpenAI
-          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY=${OPENAI_API_KEY}
 
           # Google APIs
-          GOOGLE_VISION_API_KEY=${{ secrets.GOOGLE_VISION_API_KEY }}
-          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_VISION_API_KEY=${GOOGLE_VISION_API_KEY}
+          GOOGLE_API_KEY=${GOOGLE_API_KEY}
 
           # Vercel Blob
-          BLOB_READ_WRITE_TOKEN=${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          BLOB_READ_WRITE_TOKEN=${BLOB_READ_WRITE_TOKEN}
 
           # Microsoft TTS
-          PUBLIC_SUBSCRIPTION_KEY=${{ secrets.PUBLIC_SUBSCRIPTION_KEY }}
-          PUBLIC_REGION=${{ secrets.PUBLIC_REGION }}
+          PUBLIC_SUBSCRIPTION_KEY=${PUBLIC_SUBSCRIPTION_KEY}
+          PUBLIC_REGION=${PUBLIC_REGION:-eastasia}
+          NEXT_PUBLIC_SUBSCRIPTION_KEY=${NEXT_PUBLIC_SUBSCRIPTION_KEY:-${PUBLIC_SUBSCRIPTION_KEY}}
+          NEXT_PUBLIC_REGION=${NEXT_PUBLIC_REGION:-eastasia}
+
+          # URLs
+          NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-https://bunn.ink}
+          NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://www.bunn.ink}
+          API_BASE_URL=${API_BASE_URL:-https://bunn.ink}
+          NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://bunn.ink}
 
           # Other
-          DEEPAI_API_KEY=${{ secrets.DEEPAI_API_KEY }}
-          MIN_MAX_API_KEY=${{ secrets.MIN_MAX_API_KEY }}
-
-          # Let's Encrypt
-          LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}
+          DEEPAI_API_KEY=${DEEPAI_API_KEY}
+          MIN_MAX_API_KEY=${MIN_MAX_API_KEY}
+          NEXT_PUBLIC_CHROME_EXTENSION_ID=${NEXT_PUBLIC_CHROME_EXTENSION_ID:-lmepenbgdgfihjehjnanphnfhobclghl}
+          LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@bunn.ink}
           EOF
-          # 移除空行和只有空白的行，清理格式
-          sed -i '/^[[:space:]]*$/d' .env.production.generated
-          sed -i 's/^[[:space:]]*//' .env.production.generated
 
       - name: Deploy image on VPS
         run: |
