@@ -276,7 +276,10 @@ export function UsersTable({
                   />
                 </TableHead>
                 <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium">
-                  用户标识
+                  用户 ID
+                </TableHead>
+                <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium">
+                  邮箱
                 </TableHead>
                 <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium">
                   Token 使用量
@@ -313,11 +316,14 @@ export function UsersTable({
                         />
                       )}
                     </TableCell>
+                    <TableCell className="font-mono text-xs text-neutral-600 max-w-[280px]">
+                      <span className="truncate block select-all">
+                        {String(row.id ?? "—")}
+                      </span>
+                    </TableCell>
                     <TableCell className="font-medium text-neutral-900 max-w-[240px]">
                       <span className="truncate block">
-                        {String(
-                          row.email ?? row.username ?? row.name ?? row.id ?? "—"
-                        )}
+                        {String(row.email ?? row.username ?? row.name ?? "—")}
                       </span>
                     </TableCell>
                     <TableCell className="tabular-nums text-neutral-600">

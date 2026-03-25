@@ -149,6 +149,51 @@ class RedisWrapper {
   }
 
   /**
+   * 获取 key 的类型
+   */
+  async type(key: string): Promise<string> {
+    return this.client.type(key);
+  }
+
+  /**
+   * 获取 hash 的所有字段和值
+   */
+  async hgetall(key: string): Promise<Record<string, string>> {
+    return this.client.hgetall(key);
+  }
+
+  /**
+   * 获取 list 的指定范围
+   */
+  async lrange(key: string, start: number, stop: number): Promise<string[]> {
+    return this.client.lrange(key, start, stop);
+  }
+
+  /**
+   * 获取 set 的所有成员
+   */
+  async smembers(key: string): Promise<string[]> {
+    return this.client.smembers(key);
+  }
+
+  /**
+   * 获取 sorted set 的指定范围
+   */
+  async zrange(key: string, start: number, stop: number, options?: { withScores: boolean }): Promise<string[]> {
+    if (options?.withScores) {
+      return this.client.zrange(key, start, stop, 'WITHSCORES');
+    }
+    return this.client.zrange(key, start, stop);
+  }
+
+  /**
+   * 移除 key 的过期时间（使其永不过期）
+   */
+  async persist(key: string): Promise<number> {
+    return this.client.persist(key);
+  }
+
+  /**
    * 获取原始 ioredis 客户端（高级用法）
    */
   get rawClient(): Redis {

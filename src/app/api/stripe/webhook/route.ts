@@ -282,8 +282,10 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ success: true, message: '未找到用户ID' });
             }
 
-            const startTime = dayjs(invoice.period_start * 1000).toISOString();
-            const endTime = dayjs(invoice.period_end * 1000).toISOString();
+            // 使用 subscription 对象的 current_period_start/end，而不是 invoice 的 period_start/end
+            // invoice 的周期信息可能不准确（特别是首次订阅时可能相同）
+            const startTime = dayjs(subscriptionObject.current_period_start * 1000).toISOString();
+            const endTime = dayjs(subscriptionObject.current_period_end * 1000).toISOString();
 
             const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
             const { stripeCustomerId, stripeCustomerEmail } = customerId
