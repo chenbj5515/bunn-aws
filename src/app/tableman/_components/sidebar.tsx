@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Database, Users, Table2 } from "lucide-react";
+import { Database, Users, Table2, Rocket } from "lucide-react";
 
 const NAV_ITEMS = [
   {
@@ -15,6 +15,11 @@ const NAV_ITEMS = [
     href: "/tableman/users",
     icon: Users,
     label: "用户管理",
+  },
+  {
+    href: "/tableman/builds",
+    icon: Rocket,
+    label: "构建记录",
   },
 ];
 
