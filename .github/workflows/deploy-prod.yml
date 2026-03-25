@@ -81,6 +81,7 @@ jobs:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          DEPLOY_GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
           GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
           GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -98,6 +99,7 @@ jobs:
             --secret id=BETTER_AUTH_SECRET,env=BETTER_AUTH_SECRET \
             --secret id=DATABASE_URL,env=DATABASE_URL \
             --secret id=STRIPE_SECRET_KEY,env=STRIPE_SECRET_KEY \
+            --secret id=DEPLOY_GITHUB_TOKEN,env=DEPLOY_GITHUB_TOKEN \
             -t "${{ steps.tags.outputs.image_sha }}" \
             -t "${{ steps.tags.outputs.image_latest }}" \
             .
