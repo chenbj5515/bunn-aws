@@ -6,6 +6,7 @@ import { redis } from '@/lib/redis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { SUBSCRIPTION_KEYS, USER_KEYS } from '@/constants/redis-keys';
+import { logWebhook, type WebhookProcessingBranch } from '@/lib/webhook-log';
 
 /**
  * 安全解析Redis中的用户设置数据
@@ -78,7 +79,7 @@ async function processSubscription({
     stripeCustomerId: string | null,
     stripeCustomerEmail: string | null,
     subscriptionType: SubscriptionType
-}) {
+}): Promise<string | undefined> {
     const inserted = await db.insert(userSubscription).values({
         userId,
         stripeCustomerId,
@@ -114,6 +115,8 @@ async function processSubscription({
     } catch (redisError) {
         console.error('Redis操作失败:', redisError);
     }
+
+    return subscriptionId;
 }
 
 async function getStripeCustomerInfo(customerId: string) {
@@ -167,13 +170,21 @@ export async function POST(req: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session;
         
         if (session.mode === 'payment') {
+            const userId = session.client_reference_id;
+
+            if (!userId) {
+                await logWebhook({
+                    stripeEventId: event.id,
+                    eventType: event.type,
+                    userId: null,
+                    processingBranch: 'skipped',
+                    success: true,
+                    payload: { reason: '未找到用户ID', sessionId: session.id }
+                });
+                return NextResponse.json({ success: true, message: '未找到用户ID' });
+            }
+
             try {
-                const userId = session.client_reference_id;
-
-                if (!userId) {
-                    return NextResponse.json({ success: true, message: '未找到用户ID' });
-                }
-
                 const now = dayjs();
                 const startTime = now.toISOString();
                 const endTime = now.add(1, 'month').toISOString();
@@ -182,7 +193,7 @@ export async function POST(req: NextRequest) {
                     ? await getStripeCustomerInfo(session.customer as string) 
                     : { stripeCustomerId: null, stripeCustomerEmail: null };
                 
-                await processSubscription({
+                const subscriptionId = await processSubscription({
                     userId,
                     startTime,
                     endTime,
@@ -191,12 +202,44 @@ export async function POST(req: NextRequest) {
                     subscriptionType: 'oneTime'
                 });
 
+                await logWebhook({
+                    stripeEventId: event.id,
+                    eventType: event.type,
+                    userId,
+                    stripeCustomerId,
+                    stripeCustomerEmail,
+                    processingBranch: 'one_time_payment',
+                    success: true,
+                    subscriptionId,
+                    payload: { startTime, endTime, sessionId: session.id }
+                });
+
                 return NextResponse.json({ success: true });
             } catch (err) {
+                const errorMessage = err instanceof Error ? err.message : '处理一次性支付事件失败';
                 console.error('处理一次性支付事件失败:', err);
+                
+                await logWebhook({
+                    stripeEventId: event.id,
+                    eventType: event.type,
+                    userId,
+                    processingBranch: 'error',
+                    success: false,
+                    errorMessage,
+                    payload: { sessionId: session.id }
+                });
+                
                 return NextResponse.json({ success: false, error: '处理一次性支付事件失败' }, { status: 500 });
             }
         } else {
+            await logWebhook({
+                stripeEventId: event.id,
+                eventType: event.type,
+                userId: session.client_reference_id,
+                processingBranch: 'subscription_checkout_skip',
+                success: true,
+                payload: { reason: '订阅模式checkout完成，等待invoice事件处理', sessionId: session.id }
+            });
             return NextResponse.json({ success: true, message: '订阅模式checkout完成，等待invoice事件处理' });
         }
     }
@@ -204,23 +247,37 @@ export async function POST(req: NextRequest) {
     if (event.type === 'invoice.payment_succeeded') {
         const invoice = event.data.object as Stripe.Invoice;
 
+        const subscriptionDetails = invoice.parent?.subscription_details;
+        if (!subscriptionDetails?.subscription) {
+            await logWebhook({
+                stripeEventId: event.id,
+                eventType: event.type,
+                processingBranch: 'skipped',
+                success: true,
+                payload: { reason: '非订阅类型发票，跳过', invoiceId: invoice.id }
+            });
+            return NextResponse.json({ success: true, message: '非订阅类型发票，跳过' });
+        }
+
+        const stripeSubscriptionId = typeof subscriptionDetails.subscription === 'string' 
+            ? subscriptionDetails.subscription 
+            : subscriptionDetails.subscription.id;
+
         try {
-            const subscriptionDetails = invoice.parent?.subscription_details;
-            if (!subscriptionDetails?.subscription) {
-                return NextResponse.json({ success: true, message: '非订阅类型发票，跳过' });
-            }
-
-            const subscriptionId = typeof subscriptionDetails.subscription === 'string' 
-                ? subscriptionDetails.subscription 
-                : subscriptionDetails.subscription.id;
-
-            const subscriptionObject = await stripe.subscriptions.retrieve(subscriptionId);
+            const subscriptionObject = await stripe.subscriptions.retrieve(stripeSubscriptionId);
             
             const userId = subscriptionObject.metadata?.userId;
             if (!userId) {
                 console.warn('[Webhook] subscription metadata 中没有 userId', {
                     invoiceId: invoice.id,
-                    subscriptionId
+                    stripeSubscriptionId
+                });
+                await logWebhook({
+                    stripeEventId: event.id,
+                    eventType: event.type,
+                    processingBranch: 'skipped',
+                    success: true,
+                    payload: { reason: '未找到用户ID', invoiceId: invoice.id, stripeSubscriptionId }
                 });
                 return NextResponse.json({ success: true, message: '未找到用户ID' });
             }
@@ -235,7 +292,7 @@ export async function POST(req: NextRequest) {
             
             console.log('[Webhook] 处理订阅:', { userId, startTime, endTime, stripeCustomerId });
             
-            await processSubscription({
+            const subscriptionId = await processSubscription({
                 userId,
                 startTime,
                 endTime,
@@ -244,12 +301,43 @@ export async function POST(req: NextRequest) {
                 subscriptionType: 'subscription'
             });
 
+            await logWebhook({
+                stripeEventId: event.id,
+                eventType: event.type,
+                userId,
+                stripeCustomerId,
+                stripeCustomerEmail,
+                processingBranch: 'subscription',
+                success: true,
+                subscriptionId,
+                payload: { startTime, endTime, invoiceId: invoice.id, stripeSubscriptionId }
+            });
+
             return NextResponse.json({ success: true });
         } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : '处理订阅事件失败';
             console.error('处理订阅事件失败:', err);
+            
+            await logWebhook({
+                stripeEventId: event.id,
+                eventType: event.type,
+                processingBranch: 'error',
+                success: false,
+                errorMessage,
+                payload: { invoiceId: invoice.id, stripeSubscriptionId }
+            });
+            
             return NextResponse.json({ success: false, error: '处理订阅事件失败' }, { status: 500 });
         }
     }
+
+    await logWebhook({
+        stripeEventId: event.id,
+        eventType: event.type,
+        processingBranch: 'unhandled',
+        success: true,
+        payload: { message: '事件已接收但未处理' }
+    });
 
     return NextResponse.json({ success: true, message: '事件已接收但未处理' });
 }

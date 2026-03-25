@@ -81,6 +81,14 @@ export const OTHER_KEYS = {
   userPrefix: (userId: string) => `user:${userId}:*`,
 };
 
+// Webhook 日志相关的 key
+export const WEBHOOK_KEYS = {
+  logs: 'webhook:logs',
+  log: (id: string) => `webhook:log:${id}`,
+  userLogs: (userId: string) => `webhook:user:${userId}:logs`,
+  TTL_SECONDS: 90 * 24 * 60 * 60,
+};
+
 // 为了向后兼容，保留旧的导出名称
 export const USER_SETTINGS_KEY = USER_KEYS.settings;
 export const USER_SUBSCRIPTION_ACTIVE_KEY = USER_KEYS.subscriptionActive;
