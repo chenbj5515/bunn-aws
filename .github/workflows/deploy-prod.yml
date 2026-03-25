@@ -119,6 +119,67 @@ jobs:
           # 预先记录服务器指纹，避免首次连接交互确认
           ssh-keyscan -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Generate .env.production for VPS
+        run: |
+          # 生成运行时环境变量文件（每次部署完整覆盖，确保与 GitHub Secrets 同步）
+          # 注意：DATABASE_URL 和 REDIS_URL 由 docker-compose 动态生成，不在此处配置
+          cat > .env.production.generated << 'EOF'
+          # ===========================================
+          # 生产环境变量（由 CI/CD 自动生成，请勿手动编辑）
+          # 生成时间: ${{ github.event.head_commit.timestamp || github.event.repository.updated_at }}
+          # ===========================================
+
+          # PostgreSQL（docker-compose 会覆盖 DATABASE_URL，这里只配置认证信息）
+          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'bunn_db' }}
+
+          # Auth
+          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
+          GITHUB_CLIENT_ID=${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET=${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+          # Stripe
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_ID=${{ secrets.STRIPE_PRICE_ID }}
+          STRIPE_PRICE_ID_ONE_MONTH_ACCESS=${{ secrets.STRIPE_PRICE_ID_ONE_MONTH_ACCESS }}
+
+          # GitHub API (for builds page)
+          DEPLOY_GITHUB_TOKEN=${{ secrets.DEPLOY_GITHUB_TOKEN }}
+
+          # Upstash Redis
+          UPSTASH_REDIS_REST_URL=${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN=${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
+          # OpenAI
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+
+          # Google APIs
+          GOOGLE_VISION_API_KEY=${{ secrets.GOOGLE_VISION_API_KEY }}
+          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+
+          # Vercel Blob
+          BLOB_READ_WRITE_TOKEN=${{ secrets.BLOB_READ_WRITE_TOKEN }}
+
+          # Microsoft TTS
+          PUBLIC_SUBSCRIPTION_KEY=${{ secrets.PUBLIC_SUBSCRIPTION_KEY }}
+          PUBLIC_REGION=${{ secrets.PUBLIC_REGION }}
+
+          # Other
+          DEEPAI_API_KEY=${{ secrets.DEEPAI_API_KEY }}
+          MIN_MAX_API_KEY=${{ secrets.MIN_MAX_API_KEY }}
+
+          # Let's Encrypt
+          LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}
+          EOF
+          # 移除空行和只有空白的行，清理格式
+          sed -i '/^[[:space:]]*$/d' .env.production.generated
+          sed -i 's/^[[:space:]]*//' .env.production.generated
+
       - name: Deploy image on VPS
         run: |
           # 1) 确保 VPS 目标目录存在
@@ -129,8 +190,10 @@ jobs:
           scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/nginx.conf "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/nginx.conf"
           scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/conf.d/app.conf.template "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/conf.d/app.conf.template"
           scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/conf.d/app.bootstrap.conf.template "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/conf.d/app.bootstrap.conf.template"
-          # 3) 授权脚本执行权限
+          # 3) 同步 .env.production 文件到 VPS（完整覆盖，确保与 GitHub Secrets 同步）
+          scp -P "${{ secrets.VPS_PORT || 22 }}" .env.production.generated "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/.env.production"
+          # 4) 授权脚本执行权限
           ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "chmod +x ${REMOTE_DIR}/deploy.sh"
-          # 4) 远程执行 deploy.sh，传入域名和本次镜像
+          # 5) 远程执行 deploy.sh，传入域名和本次镜像
           ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
             "cd ${REMOTE_DIR} && ./deploy.sh deploy --domain ${PROD_DOMAIN} --image ${{ steps.tags.outputs.image_sha }}"
