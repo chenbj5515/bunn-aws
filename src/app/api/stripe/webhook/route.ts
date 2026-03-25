@@ -8,6 +8,18 @@ import utc from 'dayjs/plugin/utc';
 import { SUBSCRIPTION_KEYS, USER_KEYS } from '@/constants/redis-keys';
 import { logWebhook, type WebhookProcessingBranch } from '@/lib/webhook-log';
 
+function isCheckoutSessionCompletedEvent(
+    event: Stripe.Event
+): event is Stripe.CheckoutSessionCompletedEvent {
+    return event.type === 'checkout.session.completed';
+}
+
+function isInvoicePaymentSucceededEvent(
+    event: Stripe.Event
+): event is Stripe.InvoicePaymentSucceededEvent {
+    return event.type === 'invoice.payment_succeeded';
+}
+
 /**
  * 安全解析Redis中的用户设置数据
  * @param value Redis中存储的值
@@ -25,8 +37,8 @@ function parseUserSettings(value: unknown): Record<string, any> {
     }
   }
 
-  if (typeof value === 'object') {
-    return value as Record<string, any>
+  if (typeof value === 'object' && value !== null) {
+    return { ...value }
   }
 
   return {}
@@ -139,7 +151,7 @@ async function getStripeCustomerInfo(customerId: string) {
 
 export async function POST(req: NextRequest) {
     const payload = await req.text();
-    const signature = req.headers.get('stripe-signature') as string;
+    const signature = req.headers.get('stripe-signature');
 
     if (!signature) {
         return NextResponse.json({ success: false, error: '缺少 Stripe 签名' }, { status: 400 });
@@ -166,8 +178,8 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as Stripe.Checkout.Session;
+    if (isCheckoutSessionCompletedEvent(event)) {
+        const session = event.data.object;
         
         if (session.mode === 'payment') {
             const userId = session.client_reference_id;
@@ -189,8 +201,11 @@ export async function POST(req: NextRequest) {
                 const startTime = now.toISOString();
                 const endTime = now.add(1, 'month').toISOString();
 
-                const { stripeCustomerId, stripeCustomerEmail } = session.customer 
-                    ? await getStripeCustomerInfo(session.customer as string) 
+                const customerId = typeof session.customer === 'string' 
+                    ? session.customer 
+                    : session.customer?.id;
+                const { stripeCustomerId, stripeCustomerEmail } = customerId
+                    ? await getStripeCustomerInfo(customerId) 
                     : { stripeCustomerId: null, stripeCustomerEmail: null };
                 
                 const subscriptionId = await processSubscription({
@@ -244,8 +259,8 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    if (event.type === 'invoice.payment_succeeded') {
-        const invoice = event.data.object as Stripe.Invoice;
+    if (isInvoicePaymentSucceededEvent(event)) {
+        const invoice = event.data.object;
 
         const subscriptionDetails = invoice.parent?.subscription_details;
         if (!subscriptionDetails?.subscription) {
@@ -282,10 +297,24 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ success: true, message: '未找到用户ID' });
             }
 
-            // 使用 subscription 对象的 current_period_start/end，而不是 invoice 的 period_start/end
-            // invoice 的周期信息可能不准确（特别是首次订阅时可能相同）
-            const startTime = dayjs(subscriptionObject.current_period_start * 1000).toISOString();
-            const endTime = dayjs(subscriptionObject.current_period_end * 1000).toISOString();
+            // 在 Stripe SDK v20+ 中，current_period_start/end 位于 subscription item 上
+            const firstItem = subscriptionObject.items.data[0];
+            if (!firstItem) {
+                console.warn('[Webhook] subscription 没有 items', {
+                    invoiceId: invoice.id,
+                    stripeSubscriptionId
+                });
+                await logWebhook({
+                    stripeEventId: event.id,
+                    eventType: event.type,
+                    processingBranch: 'skipped',
+                    success: true,
+                    payload: { reason: '订阅没有items', invoiceId: invoice.id, stripeSubscriptionId }
+                });
+                return NextResponse.json({ success: true, message: '订阅没有items' });
+            }
+            const startTime = dayjs(firstItem.current_period_start * 1000).toISOString();
+            const endTime = dayjs(firstItem.current_period_end * 1000).toISOString();
 
             const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
             const { stripeCustomerId, stripeCustomerEmail } = customerId
