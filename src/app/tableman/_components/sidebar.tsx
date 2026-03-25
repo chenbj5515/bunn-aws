@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Database, Users, Table2, Rocket } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const NAV_ITEMS = [
   {
@@ -25,6 +27,8 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: sessionData } = useSession();
+  const userImage = sessionData?.user?.image;
 
   const isActive = (href: string) => {
     if (href === "/tableman") {
@@ -65,9 +69,14 @@ export function Sidebar() {
       </nav>
 
       <div className="p-3 flex justify-center border-t border-neutral-800">
-        <div className="size-10 rounded-full bg-neutral-700 flex items-center justify-center text-white text-sm font-medium">
-          T
-        </div>
+        <Link href="/">
+          <Avatar className="size-8 cursor-pointer">
+            <AvatarImage src={userImage || undefined} alt="profile" />
+            <AvatarFallback className="bg-neutral-700 text-white text-sm font-medium">
+              U
+            </AvatarFallback>
+          </Avatar>
+        </Link>
       </div>
     </div>
   );

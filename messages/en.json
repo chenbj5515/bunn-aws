@@ -613,7 +613,8 @@
     "uploaded": "Uploaded",
     "uploadAndClone": "Upload and Clone",
     "myVoice": "My Voice",
-    "answerAccuracy": "Answer Accuracy"
+    "answerAccuracy": "Answer Accuracy",
+    "adminPanel": "Admin Panel"
   },
   "memoCards": {
     "noDataFound": "Please enter Japanese text you're interested in",

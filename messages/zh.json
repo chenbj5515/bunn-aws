@@ -602,7 +602,8 @@
     "uploaded": "上传成功",
     "uploadAndClone": "上传并克隆",
     "myVoice": "我的声音",
-    "answerAccuracy": "答题正确率"
+    "answerAccuracy": "答题正确率",
+    "adminPanel": "管理后台"
   },
   "memoCards": {
     "noDataFound": "请输入您感兴趣的日语文本",

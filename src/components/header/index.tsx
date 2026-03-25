@@ -21,6 +21,7 @@ export default async function Header() {
           id: session.user.id,
           email: session.user.email,
           image: session.user.image || null,
+          role: (session.user as { role?: string }).role || null,
         }}
         subscription={userSettings.subscription}
         initialAchievementPoints={userSettings.achievementPoints}

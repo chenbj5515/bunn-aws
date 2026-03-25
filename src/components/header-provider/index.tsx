@@ -22,6 +22,7 @@ export async function HeaderProvider() {
               id: session.user.id,
               email: session.user.email,
               image: session.user.image || null,
+              role: (session.user as { role?: string }).role || null,
             }
           : null
       }

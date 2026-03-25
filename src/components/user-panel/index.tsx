@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { LanguageSelector } from "./language-selector"
 import { Link } from '@/i18n/navigation'
 import { signOut } from "@/lib/auth-client"
-import { ChevronRight, ArrowLeft, Play, Mic, Circle, Check } from "lucide-react"
+import { ChevronRight, ArrowLeft, Play, Mic, Circle, Check, Settings } from "lucide-react"
 import { useAudioRecorder } from "./hooks/audio"
 import { LoadingButton } from "@/components/ui/loading-button"
 import * as recMod from './lib/recorder'
@@ -25,6 +25,7 @@ interface UserPanelProps {
         id: string;
         email: string;
         image?: string | null;
+        role?: string | null;
     };
     subscription: {
         active: boolean;
@@ -282,6 +283,19 @@ export default function UserPanel({ user, subscription, initialAchievementPoints
                         {t('subscriptionManagement')}
                         <ChevronRight className="w-4 h-4" />
                     </Button>
+                )}
+                {user.role === 'admin' && (
+                    <div className="flex items-center h-10">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="justify-between shadow-none! focus-visible:shadow-none p-[8px] border-0! focus-visible:border-0 focus:border-0 border-none rounded-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 w-full h-full sm:text-sm text-base"
+                            onClick={() => router.push('/tableman')}
+                        >
+                            <p className="font-medium sm:text-sm text-base">{t('adminPanel')}</p>
+                            <Settings className="w-4 h-4" />
+                        </Button>
+                    </div>
                 )}
                 <Separator className="mt-[8px]! mb-[8px]!" />
                 <Button

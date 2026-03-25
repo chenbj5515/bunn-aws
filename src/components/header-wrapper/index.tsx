@@ -13,6 +13,7 @@ interface HeaderWrapperProps {
     id: string;
     email: string;
     image?: string | null;
+    role?: string | null;
   } | null;
   subscription?: {
     active: boolean;
@@ -58,6 +59,7 @@ export function HeaderWrapper({
             id: user.id,
             email: user.email,
             image: user.image || null,
+            role: user.role || null,
           }}
           subscription={subscription}
           initialAchievementPoints={achievementPoints}
