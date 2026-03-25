@@ -99,10 +99,11 @@ class RedisWrapper {
   }
 
   /**
-   * 删除键
+   * 删除键（支持多个 key）
    */
-  async del(key: string): Promise<number> {
-    return this.client.del(key);
+  async del(...keys: string[]): Promise<number> {
+    if (keys.length === 0) return 0;
+    return this.client.del(...keys);
   }
 
   /**
