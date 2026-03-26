@@ -21,7 +21,8 @@
     "cdk:synth": "cd cdk && pnpm cdk synth",
     "cdk:diff": "cd cdk && pnpm cdk diff",
     "cdk:deploy": "cd cdk && pnpm cdk deploy --all",
-    "redis:migrate": "pnpm dlx tsx scripts/migrate-redis.ts"
+    "redis:migrate": "pnpm dlx tsx scripts/migrate-redis.ts",
+    "sync:env": "./sync-env.sh"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.26",

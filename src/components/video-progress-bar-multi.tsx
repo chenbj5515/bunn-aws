@@ -38,6 +38,7 @@ interface VideoProgressBarMultiProps {
     seekTo: (time: number, allowSeekAhead?: boolean) => void;
     getPlayerState: () => number;
     pauseVideo: () => void;
+    playVideo: () => void;
   } | null;
   duration?: number;
   visible?: boolean;
@@ -286,16 +287,23 @@ export function VideoProgressBarMulti({
                         setCurrentTime(m.startSec);
                         setLastValidTime(m.startSec);
                         setLastSeekAt(Date.now());
-                        // 确保视频保持原来的播放状态（如果当前是暂停的，seekTo后仍然暂停）
-                        // YouTube Player API 的 seekTo 不会改变播放状态，但这里添加保障措施
-                        if (currentState === 2) { // 2 = paused
-                          // 延迟一点时间再调用pause，确保seekTo完成
+                        // 根据当前播放状态决定后续行为
+                        // -1 = unstarted, 5 = cued: 视频未开始播放，需要主动开始播放
+                        if (currentState === -1 || currentState === 5) {
+                          setTimeout(() => {
+                            if (videoPlayerRef) {
+                              videoPlayerRef.playVideo();
+                            }
+                          }, 50);
+                        } else if (currentState === 2) { // 2 = paused
+                          // 视频已暂停，保持暂停状态
                           setTimeout(() => {
                             if (videoPlayerRef) {
                               videoPlayerRef.pauseVideo();
                             }
                           }, 50);
                         }
+                        // 如果是 1 (playing) 或 3 (buffering)，seekTo 后会自动继续播放
                       }
                       // 如果提供了onMarkerClick回调，调用它来展示记忆卡片
                       if (onMarkerClick) {
