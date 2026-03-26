@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { UsersTable, type UserRow } from "../../_components/users-table";
 import { Users } from "lucide-react";
 import { fetchUsersData, deleteUsers } from "../../_actions";
+import type { RedisKeyEntry, RedisKeysResponse } from "@/app/api/tableman/redis-keys/route";
 
 interface UsersData {
   tableExists: boolean;
@@ -27,6 +28,10 @@ export function UsersPageClient({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adminFilter, setAdminFilter] = useState<boolean | null>(null);
+
+  const [redisKeys, setRedisKeys] = useState<RedisKeyEntry[]>([]);
+  const [redisKeysUserId, setRedisKeysUserId] = useState<string | null>(null);
+  const [isLoadingRedisKeys, setIsLoadingRedisKeys] = useState(false);
 
   const loadUsers = useCallback(
     async (currentPage: number, currentAdminFilter: boolean | null) => {
@@ -84,6 +89,88 @@ export function UsersPageClient({
     }
   };
 
+  const fetchRedisKeys = useCallback(async (userId: string) => {
+    try {
+      setIsLoadingRedisKeys(true);
+      const params = new URLSearchParams({ userId });
+      const response = await fetch(`/api/tableman/redis-keys?${params.toString()}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "获取 Redis Keys 失败");
+      }
+
+      const data: RedisKeysResponse = await response.json();
+      setRedisKeys(data.keys);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "获取 Redis Keys 失败";
+      toast.error(message);
+    } finally {
+      setIsLoadingRedisKeys(false);
+    }
+  }, []);
+
+  const handleViewRedisKeys = (userId: string) => {
+    setRedisKeysUserId(userId);
+    fetchRedisKeys(userId);
+  };
+
+  const handleCloseRedisKeys = () => {
+    setRedisKeysUserId(null);
+    setRedisKeys([]);
+  };
+
+  const handleRefreshRedisKeys = () => {
+    if (redisKeysUserId) {
+      fetchRedisKeys(redisKeysUserId);
+    }
+  };
+
+  const handleUpdateRedisKey = async (key: string, value: string, ttl?: number) => {
+    try {
+      const response = await fetch("/api/tableman/redis-keys", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value, ttl }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "更新失败");
+      }
+
+      toast.success("更新成功");
+      if (redisKeysUserId) {
+        fetchRedisKeys(redisKeysUserId);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "更新失败";
+      toast.error(message);
+    }
+  };
+
+  const handleDeleteRedisKey = async (key: string) => {
+    try {
+      const params = new URLSearchParams({ key });
+      const response = await fetch(`/api/tableman/redis-keys?${params.toString()}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "删除失败");
+      }
+
+      toast.success("删除成功");
+      if (redisKeysUserId) {
+        fetchRedisKeys(redisKeysUserId);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "删除失败";
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="flex flex-col p-6 lg:p-8 h-full">
       <div className="mb-6">
@@ -119,6 +206,14 @@ export function UsersPageClient({
           onDelete={handleDelete}
           onPageChange={handlePageChange}
           onAdminFilterChange={handleAdminFilterChange}
+          redisKeys={redisKeys}
+          redisKeysUserId={redisKeysUserId}
+          isLoadingRedisKeys={isLoadingRedisKeys}
+          onViewRedisKeys={handleViewRedisKeys}
+          onCloseRedisKeys={handleCloseRedisKeys}
+          onRefreshRedisKeys={handleRefreshRedisKeys}
+          onUpdateRedisKey={handleUpdateRedisKey}
+          onDeleteRedisKey={handleDeleteRedisKey}
         />
       </div>
     </div>

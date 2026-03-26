@@ -28,7 +28,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trash2, Users, Database, Shield, ShieldCheck } from "lucide-react";
+import { Trash2, Users, Database, Shield, ShieldCheck, KeyRound } from "lucide-react";
+import type { RedisKeyEntry } from "@/app/api/tableman/redis-keys/route";
+import { RedisKeysPanel } from "./redis-keys-panel";
 
 export interface UserRow {
   id?: string | number;
@@ -54,6 +56,14 @@ interface UsersTableProps {
   onDelete: (ids: (string | number)[]) => Promise<void>;
   onPageChange: (page: number) => void;
   onAdminFilterChange: (value: boolean | null) => void;
+  redisKeys: RedisKeyEntry[];
+  redisKeysUserId: string | null;
+  isLoadingRedisKeys: boolean;
+  onViewRedisKeys: (userId: string) => void;
+  onCloseRedisKeys: () => void;
+  onRefreshRedisKeys: () => void;
+  onUpdateRedisKey: (key: string, value: string, ttl?: number) => Promise<void>;
+  onDeleteRedisKey: (key: string) => Promise<void>;
 }
 
 function formatTokenUsage(value: unknown): string {
@@ -100,6 +110,14 @@ export function UsersTable({
   onDelete,
   onPageChange,
   onAdminFilterChange,
+  redisKeys,
+  redisKeysUserId,
+  isLoadingRedisKeys,
+  onViewRedisKeys,
+  onCloseRedisKeys,
+  onRefreshRedisKeys,
+  onUpdateRedisKey,
+  onDeleteRedisKey,
 }: UsersTableProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(
     new Set()
@@ -295,6 +313,9 @@ export function UsersTable({
                     角色
                   </TableHead>
                 )}
+                <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium w-28">
+                  缓存
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -361,6 +382,19 @@ export function UsersTable({
                         )}
                       </TableCell>
                     )}
+                    <TableCell>
+                      {rowId !== null && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-2.5 gap-1.5 text-xs rounded-lg"
+                          onClick={() => onViewRedisKeys(String(rowId))}
+                        >
+                          <KeyRound className="size-3.5" />
+                          Redis
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -433,6 +467,35 @@ export function UsersTable({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {redisKeysUserId && (
+        <Dialog open={true} onOpenChange={(open: boolean) => !open && onCloseRedisKeys()}>
+          <DialogContent
+            className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            <DialogHeader className="shrink-0">
+              <DialogTitle className="flex items-center gap-2">
+                <KeyRound className="size-5" />
+                用户缓存
+              </DialogTitle>
+              <DialogDescription className="break-all">
+                <code className="font-mono text-xs bg-neutral-100 px-1.5 py-0.5 rounded">{redisKeysUserId}</code>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <RedisKeysPanel
+                keys={redisKeys}
+                userId={redisKeysUserId}
+                isLoading={isLoadingRedisKeys}
+                onRefresh={onRefreshRedisKeys}
+                onUpdate={onUpdateRedisKey}
+                onDelete={onDeleteRedisKey}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
       `random-cards:${userId}:*`,
       `review:${userId}:*`,
       `active-sessions-${userId}`,
+      `webhook:user:${userId}:*`,
     ];
 
     const allKeys: string[] = [];
