@@ -112,6 +112,23 @@ export const translateQuestionOutput = z.union([
 export type TranslateQuestionInput = z.infer<typeof translateQuestionInput>;
 export type TranslateQuestionOutput = z.infer<typeof translateQuestionOutput>;
 
+// --- Text to SQL ---
+export const textToSqlInput = z.object({
+  prompt: z.string().min(1, '需求不能为空').max(4000, '需求过长'),
+});
+
+export const textToSqlOutput = z.union([
+  z.object({
+    errorCode: z.null(),
+    sql: z.string(),
+    explanation: z.string(),
+  }),
+  z.object({ errorCode: z.number() }),
+]);
+
+export type TextToSqlInput = z.infer<typeof textToSqlInput>;
+export type TextToSqlOutput = z.infer<typeof textToSqlOutput>;
+
 // --- 流式 AI Chat ---
 // 注意：流式 AI Chat 已迁移到 /api/ai/chat API Route
 // 使用 Vercel AI SDK 的原生流式响应，不再通过 tRPC

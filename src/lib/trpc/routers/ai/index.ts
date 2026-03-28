@@ -11,6 +11,7 @@ import { translateAndSegment } from './memo-card';
 import { generateWordDistractions } from './word-distractions';
 import { generateMultilingualMeaning } from './multilingual-meaning';
 import { translateQuestion } from './translate-question';
+import { textToSql } from './text-to-sql';
 
 export const aiRouter = router({
   extractSubtitles,
@@ -18,6 +19,7 @@ export const aiRouter = router({
   generateWordDistractions,
   generateMultilingualMeaning,
   translateQuestion,
+  textToSql,
 });
 
 export type AiRouter = typeof aiRouter;

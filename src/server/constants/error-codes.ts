@@ -46,6 +46,10 @@ export const ERROR_CODES = {
   // AI: translateQuestion (35xx)
   TRANSLATE_QUESTION_PARSE_FAILED: 3501,
 
+  // AI: textToSql (36xx)
+  TEXT_TO_SQL_PARSE_FAILED: 3601,
+  TEXT_TO_SQL_SQL_MISSING: 3602,
+
   // API 相关 (4xxx)
   API_KEY_MISSING: 4001,
   API_ERROR: 4002,
