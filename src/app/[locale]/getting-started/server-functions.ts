@@ -101,9 +101,7 @@ export async function cloneSampleCards(targetLocale: string = 'zh') {
     const newCardsData = selectedCards.map(card => ({
       translation: card.adminPreTranslations || card.translation,
       originalText: card.originalText,
-      kanaPronunciation: card.kanaPronunciation,
       contextUrl: card.contextUrl,
-      rubyTranslations: card.rubyTranslations,
       wordSegmentation: card.wordSegmentation,
       platform: card.platform,
       seriesId: card.seriesId,

@@ -122,10 +122,11 @@ jobs:
       - name: Deploy image on VPS
         run: |
           # 1) 确保 VPS 目标目录存在
-          ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ${REMOTE_DIR}/nginx/conf.d"
+          ssh -p "${{ secrets.VPS_PORT || 22 }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "mkdir -p ${REMOTE_DIR}/nginx/conf.d ${REMOTE_DIR}/drizzle"
           # 2) 同步部署所需文件到 VPS
           scp -P "${{ secrets.VPS_PORT || 22 }}" deploy.sh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/deploy.sh"
           scp -P "${{ secrets.VPS_PORT || 22 }}" docker-compose.prod.yml "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/docker-compose.prod.yml"
+          scp -r -P "${{ secrets.VPS_PORT || 22 }}" drizzle "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/"
           scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/nginx.conf "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/nginx.conf"
           scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/conf.d/app.conf.template "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/conf.d/app.conf.template"
           scp -P "${{ secrets.VPS_PORT || 22 }}" nginx/conf.d/app.bootstrap.conf.template "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${REMOTE_DIR}/nginx/conf.d/app.bootstrap.conf.template"

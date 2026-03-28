@@ -13,10 +13,13 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 # 部署依赖的核心文件
-COMPOSE_FILE="docker-compose.prod.yml"
-ENV_FILE=".env.production"
-RELEASE_FILE=".release"
-DEFAULT_APP_IMAGE="ghcr.io/baijinchen/bunn-aws:latest"
+COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
+ENV_FILE="${ENV_FILE:-.env.production}"
+RELEASE_FILE="${RELEASE_FILE:-.release}"
+MIGRATIONS_DIR="${MIGRATIONS_DIR:-drizzle}"
+MIGRATION_JOURNAL="${MIGRATION_JOURNAL:-$MIGRATIONS_DIR/meta/_journal.json}"
+MIGRATION_TABLE="${MIGRATION_TABLE:-schema_migrations}"
+DEFAULT_APP_IMAGE="${DEFAULT_APP_IMAGE:-ghcr.io/baijinchen/bunn-aws:latest}"
 
 # 运行参数（由 parse_args 解析）
 MODE=""
@@ -41,11 +44,13 @@ usage() {
 Usage:
   ./deploy.sh init --domain <domain> [--image <image>]
   ./deploy.sh deploy --image <image> [--domain <domain>]
+  ./deploy.sh migrate
   ./deploy.sh rollback --image <image> [--domain <domain>]
 
 Examples:
   ./deploy.sh init --domain bunn.ink --image ghcr.io/baijinchen/bunn-aws:latest
   ./deploy.sh deploy --image ghcr.io/baijinchen/bunn-aws:sha-abc123 --domain bunn.ink
+  ./deploy.sh migrate
   ./deploy.sh rollback --image ghcr.io/baijinchen/bunn-aws:latest --domain bunn.ink
 EOF
 }
@@ -122,6 +127,105 @@ ensure_docker() {
 # - 注入 APP_IMAGE 供 compose 中 app 服务读取
 compose_prod() {
     APP_IMAGE="${APP_IMAGE:-$DEFAULT_APP_IMAGE}" docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" "$@"
+}
+
+wait_for_postgres() {
+    local max_attempts=30
+    local attempt=1
+
+    log_info "等待 PostgreSQL 就绪..."
+    compose_prod up -d postgres > /dev/null
+
+    until compose_prod exec -T postgres sh -lc 'pg_isready -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-bunn_db}"' > /dev/null 2>&1; do
+        if [ "$attempt" -ge "$max_attempts" ]; then
+            log_error "PostgreSQL 在预期时间内未就绪"
+            exit 1
+        fi
+        sleep 2
+        attempt=$((attempt + 1))
+    done
+}
+
+psql_exec() {
+    local sql="$1"
+    compose_prod exec -T postgres sh -lc \
+        "psql -v ON_ERROR_STOP=1 -U \"\${POSTGRES_USER:-postgres}\" -d \"\${POSTGRES_DB:-bunn_db}\" -c \"$sql\""
+}
+
+escape_sql_literal() {
+    printf "%s" "$1" | sed "s/'/''/g"
+}
+
+ensure_migration_table() {
+    psql_exec "CREATE TABLE IF NOT EXISTS ${MIGRATION_TABLE} (tag text PRIMARY KEY, filename text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now());"
+}
+
+get_migration_tags() {
+    if [ ! -f "$MIGRATION_JOURNAL" ]; then
+        log_warn "未找到迁移索引文件: $MIGRATION_JOURNAL，跳过迁移"
+        return 0
+    fi
+
+    awk -F'"' '/"tag":/ {print $4}' "$MIGRATION_JOURNAL"
+}
+
+run_single_migration() {
+    local tag="$1"
+    local migration_file="$MIGRATIONS_DIR/${tag}.sql"
+    local escaped_tag
+    local escaped_filename
+    local already_applied
+
+    if [ ! -f "$migration_file" ]; then
+        log_error "迁移文件不存在: $migration_file"
+        exit 1
+    fi
+
+    escaped_tag=$(escape_sql_literal "$tag")
+    escaped_filename=$(escape_sql_literal "$(basename "$migration_file")")
+
+    already_applied=$(
+        compose_prod exec -T postgres sh -lc \
+            "psql -At -U \"\${POSTGRES_USER:-postgres}\" -d \"\${POSTGRES_DB:-bunn_db}\" -c \"SELECT 1 FROM ${MIGRATION_TABLE} WHERE tag = '${escaped_tag}' LIMIT 1;\"" \
+            2> /dev/null || true
+    )
+
+    if [ "$already_applied" = "1" ]; then
+        log_info "跳过已执行迁移: $tag"
+        return 0
+    fi
+
+    log_info "执行迁移: $tag"
+    compose_prod exec -T postgres sh -lc \
+        'psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-bunn_db}"' \
+        < "$migration_file"
+
+    psql_exec "INSERT INTO ${MIGRATION_TABLE} (tag, filename) VALUES ('${escaped_tag}', '${escaped_filename}') ON CONFLICT (tag) DO NOTHING;"
+}
+
+run_migrations() {
+    local tags
+
+    if [ ! -d "$MIGRATIONS_DIR" ]; then
+        log_warn "未找到迁移目录: $MIGRATIONS_DIR，跳过迁移"
+        return 0
+    fi
+
+    wait_for_postgres
+    ensure_migration_table
+
+    tags=$(get_migration_tags)
+    if [ -z "$tags" ]; then
+        log_info "未发现需要管理的迁移"
+        return 0
+    fi
+
+    while IFS= read -r tag; do
+        if [ -z "$tag" ]; then
+            continue
+        fi
+        run_single_migration "$tag"
+    done <<< "$tags"
 }
 
 # 首次初始化时可选配置 UFW 防火墙规则
@@ -212,7 +316,9 @@ run_init() {
     log_info "使用 HTTP 引导配置启动服务..."
     # 首次先用 HTTP 引导配置，证书成功后再切换 HTTPS
     switch_nginx_config "nginx/conf.d/app.bootstrap.conf.template"
-    compose_prod up -d postgres redis app nginx
+    compose_prod up -d postgres redis
+    run_migrations
+    compose_prod up -d app nginx
     sleep 8
 
     # 证书失败不阻塞首发，先保证站点可用
@@ -234,6 +340,9 @@ run_deploy_like() {
     ensure_docker
     log_info "开始发布镜像: $APP_IMAGE"
 
+    # 先让数据库完成迁移，再启动新版本 app，避免代码先于表结构发布
+    run_migrations
+
     # 只拉 app 镜像，不动数据库和缓存容器
     compose_prod pull app
     compose_prod up -d app
@@ -244,6 +353,13 @@ run_deploy_like() {
     log_info "发布完成: $APP_IMAGE"
 }
 
+run_migrate_only() {
+    ensure_docker
+    log_info "开始执行数据库迁移"
+    run_migrations
+    log_info "数据库迁移完成"
+}
+
 # 主入口：按模式分发到 init / deploy / rollback
 main() {
     parse_args "$@"
@@ -252,6 +368,9 @@ main() {
     case "$MODE" in
         init)
             run_init
+            ;;
+        migrate)
+            run_migrate_only
             ;;
         deploy|rollback)
             run_deploy_like

@@ -162,10 +162,8 @@ export const memoCard = pgTable("memo_card", {
 	reviewTimes: integer("review_times").default(0),
 	forgetCount: integer("forget_count").default(0).notNull(),
 	userId: text("user_id").default('chenbj').notNull(),
-	kanaPronunciation: jsonb("kana_pronunciation"),
 	contextUrl: text("context_url"),
 	videoId: text('video_id'),
-	rubyTranslations: jsonb("ruby_translations"),   // 存储ruby元素的翻译
 	wordSegmentation: jsonb("word_segmentation"),  // 存储句子拆分成单词的信息，JSON格式
 	platform: text('platform'),      // 内容类型：'youtube', 'nextflix series'等
 	seriesId: uuid('series_id').references(() => series.id, { onDelete: 'set null' }),          // 关联到具体内容的ID

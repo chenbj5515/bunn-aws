@@ -194,9 +194,21 @@ cd /opt/bunn-aws
 ```
 
 发布流程：
+- 自动执行 `drizzle/` 中尚未应用的 SQL 迁移
 - `docker compose pull app`
 - `docker compose up -d app`
 - 健康检查通过后写入 `.release`（记录当前镜像）
+
+### 仅执行数据库迁移
+
+```bash
+cd /opt/bunn-aws
+./deploy.sh migrate
+```
+
+适用场景：
+- 需要先手动补跑一次线上迁移
+- 想在不重启应用的情况下先让数据库结构追平
 
 ### 回滚
 
