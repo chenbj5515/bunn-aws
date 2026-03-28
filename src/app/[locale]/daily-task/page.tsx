@@ -18,7 +18,15 @@ export default async function DailyTaskPage() {
     const memoCardRecords = await db
         .select({ id: memoCard.id, videoId: memoCard.videoId, channelId: memoCard.channelId })
         .from(memoCard)
-        .where(and(eq(memoCard.userId, userId), eq(memoCard.platform, 'youtube')))
+        .where(and(
+            eq(memoCard.userId, userId),
+            eq(memoCard.platform, 'youtube'),
+            sql`exists (
+                select 1
+                from ${wordCard}
+                where ${wordCard.memoCardId} = ${memoCard.id}
+            )`
+        ))
         .orderBy(
             sql`${memoCard.lastWrongTime} IS NOT NULL DESC`,
             sql`${memoCard.reviewTimes} = 0 DESC`,
@@ -66,6 +74,7 @@ export default async function DailyTaskPage() {
     const idOrder = new Map(memoCardIds.map((id, i) => [id, i]));
     const result = memoCards
         .sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0))
+        .filter(card => (wordsMap.get(card.id)?.length ?? 0) > 0)
         .map(card => {
             const channel = card.channelId ? channelsMap.get(card.channelId) : null;
             return {

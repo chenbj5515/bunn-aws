@@ -22,6 +22,7 @@
     "cdk:diff": "cd cdk && pnpm cdk diff",
     "cdk:deploy": "cd cdk && pnpm cdk deploy --all",
     "redis:migrate": "pnpm dlx tsx scripts/migrate-redis.ts",
+    "backfill:prod:memo-words": "pnpm dlx tsx scripts/backfill-production-memo-words.ts",
     "sync:env": "./sync-env.sh"
   },
   "dependencies": {
