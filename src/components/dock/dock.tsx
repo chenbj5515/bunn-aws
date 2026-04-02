@@ -6,7 +6,7 @@ import { AppIcon } from "./app-icon"
 import { useRouter } from "next/navigation"
 import { useParams } from "next/navigation"
 import { useTranslations } from 'next-intl'
-import { LucideIcon } from 'lucide-react'
+import { LucideIcon, Music } from 'lucide-react'
 
 // 定义应用图标数据接口
 interface AppIconData {
@@ -53,6 +53,12 @@ export function Dock({ isLoggedIn = false }: DockProps) {
             onClick: () => router.push(`/${locale}/safari`),
             tooltip: t('safari')
         },
+        {
+            name: "Music",
+            iconComponent: Music,
+            onClick: () => router.push(`/${locale}/music`),
+            tooltip: t('music'),
+        },
         // {
         //     name: "Netflix",
         //     icon: "/icon/netflix-n.png",
@@ -74,7 +80,7 @@ export function Dock({ isLoggedIn = false }: DockProps) {
     ]
 
     return (
-        <div className="top-1/2 left-0 z-100 fixed flex -translate-y-1/2 cursor-pointer">
+        <div className="top-1/2 left-0 z-(--z-dock) fixed flex -translate-y-1/2 cursor-pointer">
             <motion.div
                 className="flex flex-col justify-center items-center bg-[#0000000d] backdrop-blur-md backdrop-saturate-180 px-2 pt-2 pb-4 border-[0.5px] border-white/20 rounded-2xl"
                 initial={{ opacity: 0, x: -100 }}

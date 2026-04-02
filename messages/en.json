@@ -28,10 +28,88 @@
       "dailyTasks": "Daily Tasks",
       "youtube": "YouTube",
       "safari": "Safari",
+      "music": "Music",
       "netflix": "Netflix",
       "books": "Books",
       "bookmarks": "Bookmarks",
       "others": "Others"
+    }
+  },
+  "music": {
+    "common": {
+      "unknownMusic": "Unknown Music",
+      "unknownSong": "Unknown Song"
+    },
+    "emptyPage": {
+      "title": "No music videos yet",
+      "adminDescription": "Click the top-right button to add a music video",
+      "viewerDescription": "The admin has not added any music videos yet"
+    },
+    "addVideo": {
+      "triggerTitle": "Add music video",
+      "dialogTitle": "Add music video",
+      "inputPlaceholder": "Enter a YouTube video URL...",
+      "submit": "Add video",
+      "errors": {
+        "videoUrlRequired": "Please enter a video URL",
+        "invalidYoutubeUrl": "Invalid YouTube URL",
+        "loginRequired": "Please log in first",
+        "noPermission": "Only admins can add music videos",
+        "videoIdRequired": "Video ID is required",
+        "videoTitleRequired": "Video title is required",
+        "videoAlreadyExists": "This music video already exists",
+        "addFailed": "Failed to add video",
+        "fetchVideoInfoFailed": "Failed to fetch video information",
+        "videoNotFound": "Video not found",
+        "invalidVideoData": "Invalid video data"
+      }
+    },
+    "titleBar": {
+      "searchPlaceholder": "Search videos...",
+      "noResults": "No matching videos found",
+      "untitled": "Untitled"
+    },
+    "lyricsButton": {
+      "edit": "Edit lyrics",
+      "add": "Add lyrics"
+    },
+    "lyricsOverlay": {
+      "unknownSong": "Unknown Song",
+      "empty": "No lyrics yet",
+      "close": "Close lyrics",
+      "edit": "Edit lyrics"
+    },
+    "lyricsEditor": {
+      "unknownSong": "Unknown Song",
+      "title": "Edit lyrics",
+      "columns": {
+        "original": "Original (supports pasted images)",
+        "translation": "Translation",
+        "startTime": "Start",
+        "endTime": "End"
+      },
+      "placeholders": {
+        "original": "Enter lyrics or paste an image",
+        "translation": "Auto translation"
+      },
+      "ocrProcessing": "Reading image...",
+      "actions": {
+        "insertAfter": "Insert a line below",
+        "deleteLine": "Delete this line",
+        "cancel": "Cancel",
+        "save": "Save lyrics"
+      },
+      "errors": {
+        "processFailed": "Failed to translate and segment lyrics",
+        "regenerateFailed": "Failed to regenerate translations",
+        "ocrFailed": "OCR failed",
+        "noOcrText": "No lyric text was detected",
+        "emptyLyrics": "Please enter at least one line of lyrics",
+        "timeRequired": "Each lyric line must have both a start and end time",
+        "invalidTimeFormat": "Time must use the mm:ss format, for example 01:23",
+        "saveFailed": "Failed to save lyrics",
+        "saveFailedGeneric": "Save failed"
+      }
     }
   },
   "bookmarks": {

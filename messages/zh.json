@@ -28,10 +28,88 @@
       "dailyTasks": "每日任务",
       "youtube": "YouTube",
       "safari": "探索",
+      "music": "音乐",
       "netflix": "Netflix",
       "books": "书籍",
       "bookmarks": "书摘",
       "others": "其他"
+    }
+  },
+  "music": {
+    "common": {
+      "unknownMusic": "未知音乐",
+      "unknownSong": "未知歌曲"
+    },
+    "emptyPage": {
+      "title": "暂无音乐视频",
+      "adminDescription": "点击右上角添加音乐视频",
+      "viewerDescription": "管理员尚未添加任何音乐视频"
+    },
+    "addVideo": {
+      "triggerTitle": "添加音乐视频",
+      "dialogTitle": "添加音乐视频",
+      "inputPlaceholder": "输入 YouTube 视频 URL...",
+      "submit": "添加视频",
+      "errors": {
+        "videoUrlRequired": "请输入视频 URL",
+        "invalidYoutubeUrl": "无效的 YouTube URL",
+        "loginRequired": "请先登录",
+        "noPermission": "仅管理员可添加音乐视频",
+        "videoIdRequired": "视频 ID 不能为空",
+        "videoTitleRequired": "视频标题不能为空",
+        "videoAlreadyExists": "该音乐视频已存在",
+        "addFailed": "添加失败",
+        "fetchVideoInfoFailed": "获取视频信息失败",
+        "videoNotFound": "视频不存在",
+        "invalidVideoData": "视频数据无效"
+      }
+    },
+    "titleBar": {
+      "searchPlaceholder": "搜索视频...",
+      "noResults": "没有找到匹配的视频",
+      "untitled": "无标题"
+    },
+    "lyricsButton": {
+      "edit": "编辑歌词",
+      "add": "添加歌词"
+    },
+    "lyricsOverlay": {
+      "unknownSong": "未知歌曲",
+      "empty": "暂无歌词",
+      "close": "关闭歌词",
+      "edit": "编辑歌词"
+    },
+    "lyricsEditor": {
+      "unknownSong": "未知歌曲",
+      "title": "录入歌词",
+      "columns": {
+        "original": "原文（支持粘贴图片）",
+        "translation": "翻译",
+        "startTime": "开始时间",
+        "endTime": "结束时间"
+      },
+      "placeholders": {
+        "original": "输入歌词或粘贴图片",
+        "translation": "自动翻译"
+      },
+      "ocrProcessing": "识别图片中",
+      "actions": {
+        "insertAfter": "在下方插入一行",
+        "deleteLine": "删除此行",
+        "cancel": "取消",
+        "save": "保存歌词"
+      },
+      "errors": {
+        "processFailed": "翻译和拆分失败",
+        "regenerateFailed": "重新生成翻译失败",
+        "ocrFailed": "OCR 识别失败",
+        "noOcrText": "未识别到歌词文本",
+        "emptyLyrics": "请至少录入一行歌词",
+        "timeRequired": "每行歌词的开始时间和结束时间都必须填写",
+        "invalidTimeFormat": "时间格式必须为 mm:ss（如 01:23）",
+        "saveFailed": "保存歌词失败",
+        "saveFailedGeneric": "保存失败"
+      }
     }
   },
   "bookmarks": {

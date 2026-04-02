@@ -47,6 +47,7 @@ async function fetchMemoCards(
       hasQuestionAnswerSubmission: memoCard.hasQuestionAnswerSubmission,
       questionAnswerSubmissions: memoCard.questionAnswerSubmissions,
       lastQuestionAnswerSubmittedAt: memoCard.lastQuestionAnswerSubmittedAt,
+      endTimeMs: memoCard.endTimeMs,
       channelId: memoCard.channelId!,
       thumbnailUrl: videos.thumbnailUrl,
       videoId: videos.videoId,

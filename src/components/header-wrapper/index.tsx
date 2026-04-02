@@ -53,7 +53,7 @@ export function HeaderWrapper({
   // 其他路由，如果用户已登录，显示 UserPanel（原来的 Header）
   if (isLoggedIn && user && subscription) {
     return (
-      <header className="top-4 left-4 z-50 absolute">
+      <header className="top-4 left-4 z-(--z-header) absolute">
         <UserPanel
           user={{
             id: user.id,

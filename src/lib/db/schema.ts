@@ -197,6 +197,8 @@ export const memoCard = pgTable("memo_card", {
 	highlightSentenceId: uuid('highlight_sentence_id').references(() => bookHighlightSentences.id, {
 		onDelete: 'set null',
 	}),
+	// 歌词结束时间（毫秒），用于音乐歌词同步显示
+	endTimeMs: integer('end_time_ms'),
 }, (table) => [
 	foreignKey({
 		columns: [table.videoId, table.userId],
@@ -330,6 +332,7 @@ export const videos = pgTable('videos', {
 	channelId: text('channel_id').references(() => channels.channelId, { onDelete: 'cascade' }), // 频道ID（可空，兼容历史数据）
 	videoTitle: text('video_title'),                     // 视频标题（可空，历史数据可能缺失）
 	thumbnailUrl: text('thumbnail_url'),                 // 视频缩略图URL
+	isMusic: boolean('is_music').default(false).notNull(), // 是否为音乐视频
 	createTime: timestamp("create_time", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updateTime: timestamp("update_time", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 }, (table) => [

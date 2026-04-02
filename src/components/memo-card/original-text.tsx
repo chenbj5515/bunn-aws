@@ -1,7 +1,11 @@
 "use client"
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { updateOriginalText } from "./server-functions";
+import {
+    updateOriginalText,
+    updateWordSegmentationRuby,
+    updateWordSegmentationTranslation,
+} from "./server-functions";
 import { Character } from "./types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslations, useLocale } from 'next-intl';
@@ -27,6 +31,7 @@ type GlobalTooltipState = {
     word: string;
     meaning: string;
     kanaPronunciation?: string;
+    segmentIndex: number;
     anchorRect: TooltipAnchorRect;
 } | null;
 
@@ -64,6 +69,8 @@ const debounce = <F extends (...args: any[]) => any>(func: F, wait: number) => {
 };
 
 import type { WordSegmentationV2, Segment } from "@/types/extended-memo-card";
+
+type SupportedTooltipLocale = 'en' | 'zh' | 'zh-TW';
 
 interface OriginalTextProps {
     selectedCharacter?: Character | null;
@@ -103,9 +110,14 @@ export function OriginalText({
     const pathname = usePathname();
     const localOriginalTextRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [localWordSegmentation, setLocalWordSegmentation] = useState<WordSegmentationV2 | null>(wordSegmentation ?? null);
 
     // 使用传入的 ref 或本地创建的 ref
     const effectiveRef = originalTextRef || localOriginalTextRef;
+
+    useEffect(() => {
+        setLocalWordSegmentation(wordSegmentation ?? null);
+    }, [wordSegmentation]);
 
     // 根据当前语言获取 segment 的翻译
     const getSegmentTranslation = (segment: Segment): string => {
@@ -119,11 +131,20 @@ export function OriginalText({
         return translations[locale as keyof typeof translations] || translations['en'] || '';
     };
 
+    const getTranslationLocaleKey = (): SupportedTooltipLocale => {
+        if (locale === 'zh' || locale === 'zh-TW' || locale === 'en') {
+            return locale;
+        }
+
+        return 'en';
+    };
+
     // Tooltip 相关状态
     const [activeTooltip, setActiveTooltip] = useState<{
         word: string;
         meaning: string;
         kanaPronunciation?: string;
+        segmentIndex: number;
         anchorRect: TooltipAnchorRect;
     } | null>(null);
     // 为每个组件实例分配唯一 ID，用于全局单例控制
@@ -145,6 +166,7 @@ export function OriginalText({
                     word: state.word,
                     meaning: state.meaning,
                     kanaPronunciation: state.kanaPronunciation,
+                    segmentIndex: state.segmentIndex,
                     anchorRect: state.anchorRect,
                 });
             } else {
@@ -173,7 +195,7 @@ export function OriginalText({
     };
 
     // 显示单词tooltip
-    const showTooltip = (segment: Segment, event: React.MouseEvent) => {
+    const showTooltip = (segment: Segment, segmentIndex: number, event: React.MouseEvent) => {
         const element = event.currentTarget as HTMLElement;
         const rect = element.getBoundingClientRect();
         const meaning = getSegmentTranslation(segment);
@@ -184,6 +206,7 @@ export function OriginalText({
             word: segment.word,
             meaning,
             kanaPronunciation: segment.ruby || undefined,
+            segmentIndex,
             anchorRect: {
                 top: rect.top,
                 left: rect.left,
@@ -193,6 +216,160 @@ export function OriginalText({
                 height: rect.height,
             },
         });
+    };
+
+    const handleKanaPronunciationBlur = async (segmentIndex: number, nextKanaPronunciation: string) => {
+        if (!id || !localWordSegmentation?.segments[segmentIndex]) {
+            return;
+        }
+
+        const currentSegment = localWordSegmentation.segments[segmentIndex];
+        const trimmedKanaPronunciation = nextKanaPronunciation.trim();
+        const previousKanaPronunciation = (currentSegment.ruby || "").trim();
+
+        if (trimmedKanaPronunciation === previousKanaPronunciation) {
+            return;
+        }
+
+        const nextSegments = localWordSegmentation.segments.map((segment, index) => {
+            if (index !== segmentIndex) {
+                return segment;
+            }
+
+            if (!trimmedKanaPronunciation) {
+                const { ruby, ...rest } = segment;
+                return rest;
+            }
+
+            return {
+                ...segment,
+                ruby: trimmedKanaPronunciation,
+            };
+        });
+
+        const previousWordSegmentation = localWordSegmentation;
+        const nextWordSegmentation: WordSegmentationV2 = {
+            ...localWordSegmentation,
+            segments: nextSegments,
+            metadata: {
+                ...localWordSegmentation.metadata,
+                source: 'manual',
+                segmentedAt: new Date().toISOString(),
+            },
+        };
+
+        setLocalWordSegmentation(nextWordSegmentation);
+
+        if (activeTooltip?.segmentIndex === segmentIndex) {
+            const nextTooltipState = {
+                ...activeTooltip,
+                kanaPronunciation: trimmedKanaPronunciation || undefined,
+            };
+            setActiveTooltip(nextTooltipState);
+            setGlobalTooltipState({
+                ownerId: instanceId as number,
+                ...nextTooltipState,
+            });
+        }
+
+        try {
+            await updateWordSegmentationRuby(id, segmentIndex, trimmedKanaPronunciation);
+        } catch (error) {
+            console.error('更新单词假名标注失败', error);
+            setLocalWordSegmentation(previousWordSegmentation);
+
+            if (activeTooltip?.segmentIndex === segmentIndex) {
+                const revertedTooltipState = {
+                    ...activeTooltip,
+                    kanaPronunciation: currentSegment.ruby || undefined,
+                };
+                setActiveTooltip(revertedTooltipState);
+                setGlobalTooltipState({
+                    ownerId: instanceId as number,
+                    ...revertedTooltipState,
+                });
+            }
+        }
+    };
+
+    const handleMeaningBlur = async (segmentIndex: number, nextMeaning: string) => {
+        if (!id || !localWordSegmentation?.segments[segmentIndex]) {
+            return;
+        }
+
+        const localeKey = getTranslationLocaleKey();
+        const currentSegment = localWordSegmentation.segments[segmentIndex];
+        const currentTranslations = currentSegment.translations ?? {
+            en: '',
+            zh: '',
+            'zh-TW': '',
+        };
+        const trimmedMeaning = nextMeaning.trim();
+        const previousMeaning = (currentTranslations[localeKey] ?? '').trim();
+
+        if (trimmedMeaning === previousMeaning) {
+            return;
+        }
+
+        const nextSegments = localWordSegmentation.segments.map((segment, index) => {
+            if (index !== segmentIndex) {
+                return segment;
+            }
+
+            return {
+                ...segment,
+                translations: {
+                    en: segment.translations?.en ?? '',
+                    zh: segment.translations?.zh ?? '',
+                    'zh-TW': segment.translations?.['zh-TW'] ?? '',
+                    [localeKey]: trimmedMeaning,
+                },
+            };
+        });
+
+        const previousWordSegmentation = localWordSegmentation;
+        const nextWordSegmentation: WordSegmentationV2 = {
+            ...localWordSegmentation,
+            segments: nextSegments,
+            metadata: {
+                ...localWordSegmentation.metadata,
+                source: 'manual',
+                segmentedAt: new Date().toISOString(),
+            },
+        };
+
+        setLocalWordSegmentation(nextWordSegmentation);
+
+        if (activeTooltip?.segmentIndex === segmentIndex) {
+            const nextTooltipState = {
+                ...activeTooltip,
+                meaning: trimmedMeaning,
+            };
+            setActiveTooltip(nextTooltipState);
+            setGlobalTooltipState({
+                ownerId: instanceId as number,
+                ...nextTooltipState,
+            });
+        }
+
+        try {
+            await updateWordSegmentationTranslation(id, segmentIndex, localeKey, trimmedMeaning);
+        } catch (error) {
+            console.error('更新单词翻译失败', error);
+            setLocalWordSegmentation(previousWordSegmentation);
+
+            if (activeTooltip?.segmentIndex === segmentIndex) {
+                const revertedTooltipState = {
+                    ...activeTooltip,
+                    meaning: getSegmentTranslation(currentSegment),
+                };
+                setActiveTooltip(revertedTooltipState);
+                setGlobalTooltipState({
+                    ownerId: instanceId as number,
+                    ...revertedTooltipState,
+                });
+            }
+        }
     };
 
     // 添加单词到单词本
@@ -224,9 +401,9 @@ export function OriginalText({
                 // 检查鼠标是否在tooltip内
                 let isOverTooltip = tooltipElement?.contains(targetElement);
 
-                // 检查鼠标是否在任何Ruby元素上
+                // 检查鼠标是否仍在可触发 tooltip 的词段上
                 let isOverRuby = false;
-                const rubyElements = document.querySelectorAll('ruby');
+                const rubyElements = document.querySelectorAll('[data-word-tooltip-target="true"]');
 
                 rubyElements.forEach(ruby => {
                     if (ruby.contains(targetElement)) {
@@ -341,26 +518,41 @@ export function OriginalText({
     const renderSegment = (segment: Segment, index: number) => {
         const hasRuby = !!segment.ruby;
         const hasTranslation = !!segment.translations;
-        const translation = getSegmentTranslation(segment);
 
-        if (hasRuby) {
-            const rubyClassName = [
+        const targetClassName = [
                 'relative z-999 cursor-pointer',
                 hasTranslation ? 'has-translation' : '',
             ]
                 .filter(Boolean)
                 .join(' ');
 
+        if (hasRuby) {
+
             return (
                 <ruby
                     key={index}
                     onClick={() => handleRubyClick(segment.ruby || segment.word)}
-                    onMouseEnter={hasTranslation ? (e) => showTooltip(segment, e) : undefined}
-                    className={rubyClassName}
+                    onMouseEnter={hasTranslation ? (e) => showTooltip(segment, index, e) : undefined}
+                    className={targetClassName}
+                    data-word-tooltip-target="true"
                 >
                     {segment.word}
                     <rt>{segment.ruby}</rt>
                 </ruby>
+            );
+        }
+
+        if (hasTranslation) {
+            return (
+                <span
+                    key={index}
+                    onClick={() => handleRubyClick(segment.word)}
+                    onMouseEnter={(e) => showTooltip(segment, index, e)}
+                    className={targetClassName}
+                    data-word-tooltip-target="true"
+                >
+                    {segment.word}
+                </span>
             );
         }
 
@@ -377,19 +569,14 @@ export function OriginalText({
         );
     };
 
-    // 使用useMemo缓存渲染结果
-    const memoizedRenderedContent = useMemo(() => {
-        if (wordSegmentation?.segments) {
-            return renderSegments(wordSegmentation.segments);
-        }
-        // 如果没有 wordSegmentation，显示原始文本
-        return (
-            <span>
-                {renderOriginalTextLabel()}
-                {originalText || ''}
-            </span>
-        );
-    }, [selectedCharacter, isHoveringCharacter, wordSegmentation, originalText]);
+    const renderedContent = localWordSegmentation?.segments ? (
+        renderSegments(localWordSegmentation.segments)
+    ) : (
+        <span>
+            {renderOriginalTextLabel()}
+            {originalText || ''}
+        </span>
+    );
 
     return (
         <div ref={containerRef} className={`relative ${noOffset ? 'w-full' : 'w-[calc(100%-42px)]'}`}>
@@ -406,7 +593,7 @@ export function OriginalText({
                             }  w-[101%] h-[105%] -left-[4px] -top-[2px]`}
                     ></section>
                 ) : null}
-                {memoizedRenderedContent}
+                {renderedContent}
             </div>
 
             {/* 单词Tooltip */}
@@ -415,6 +602,18 @@ export function OriginalText({
                     activeTooltip={activeTooltip}
                     isAddButtonActive={false}
                     handleAddToDictionary={handleAddToDictionary}
+                    onKanaPronunciationBlur={(nextKanaPronunciation) =>
+                        handleKanaPronunciationBlur(
+                            activeTooltip.segmentIndex,
+                            nextKanaPronunciation
+                        )
+                    }
+                    onMeaningBlur={(nextMeaning) =>
+                        handleMeaningBlur(
+                            activeTooltip.segmentIndex,
+                            nextMeaning
+                        )
+                    }
                     theme={tooltipTheme}
                 />
             )}

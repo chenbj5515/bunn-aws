@@ -16,6 +16,44 @@ main,
 }
 
 @theme inline {
+  /*
+   * Z-Index 层级系统
+   * ================
+   * 层级从低到高，高层级会覆盖低层级
+   *
+   * 1. 基础内容层 (0-150)
+   *    - z-base: 页面主内容（视频播放器等）
+   *    - z-dropdown: 下拉菜单
+   *    - z-sticky: 粘性定位元素
+   *    - z-fixed: 固定定位元素
+   *
+   * 2. 导航层 (200-250)
+   *    - z-dock: 左侧 Dock 导航栏
+   *    - z-header: 顶部 Header（用户头像等）
+   *
+   * 3. 交互层 (300-500)
+   *    - z-drawer: 侧边抽屉
+   *    - z-modal: 模态框
+   *    - z-popover: 弹出框
+   *
+   * 4. 覆盖层 (600+)
+   *    - z-overlay: 全屏覆盖层（歌词视图、编辑器等），会遮挡 Dock 和 Header
+   *    - z-toast: 通知提示
+   *    - z-tooltip: 工具提示（最高层级）
+   */
+  --z-base: 0;
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-fixed: 150;
+  --z-dock: 200;
+  --z-header: 250;
+  --z-drawer: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-overlay: 600;
+  --z-toast: 700;
+  --z-tooltip: 800;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

@@ -36,7 +36,7 @@ export default function CaptureDialog() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
-        className="z-9999 fixed inset-0 flex flex-col justify-start items-center bg-black/40 backdrop-blur-xl pt-[184px]"
+        className="z-(--z-overlay) fixed inset-0 flex flex-col justify-start items-center bg-black/40 backdrop-blur-xl pt-[184px]"
       >
         {/* 关闭按钮 */}
         <button

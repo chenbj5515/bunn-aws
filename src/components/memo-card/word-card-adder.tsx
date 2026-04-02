@@ -8,11 +8,11 @@ import { SuccessMotion } from "../success-motion";
 // 添加毛玻璃效果的CSS
 const frostedGlassStyle = `
   .frosted-glass {
-    background-color: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px) saturate(180%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     position: absolute;
   }
 `;
@@ -39,14 +39,24 @@ interface WordCardAdderProps {
         };
     };
     isAddButtonActive: boolean;
-    handleAddToDictionary: (word: string, meaning: string, kanaPronunciation?: string) => void;
+    handleAddToDictionary: (word: string, meaning: string, kanaPronunciation?: string) => Promise<void> | void;
+    onKanaPronunciationBlur?: (kanaPronunciation: string) => Promise<void> | void;
+    onMeaningBlur?: (meaning: string) => Promise<void> | void;
     onAddSuccess?: () => void;
     theme?: 'default' | 'frosted'; // 控制悬浮窗样式，默认为白色背景，frosted为毛玻璃效果
 }
 
 export function WordCardAdder(props: WordCardAdderProps) {
     const t = useTranslations('memoCard');
-    const { activeTooltip, isAddButtonActive, handleAddToDictionary, onAddSuccess, theme = 'default' } = props;
+    const {
+        activeTooltip,
+        isAddButtonActive,
+        handleAddToDictionary,
+        onKanaPronunciationBlur,
+        onMeaningBlur,
+        onAddSuccess,
+        theme = 'default',
+    } = props;
     
     // 添加样式到DOM，仅当主题为frosted时
     useEffect(() => {
@@ -63,7 +73,15 @@ export function WordCardAdder(props: WordCardAdderProps) {
     const [isSpacePressed, setIsSpacePressed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [kanaPronunciation, setKanaPronunciation] = useState(activeTooltip.kanaPronunciation ?? "");
+    const [meaning, setMeaning] = useState(activeTooltip.meaning);
+    const [isSavingKanaPronunciation, setIsSavingKanaPronunciation] = useState(false);
+    const [isSavingMeaning, setIsSavingMeaning] = useState(false);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
+    const kanaTextRef = useRef<HTMLDivElement | null>(null);
+    const meaningTextRef = useRef<HTMLDivElement | null>(null);
+    const isKanaFocusedRef = useRef(false);
+    const isMeaningFocusedRef = useRef(false);
     const [tooltipSize, setTooltipSize] = useState<{ width: number; height: number }>({
         width: 0,
         height: 0,
@@ -77,6 +95,22 @@ export function WordCardAdder(props: WordCardAdderProps) {
     useEffect(() => {
         setIsLoading(false);
         setIsSuccess(false);
+        setKanaPronunciation(activeTooltip.kanaPronunciation ?? "");
+        setMeaning(activeTooltip.meaning);
+        setIsSavingKanaPronunciation(false);
+        setIsSavingMeaning(false);
+        isKanaFocusedRef.current = false;
+        isMeaningFocusedRef.current = false;
+
+        // 直接设置初始内容（setTimeout 确保 ref 已挂载）
+        setTimeout(() => {
+            if (kanaTextRef.current) {
+                kanaTextRef.current.textContent = activeTooltip.kanaPronunciation ?? "";
+            }
+            if (meaningTextRef.current) {
+                meaningTextRef.current.textContent = activeTooltip.meaning;
+            }
+        }, 0);
 
         // 更新视口尺寸
         const updateViewportSize = () => {
@@ -95,7 +129,19 @@ export function WordCardAdder(props: WordCardAdderProps) {
         return () => {
             window.removeEventListener("resize", updateViewportSize);
         };
-    }, [activeTooltip.word, activeTooltip.meaning]);
+    }, [activeTooltip.word, activeTooltip.meaning, activeTooltip.kanaPronunciation]);
+
+    useEffect(() => {
+        if (kanaTextRef.current && !isKanaFocusedRef.current) {
+            kanaTextRef.current.textContent = kanaPronunciation;
+        }
+    }, [kanaPronunciation]);
+
+    useEffect(() => {
+        if (meaningTextRef.current && !isMeaningFocusedRef.current) {
+            meaningTextRef.current.textContent = meaning;
+        }
+    }, [meaning]);
 
     // 测量 Tooltip 实际尺寸
     useEffect(() => {
@@ -106,7 +152,13 @@ export function WordCardAdder(props: WordCardAdderProps) {
                 height: rect.height,
             });
         }
-    }, [activeTooltip.word, activeTooltip.meaning]);
+    }, [activeTooltip.word, activeTooltip.meaning, activeTooltip.kanaPronunciation]);
+
+    useEffect(() => {
+        if (!onKanaPronunciationBlur && !onMeaningBlur) {
+            return;
+        }
+    }, [activeTooltip.word, activeTooltip.meaning, activeTooltip.kanaPronunciation]);
 
     // 根据锚点和 Tooltip 尺寸、视口尺寸计算最终位置
     const computedPosition = (() => {
@@ -170,8 +222,69 @@ export function WordCardAdder(props: WordCardAdderProps) {
         }, 1500);
     };
 
+    const handleKanaPronunciationBlur = async () => {
+        if (!onKanaPronunciationBlur) {
+            return;
+        }
+
+        const trimmedKanaPronunciation = kanaPronunciation.trim();
+        const previousKanaPronunciation = (activeTooltip.kanaPronunciation ?? "").trim();
+
+        if (trimmedKanaPronunciation === previousKanaPronunciation) {
+            return;
+        }
+
+        setIsSavingKanaPronunciation(true);
+
+        try {
+            await onKanaPronunciationBlur(trimmedKanaPronunciation);
+        } catch (error) {
+            console.error('更新假名标注失败', error);
+            setKanaPronunciation(activeTooltip.kanaPronunciation ?? "");
+        } finally {
+            setIsSavingKanaPronunciation(false);
+        }
+    };
+
+    const handleMeaningBlur = async () => {
+        if (!onMeaningBlur) {
+            return;
+        }
+
+        const trimmedMeaning = meaning.trim();
+        const previousMeaning = activeTooltip.meaning.trim();
+
+        if (trimmedMeaning === previousMeaning) {
+            return;
+        }
+
+        setIsSavingMeaning(true);
+
+        try {
+            await onMeaningBlur(trimmedMeaning);
+        } catch (error) {
+            console.error('更新单词翻译失败', error);
+            setMeaning(activeTooltip.meaning);
+        } finally {
+            setIsSavingMeaning(false);
+        }
+    };
+
+    const isEditableTarget = (target: EventTarget | null) => {
+        if (!(target instanceof HTMLElement)) {
+            return false;
+        }
+
+        const tagName = target.tagName.toLowerCase();
+        return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
+    };
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (isEditableTarget(e.target)) {
+                return;
+            }
+
             if (e.code === 'Space' || e.key === ' ') {
                 e.preventDefault();
                 e.stopPropagation(); // 阻止事件冒泡，避免触发全局视频控制
@@ -180,18 +293,28 @@ export function WordCardAdder(props: WordCardAdderProps) {
         };
 
         const handleKeyUp = (e: KeyboardEvent) => {
+            if (isEditableTarget(e.target)) {
+                return;
+            }
+
             if (e.code === 'Space' || e.key === ' ') {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsSpacePressed(false);
                 // 空格键松开时执行添加操作
-                setIsLoading(true);
-                try {
-                    handleAddToDictionary(activeTooltip.word, activeTooltip.meaning, activeTooltip.kanaPronunciation);
-                    handleAddSuccess();
-                } catch (error) {
-                    setIsLoading(false);
-                }
+                void (async () => {
+                    setIsLoading(true);
+                    try {
+                        await handleAddToDictionary(
+                            activeTooltip.word,
+                            activeTooltip.meaning,
+                            kanaPronunciation.trim() || undefined
+                        );
+                        handleAddSuccess();
+                    } catch (error) {
+                        setIsLoading(false);
+                    }
+                })();
             }
         };
 
@@ -202,12 +325,16 @@ export function WordCardAdder(props: WordCardAdderProps) {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [activeTooltip.word, activeTooltip.meaning, handleAddToDictionary]);
+    }, [activeTooltip.word, activeTooltip.meaning, handleAddToDictionary, kanaPronunciation]);
 
-    const handleClick = () => {
+    const handleClick = async () => {
         setIsLoading(true);
         try {
-            handleAddToDictionary(activeTooltip.word, activeTooltip.meaning, activeTooltip.kanaPronunciation);
+            await handleAddToDictionary(
+                activeTooltip.word,
+                activeTooltip.meaning,
+                kanaPronunciation.trim() || undefined
+            );
             handleAddSuccess();
         } catch (error) {
             setIsLoading(false);
@@ -217,7 +344,7 @@ export function WordCardAdder(props: WordCardAdderProps) {
     const tooltipElement = (
         <div
             ref={tooltipRef}
-            className={`z-9999 flex flex-col p-4 rounded-xl min-w-[280px] min-h-[160px] ${theme === 'frosted' ? 'frosted-glass text-black' : 'bg-white text-gray-800'}`}
+            className={`z-(--z-tooltip) flex flex-col p-4 rounded-xl min-w-[280px] min-h-[160px] ${theme === 'frosted' ? 'frosted-glass text-black' : 'bg-white text-gray-800'}`}
             data-ruby-tooltip="true"
             style={{
                 top: `${computedPosition.top}px`,
@@ -226,11 +353,11 @@ export function WordCardAdder(props: WordCardAdderProps) {
                 transformOrigin: 'top left',
                 animation: 'fadeIn 0.15s ease-out',
                 ...(theme === 'frosted' ? {
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    backdropFilter: 'blur(25px) saturate(180%)',
-                    WebkitBackdropFilter: 'blur(25px) saturate(180%)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
                     willChange: 'backdrop-filter',
                 } : {
                     border: '1px solid rgba(0, 0, 0, 0.1)',
@@ -240,9 +367,61 @@ export function WordCardAdder(props: WordCardAdderProps) {
                 isolation: 'isolate'
             }}
         >
-            {/* 上半部分：meaning居中显示 */}
             <div className="flex flex-1 justify-center items-center mb-4">
-                <div className={`px-2 font-medium text-lg text-center ${theme === 'frosted' ? 'text-black' : 'text-gray-800'}`}>{activeTooltip.meaning}</div>
+                <div className="px-2 w-full text-center">
+                    <div className="relative mb-1">
+                        <div
+                            ref={kanaTextRef}
+                            dir="ltr"
+                            contentEditable={!isSavingKanaPronunciation}
+                            suppressContentEditableWarning
+                            onFocus={() => {
+                                isKanaFocusedRef.current = true;
+                            }}
+                            onInput={(e) => {
+                                setKanaPronunciation(e.currentTarget.textContent ?? "");
+                            }}
+                            onBlur={(e) => {
+                                isKanaFocusedRef.current = false;
+                                handleKanaPronunciationBlur();
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                            onKeyUp={(e) => e.stopPropagation()}
+                            className="bg-transparent px-0 py-0 outline-none min-h-[16px] text-black text-xs text-center cursor-text"
+                        />
+                        {isSavingKanaPronunciation ? (
+                            <Loader2 className="top-1/2 right-0 absolute w-3 h-3 text-black -translate-y-1/2 animate-spin" />
+                        ) : null}
+                    </div>
+                    <div className="relative">
+                        <div
+                            ref={meaningTextRef}
+                            dir="ltr"
+                            contentEditable={!isSavingMeaning}
+                            suppressContentEditableWarning
+                            onFocus={() => {
+                                isMeaningFocusedRef.current = true;
+                            }}
+                            onInput={(e) => {
+                                setMeaning(e.currentTarget.textContent ?? "");
+                            }}
+                            onBlur={() => {
+                                isMeaningFocusedRef.current = false;
+                                handleMeaningBlur();
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                            onKeyUp={(e) => e.stopPropagation()}
+                            className={`font-medium text-lg text-center outline-none min-h-[24px] ${theme === 'frosted' ? 'text-black' : 'text-gray-800'}`}
+                        />
+                        {isSavingMeaning ? (
+                            <Loader2 className="top-1 right-0 absolute w-3 h-3 text-black animate-spin" />
+                        ) : null}
+                    </div>
+                </div>
             </div>
 
             {/* 下半部分：添加按钮 */}
@@ -250,14 +429,12 @@ export function WordCardAdder(props: WordCardAdderProps) {
                 <button
                     className={`w-[240px] rounded-lg p-2 text-sm transition-all duration-200 h-10
                         ${theme === 'frosted'
-                            ? `${isAddButtonActive || isSpacePressed ? 'bg-white/30' : 'bg-white/20'} text-white`
+                            ? `${isAddButtonActive || isSpacePressed ? 'bg-gray-200' : 'bg-gray-100'} text-gray-800`
                             : `${isAddButtonActive || isSpacePressed ? 'shadow-neumorphic-button-hover' : 'shadow-neumorphic'} text-white`
                         }
-                        ${isLoading ? 'opacity-70 cursor-not-allowed' : theme === 'frosted' ? 'hover:bg-white/30 cursor-pointer' : 'hover:shadow-neumorphic-button-hover cursor-pointer'}`}
+                        ${isLoading ? 'opacity-70 cursor-not-allowed' : theme === 'frosted' ? 'hover:bg-gray-200 cursor-pointer' : 'hover:shadow-neumorphic-button-hover cursor-pointer'}`}
                     style={theme === 'frosted' ? {
-                        backdropFilter: 'blur(10px)',
-                        WebkitBackdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
+                        border: '1px solid rgba(0, 0, 0, 0.1)'
                     } : {}}
                     onClick={handleClick}
                     disabled={isLoading || isSuccess}

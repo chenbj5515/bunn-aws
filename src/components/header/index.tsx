@@ -15,7 +15,7 @@ export default async function Header() {
   const userSettings = await getUserSettings(session.user.id);
 
   return (
-    <header className="top-4 left-4 z-50 absolute">
+    <header className="top-4 left-4 z-(--z-header) absolute">
       <UserPanel
         user={{
           id: session.user.id,
