@@ -318,8 +318,8 @@ export function RedisKeysPanel({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4 shrink-0">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="mb-4 flex shrink-0 items-center justify-between">
         <div className="text-sm text-neutral-600">
           共 <span className="font-medium text-neutral-900">{keys.length}</span> 个缓存项
         </div>
@@ -329,7 +329,7 @@ export function RedisKeysPanel({
         </Button>
       </div>
 
-      <div className="flex-1 overflow-auto space-y-6 pr-2">
+      <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pr-2">
         {sortedCategories.map((category) => (
           <div key={category}>
             <h3 className="text-sm font-medium text-neutral-500 mb-3 flex items-center gap-2">

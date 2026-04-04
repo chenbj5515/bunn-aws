@@ -3,8 +3,8 @@
 本文件总结系统内所有计费口径、Redis 统计键、默认单价（可被 ENV 覆盖）与限额实现位点，便于统一维护与核对。
 
 ## 一、统一成本与限额
-- 订阅用户总成本阈值：默认 4 美元（ENV: `COST_LIMIT_USD`）。
-- 免费用户每日总成本阈值：$0.1 美元（100,000 microUSD）。
+- 订阅用户总成本阈值：**4 美元**（4,000,000 microUSD），常量 `SUBSCRIPTION_LIMIT_MICRO`（`src/lib/auth/billing/limit.ts`）。当前代码**未**从 `COST_LIMIT_USD` 等 ENV 读取，若需可配置应改 `limit.ts` 并同步本文档。
+- 免费用户每日总成本阈值：**$0.1**（100,000 microUSD），常量 `FREE_LIMIT_MICRO`（同上）。
 - 计费项累计到：
   - 订阅用户（TTL 对齐订阅期）：
     - `user:{userId}:subscription:cost_micro:total`
@@ -16,7 +16,7 @@
     - `token:{userId}:{YYYY-MM-DD}:cost_micro:openai_total`
     - `token:{userId}:{YYYY-MM-DD}:cost_micro:minimax_tts`
     - `token:{userId}:{YYYY-MM-DD}:cost_micro:vercel_blob`
-- 校验入口：`src/utils/error-handling.ts` → `validateUserAndTokenLimit()` 委托 `checkTokenLimit()`；订阅按总成本4美元、免费按当日成本$0.1 判断。
+- 校验入口：`checkLimit()`（`src/lib/auth/billing/limit.ts`）。订阅用户按周期内总成本与 4 美元比较；免费用户按用户时区当日总成本与 $0.1 比较。需要配额的 tRPC 能力另经 `rateLimitedProcedure`（`src/lib/trpc/procedures/rate-limited.ts`）在 context 中标记 `rateLimited`，由具体 procedure 在调 AI 前短路。
 
 ## 二、免费用户每日额度（已实装）
 - 成本：当日总成本上限 $0.1（100,000 microUSD）。
@@ -32,9 +32,9 @@
   - Vercel Blob：按上传图片尺寸计费 $7 / GB
 
 ## 四、计费口径与接入点
-- OpenAI：按输入/输出 tokens 计费；使用点：所有调用 `trackTokenCount({ inputTokens, outputTokens, model })` 的接口与函数。
-- MiniMax TTS：按字符计费；使用点：`/api/tts-minimax` 成功生成后记 `provider='minimax'`。
-- Vercel Blob：按上传图片尺寸计费（1GB = 7美元）；使用点：`src/server/upload.ts` 上传成功后记 `provider='blob'`。
+- OpenAI：按输入/输出 tokens 折算成本；统一通过 `trackUsage({ inputTokens, outputTokens, model, costMeta? })`（`src/lib/auth/billing/track.ts`）。典型调用点：各 `rateLimitedProcedure` 的 AI mutation（`src/lib/trpc/routers/ai/*.ts`）在 `after()` 中用 `generateText` 返回的 `usage`；`POST /api/ai/chat`（`src/app/api/ai/chat/route.ts`）用服务端 `countTokens()` 估算而非 OpenAI usage。
+- MiniMax TTS：按字符计费；使用点：**tRPC** `tts.synthesize`（`src/lib/trpc/routers/tts/router/synthesize.ts`），`costMeta: { provider: 'minimax', chars }`。（仓库中无 `/api/tts-minimax` route。）
+- Vercel Blob：按上传图片字节计费（定价见 `ai-pricing.ts`）；使用点：`src/server/upload.ts` 中 `trackUsage`，`costMeta: { provider: 'blob', bytes }`。
 
 ## 五、Redis 统计键（聚合）
 - 订阅维度（见 `SUBSCRIPTION_KEYS.costs.*`）：`user:{userId}:subscription:cost_micro:*`
@@ -50,7 +50,7 @@
 - 文案来源：`messages/*` → `pricing.proPlan.features.{tokens,images,tts}`。
 
 ## 七、注意事项
-- 成本统计失败不影响主流程；所有错误仅记录日志。
-- usage→cost 的计算由 `src/utils/ai-cost.ts` 统一管理（OpenAI tokens、MiniMax chars、Blob bytes → microUSD）。
-- 订阅 vs 免费的 TTL 对齐逻辑依赖 `src/redis/helpers`（订阅期 TTL，对齐至 period end；免费对齐至次日凌晨5点）。
-- 统一聚合表：`usage`（订阅：`subscription_id`；免费：`period_key`）。
+- 成本统计失败不影响主流程；`trackUsage` 内 catch 会静默返回，不抛错。
+- usage→cost：`calculateCostMicros`（`src/lib/auth/billing/cost.ts`）+ `src/lib/auth/billing/helpers/index.ts` 中的 `estimateOpenAICostMicroUSD`、`estimateMiniMaxTTSCostMicroUSD`、`estimateVercelBlobStorageCostMicroUSD`（OpenAI tokens、MiniMax chars、Blob bytes → microUSD）。
+- 订阅侧 Redis 增量时的 TTL：读取 `user:{userId}:subscription` 的 TTL（`track.ts`）。免费侧 TTL：`getSecondsUntilNextDailyReset(timezone)`（`src/lib/auth/billing/helpers/index.ts`，对齐用户时区**下一次凌晨 5 点**重置，而非自然日零点）。
+- 统一聚合表：`usage`（`src/lib/db/schema.ts`；订阅行带 `subscription_id`，免费行带 `period_key`）。

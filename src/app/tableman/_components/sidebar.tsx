@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Database, Users, Table2, Rocket, Webhook, Terminal } from "lucide-react";
+import { Database, Users, Rocket, Webhook, Terminal } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -50,9 +50,14 @@ export function Sidebar() {
   return (
     <div className="w-16 bg-neutral-900 flex flex-col h-dvh shrink-0">
       <div className="p-3 flex justify-center border-b border-neutral-800">
-        <div className="size-10 rounded-xl bg-neutral-800 flex items-center justify-center">
-          <Table2 className="size-5 text-white" />
-        </div>
+        <Link href="/" title="返回首页" aria-label="返回首页">
+          <Avatar className="size-10 cursor-pointer rounded-xl">
+            <AvatarImage src={userImage || undefined} alt="profile" />
+            <AvatarFallback className="rounded-xl bg-neutral-700 text-sm font-medium text-white">
+              U
+            </AvatarFallback>
+          </Avatar>
+        </Link>
       </div>
 
       <nav className="flex-1 flex flex-col items-center gap-2 p-3">
@@ -77,17 +82,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="p-3 flex justify-center border-t border-neutral-800">
-        <Link href="/">
-          <Avatar className="size-8 cursor-pointer">
-            <AvatarImage src={userImage || undefined} alt="profile" />
-            <AvatarFallback className="bg-neutral-700 text-white text-sm font-medium">
-              U
-            </AvatarFallback>
-          </Avatar>
-        </Link>
-      </div>
     </div>
   );
 }

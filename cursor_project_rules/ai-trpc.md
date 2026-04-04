@@ -23,7 +23,8 @@
 #### tRPC Procedures（非流式）
 
 - `ai.extractSubtitles` - 字幕提取
-- `ai.translateAndRuby` - 翻译与 Ruby 注音
+- `ai.translateAndSegment` - 翻译与分词（含 Ruby 等）
+- `ai.textToSql` - 自然语言转 SQL（管理员）
 - `ai.generateWordDistractions` - 单词干扰项生成
 - `ai.generateMultilingualMeaning` - 单词多语言意思
 - `ai.translateQuestion` - 问题多语言翻译

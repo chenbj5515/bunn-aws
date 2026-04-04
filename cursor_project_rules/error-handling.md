@@ -38,7 +38,8 @@
 | 区间 | Router | 错误码示例 |
 |------|--------|------------|
 | 310x | extractSubtitles | 3101 解析失败, 3102 格式错误, 3103 无内容, 3104 过长 |
-| 320x | translateAndRuby | 3201 解析失败 |
+| 320x | translateAndSegment | 3201 解析失败, 3202 AI 处理失败 |
+| 360x | textToSql | 3601 解析失败, 3602 缺少 SQL |
 | 330x | generateWordDistractions | 3301 意思格式错误, 3302 发音格式错误 |
 | 340x | generateMultilingualMeaning | 3401 输入无效, 3402 解析失败 |
 | 350x | translateQuestion | 3501 解析失败 |

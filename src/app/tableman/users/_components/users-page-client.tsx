@@ -3,9 +3,11 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { UsersTable, type UserRow } from "../../_components/users-table";
+import { UserBillingDialog } from "../../_components/user-billing-dialog";
 import { Users } from "lucide-react";
 import { fetchUsersData, deleteUsers } from "../../_actions";
 import type { RedisKeyEntry, RedisKeysResponse } from "@/app/api/tableman/redis-keys/route";
+import type { UserBillingSnapshot } from "@/lib/tableman/user-billing-types";
 
 interface UsersData {
   tableExists: boolean;
@@ -32,6 +34,10 @@ export function UsersPageClient({
   const [redisKeys, setRedisKeys] = useState<RedisKeyEntry[]>([]);
   const [redisKeysUserId, setRedisKeysUserId] = useState<string | null>(null);
   const [isLoadingRedisKeys, setIsLoadingRedisKeys] = useState(false);
+
+  const [billingUserId, setBillingUserId] = useState<string | null>(null);
+  const [billingSnapshot, setBillingSnapshot] = useState<UserBillingSnapshot | null>(null);
+  const [isLoadingBilling, setIsLoadingBilling] = useState(false);
 
   const loadUsers = useCallback(
     async (currentPage: number, currentAdminFilter: boolean | null) => {
@@ -113,6 +119,39 @@ export function UsersPageClient({
   const handleViewRedisKeys = (userId: string) => {
     setRedisKeysUserId(userId);
     fetchRedisKeys(userId);
+  };
+
+  const fetchBilling = useCallback(async (userId: string) => {
+    try {
+      setIsLoadingBilling(true);
+      setBillingSnapshot(null);
+      const params = new URLSearchParams({ userId });
+      const response = await fetch(`/api/tableman/users/billing?${params.toString()}`);
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "获取计费信息失败");
+      }
+      const data: UserBillingSnapshot = await response.json();
+      setBillingSnapshot(data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "获取计费信息失败";
+      toast.error(message);
+      setBillingUserId(null);
+    } finally {
+      setIsLoadingBilling(false);
+    }
+  }, []);
+
+  const handleViewBilling = (userId: string) => {
+    setBillingUserId(userId);
+    fetchBilling(userId);
+  };
+
+  const handleCloseBilling = (open: boolean) => {
+    if (!open) {
+      setBillingUserId(null);
+      setBillingSnapshot(null);
+    }
   };
 
   const handleCloseRedisKeys = () => {
@@ -214,8 +253,16 @@ export function UsersPageClient({
           onRefreshRedisKeys={handleRefreshRedisKeys}
           onUpdateRedisKey={handleUpdateRedisKey}
           onDeleteRedisKey={handleDeleteRedisKey}
+          onViewBilling={handleViewBilling}
         />
       </div>
+
+      <UserBillingDialog
+        open={billingUserId !== null}
+        onOpenChange={handleCloseBilling}
+        snapshot={billingSnapshot}
+        isLoading={isLoadingBilling}
+      />
     </div>
   );
 }

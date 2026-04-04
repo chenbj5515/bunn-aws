@@ -28,7 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trash2, Users, Database, Shield, ShieldCheck, KeyRound } from "lucide-react";
+import { Trash2, Users, Database, Shield, ShieldCheck, KeyRound, Wallet } from "lucide-react";
 import type { RedisKeyEntry } from "@/app/api/tableman/redis-keys/route";
 import { RedisKeysPanel } from "./redis-keys-panel";
 
@@ -64,6 +64,7 @@ interface UsersTableProps {
   onRefreshRedisKeys: () => void;
   onUpdateRedisKey: (key: string, value: string, ttl?: number) => Promise<void>;
   onDeleteRedisKey: (key: string) => Promise<void>;
+  onViewBilling: (userId: string) => void;
 }
 
 function formatTokenUsage(value: unknown): string {
@@ -118,6 +119,7 @@ export function UsersTable({
   onRefreshRedisKeys,
   onUpdateRedisKey,
   onDeleteRedisKey,
+  onViewBilling,
 }: UsersTableProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(
     new Set()
@@ -266,7 +268,7 @@ export function UsersTable({
             onClick={handleDeleteClick}
             disabled={isDeleting}
             aria-label="删除选中的用户"
-            className="rounded-lg"
+            className="rounded-lg text-white hover:text-white"
           >
             <Trash2 className="size-4" />
             {isDeleting ? "删除中..." : `删除 (${selectedIds.size})`}
@@ -307,6 +309,9 @@ export function UsersTable({
                 </TableHead>
                 <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium">
                   付费状态
+                </TableHead>
+                <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium w-28">
+                  计费
                 </TableHead>
                 {hasAdminColumn && (
                   <TableHead className="top-0 z-10 sticky bg-white text-neutral-600 font-medium">
@@ -364,6 +369,19 @@ export function UsersTable({
                         </span>
                       ) : (
                         <span className="text-neutral-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {rowId !== null && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-2.5 gap-1.5 text-xs rounded-lg"
+                          onClick={() => onViewBilling(String(rowId))}
+                        >
+                          <Wallet className="size-3.5" />
+                          计费
+                        </Button>
                       )}
                     </TableCell>
                     {hasAdminColumn && (
@@ -471,7 +489,7 @@ export function UsersTable({
       {redisKeysUserId && (
         <Dialog open={true} onOpenChange={(open: boolean) => !open && onCloseRedisKeys()}>
           <DialogContent
-            className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
+            className="flex max-h-[85vh] max-w-2xl flex-col gap-4 overflow-hidden sm:max-w-2xl"
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
             <DialogHeader className="shrink-0">
@@ -483,7 +501,7 @@ export function UsersTable({
                 <code className="font-mono text-xs bg-neutral-100 px-1.5 py-0.5 rounded">{redisKeysUserId}</code>
               </DialogDescription>
             </DialogHeader>
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <RedisKeysPanel
                 keys={redisKeys}
                 userId={redisKeysUserId}

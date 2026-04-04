@@ -4,9 +4,9 @@ import { getSession, getUserSettings } from '@/lib/auth';
 import { SUBSCRIPTION_KEYS, FREE_KEYS } from '@/constants/redis-keys';
 
 /** 订阅用户费用上限：$4 */
-const SUBSCRIPTION_LIMIT_MICRO = 4_000_000;
+export const SUBSCRIPTION_LIMIT_MICRO = 4_000_000;
 /** 免费用户每日费用上限：$0.1 */
-const FREE_LIMIT_MICRO = 100_000;
+export const FREE_LIMIT_MICRO = 100_000;
 
 /**
  * 检查用户是否在配额内
