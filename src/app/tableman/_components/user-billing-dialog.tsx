@@ -140,43 +140,83 @@ export function UserBillingDialog({
 
               <section className="rounded-xl border border-neutral-200 p-4">
                 <div className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">
-                  预计清零 / 重置累计
+                  重置时间
                 </div>
                 <p className="font-medium text-neutral-900">
                   {formatDateTime(snapshot.resetAtIso)}
                 </p>
-                <p className="text-xs text-neutral-500 mt-2 leading-relaxed">
+                <p className="text-xs text-neutral-500 mt-2 leading-relaxed break-words">
                   {snapshot.resetHint}
                 </p>
-                {snapshot.costKeyTtlSeconds !== null && snapshot.costKeyTtlSeconds >= 0 && (
-                  <p className="text-xs text-neutral-400 mt-1 font-mono">
-                    费用键 TTL: {snapshot.costKeyTtlSeconds}s
-                  </p>
-                )}
               </section>
 
-              <section>
-                <div className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-3">
+              <section className="rounded-xl border border-neutral-200 p-4">
+                <div className="text-xs font-medium uppercase tracking-wide text-neutral-500 mb-2">
                   内訳（分项花费）
                 </div>
-                <div className="space-y-3">
-                  {snapshot.breakdown.map((row) => (
-                    <div
-                      key={row.id}
-                      className="rounded-xl border border-neutral-100 bg-white p-3"
-                    >
-                      <div className="flex justify-between gap-2 items-start">
-                        <span className="font-medium text-neutral-800">{row.label}</span>
-                        <span className="tabular-nums font-medium text-neutral-900 shrink-0">
-                          {formatUsd(row.micro)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-neutral-500 mt-2 leading-relaxed">
-                        {row.calculationNote}
+                {(() => {
+                  const [o, m, b] = snapshot.breakdownLines;
+                  const sumParts = (o?.micro ?? 0) + (m?.micro ?? 0) + (b?.micro ?? 0);
+                  const sumOk = sumParts === snapshot.totalMicro;
+                  return (
+                    <>
+                      <p className="font-mono text-xs leading-relaxed break-all text-neutral-900">
+                        <span className="text-neutral-500">cost_total_micro</span> ={" "}
+                        <span className="text-neutral-500">cost_openai_micro</span> +{" "}
+                        <span className="text-neutral-500">cost_minimax_tts_micro</span> +{" "}
+                        <span className="text-neutral-500">cost_vercel_blob_micro</span>
                       </p>
-                    </div>
-                  ))}
-                </div>
+                      <p className="font-mono text-sm tabular-nums mt-2 text-neutral-900">
+                        {snapshot.totalMicro} = {o?.micro ?? 0} + {m?.micro ?? 0} + {b?.micro ?? 0}{" "}
+                        <span className="text-neutral-500 text-xs font-sans">（microUSD）</span>
+                      </p>
+                      {!sumOk && (
+                        <p className="text-xs text-amber-700 mt-1">
+                          提示：分项之和与 total 不一致，可能 Redis/DB 不同步。
+                        </p>
+                      )}
+                      <p className="font-mono text-[11px] text-neutral-600 mt-3 break-all leading-relaxed">
+                        合计 Redis GET <span className="text-neutral-800">{snapshot.totalRedisKey}</span> →{" "}
+                        {snapshot.totalRedisRaw === null
+                          ? "（无键）"
+                          : `"${snapshot.totalRedisRaw}"`}{" "}
+                        ；采用 {snapshot.totalValueSource === "redis" ? "Redis" : "DB"} →{" "}
+                        {snapshot.totalMicro} microUSD
+                        {snapshot.totalDbStoredMicro !== null && (
+                          <>
+                            {" "}
+                            · DB <span className="text-neutral-800">usage.{snapshot.totalDbColumn}</span>{" "}
+                            = {snapshot.totalDbStoredMicro}
+                          </>
+                        )}
+                      </p>
+
+                      <div className="mt-4 space-y-4 border-t border-neutral-100 pt-4">
+                        {snapshot.breakdownLines.map((line) => (
+                          <div key={line.id} className="text-xs space-y-1.5">
+                            <p className="font-medium text-neutral-800">{line.label}</p>
+                            <p className="font-mono text-[11px] text-neutral-600 break-all leading-relaxed">
+                              Redis GET <span className="text-neutral-800">{line.redisKey}</span> →{" "}
+                              {line.redisRaw === null ? "（无键）" : `"${line.redisRaw}"`}{" "}
+                              ；采用 {line.valueSource === "redis" ? "Redis" : "DB"} →{" "}
+                              <span className="tabular-nums text-neutral-900">{line.micro}</span> microUSD
+                            </p>
+                            <p className="font-mono text-[11px] text-neutral-600 break-all">
+                              DB 列{" "}
+                              <span className="text-neutral-800">usage.{line.dbColumn}</span>
+                              {line.dbStoredMicro !== null
+                                ? ` = ${line.dbStoredMicro}`
+                                : "（当前周期无行或为空）"}
+                            </p>
+                            <p className="text-neutral-600 leading-relaxed pl-0">
+                              系数：{line.coefficientText}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
               </section>
 
               <section className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50/80 p-4">

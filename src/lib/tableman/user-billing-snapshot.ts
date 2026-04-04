@@ -8,15 +8,16 @@ import {
   SUBSCRIPTION_LIMIT_MICRO,
 } from '@/lib/auth/billing/limit';
 import { AIPricing } from '@/constants/ai-pricing';
-import type { BillingBreakdownItem, UserBillingSnapshot } from '@/lib/tableman/user-billing-types';
+import type { BillingBreakdownLine, UserBillingSnapshot } from '@/lib/tableman/user-billing-types';
 
-export type { BillingBreakdownItem, UserBillingSnapshot } from '@/lib/tableman/user-billing-types';
+export type { BillingBreakdownLine, UserBillingSnapshot } from '@/lib/tableman/user-billing-types';
 
-async function microFromRedis(key: string): Promise<number | null> {
+async function redisCostSlot(key: string): Promise<{ raw: string | null; micro: number | null }> {
   const v = await redis.get<string>(key);
-  if (v === null || v === undefined) return null;
-  const n = parseInt(String(v), 10);
-  return Number.isNaN(n) ? null : n;
+  if (v === null || v === undefined) return { raw: null, micro: null };
+  const s = String(v);
+  const n = parseInt(s, 10);
+  return { raw: s, micro: Number.isNaN(n) ? null : n };
 }
 
 function microToUsd(micro: number): number {
@@ -32,14 +33,94 @@ function dateKeyForTimezone(timezone: string): string {
   return `${y}-${m}-${d}`;
 }
 
-function buildMethodology(): string[] {
+function openaiCoefficientText(): string {
   const g4o = AIPricing.openai['gpt-4o'];
   const g4m = AIPricing.openai['gpt-4o-mini'];
+  return `gpt-4o：输入 $${g4o.inputPer1K}/1K tokens、输出 $${g4o.outputPer1K}/1K；gpt-4o-mini：输入 $${g4m.inputPer1K}/1K、输出 $${g4m.outputPer1K}/1K（USD，按次请求折算为 microUSD 后 INCRBY 写入上列 Redis，并同步 usage.cost_openai_micro）`;
+}
+
+function minimaxCoefficientText(): string {
+  return `MiniMax TTS：$${AIPricing.minimax.ttsPer1KChars}/1K 字符（USD，(chars/1000)×单价 → microUSD 累加；usage.cost_minimax_tts_micro）`;
+}
+
+function blobCoefficientText(): string {
+  return `Vercel Blob：$${AIPricing.vercelBlob.storageUsdPerGb}/GB（USD，(bytes/10⁹)×单价 → microUSD 累加；usage.cost_vercel_blob_micro）`;
+}
+
+function buildMethodology(): string[] {
   return [
-    '总成本 = OpenAI 估算 + MiniMax TTS + Vercel Blob 三项之和，均以 microUSD（10⁻⁶ 美元）在 Redis / usage 表中累计。',
-    `OpenAI：每次 trackUsage 按模型与 input/output tokens，用「$/1K tokens」折算。当前定价：gpt-4o 输入 $${g4o.inputPer1K}/1K、输出 $${g4o.outputPer1K}/1K；gpt-4o-mini 输入 $${g4m.inputPer1K}/1K、输出 $${g4m.outputPer1K}/1K（与 estimateOpenAICostMicroUSD 一致，可被 ENV 覆盖）。`,
-    `MiniMax TTS：字符数 ÷ 1000 × $${AIPricing.minimax.ttsPer1KChars}/1K 字符（costMeta.provider === 'minimax' 时计入）。`,
-    `Vercel Blob：字节数 ÷ 10⁹ × $${AIPricing.vercelBlob.storageUsdPerGb}/GB（costMeta.provider === 'blob' 时计入）。`,
+    '总成本 = OpenAI + MiniMax TTS + Vercel Blob 三项 microUSD 之和，与 cost_total_micro 及上方等式一致；单价系数见各分项「系数」行（与 AIPricing / trackUsage 一致）。',
+  ];
+}
+
+type UsageRow = {
+  costTotalMicro: number;
+  costOpenaiMicro: number;
+  costMinimaxTtsMicro: number;
+  costVercelBlobMicro: number;
+} | null;
+
+function buildBreakdownLines(
+  slots: {
+    openai: { raw: string | null; micro: number | null };
+    minimax: { raw: string | null; micro: number | null };
+    blob: { raw: string | null; micro: number | null };
+  },
+  keys: { openai: string; minimax: string; blob: string },
+  row: UsageRow
+): BillingBreakdownLine[] {
+  const pick = (
+    redisKey: string,
+    slot: { raw: string | null; micro: number | null },
+    dbVal: number | undefined,
+    dbColumn: string,
+    id: BillingBreakdownLine['id'],
+    label: string,
+    coefficientText: string
+  ): BillingBreakdownLine => {
+    const fromRedis = slot.micro !== null;
+    const micro = fromRedis ? slot.micro! : (dbVal ?? 0);
+    return {
+      id,
+      label,
+      micro,
+      redisKey,
+      redisRaw: slot.raw,
+      valueSource: fromRedis ? 'redis' : 'db',
+      dbColumn,
+      dbStoredMicro: dbVal ?? null,
+      coefficientText,
+    };
+  };
+
+  return [
+    pick(
+      keys.openai,
+      slots.openai,
+      row?.costOpenaiMicro,
+      'cost_openai_micro',
+      'openai',
+      'OpenAI',
+      openaiCoefficientText()
+    ),
+    pick(
+      keys.minimax,
+      slots.minimax,
+      row?.costMinimaxTtsMicro,
+      'cost_minimax_tts_micro',
+      'minimax',
+      'MiniMax TTS',
+      minimaxCoefficientText()
+    ),
+    pick(
+      keys.blob,
+      slots.blob,
+      row?.costVercelBlobMicro,
+      'cost_vercel_blob_micro',
+      'vercel_blob',
+      'Vercel Blob',
+      blobCoefficientText()
+    ),
   ];
 }
 
@@ -65,66 +146,46 @@ export async function getUserBillingSnapshot(userId: string): Promise<UserBillin
         and(eq(tbl.userId, userId), eq(tbl.subscriptionId, subscriptionId)),
     });
 
-    const rTotal = await microFromRedis(totalKey);
-    const rOpenai = await microFromRedis(openaiKey);
-    const rMinimax = await microFromRedis(minimaxKey);
-    const rBlob = await microFromRedis(blobKey);
+    const [totalSlot, openaiSlot, minimaxSlot, blobSlot] = await Promise.all([
+      redisCostSlot(totalKey),
+      redisCostSlot(openaiKey),
+      redisCostSlot(minimaxKey),
+      redisCostSlot(blobKey),
+    ]);
 
-    const totalMicro = rTotal ?? row?.costTotalMicro ?? 0;
-    const openaiMicro = rOpenai ?? row?.costOpenaiMicro ?? 0;
-    const minimaxMicro = rMinimax ?? row?.costMinimaxTtsMicro ?? 0;
-    const blobMicro = rBlob ?? row?.costVercelBlobMicro ?? 0;
+    const totalMicro = totalSlot.micro ?? row?.costTotalMicro ?? 0;
+    const breakdownLines = buildBreakdownLines(
+      { openai: openaiSlot, minimax: minimaxSlot, blob: blobSlot },
+      { openai: openaiKey, minimax: minimaxKey, blob: blobKey },
+      row
+        ? {
+            costTotalMicro: row.costTotalMicro,
+            costOpenaiMicro: row.costOpenaiMicro,
+            costMinimaxTtsMicro: row.costMinimaxTtsMicro,
+            costVercelBlobMicro: row.costVercelBlobMicro,
+          }
+        : null
+    );
 
     const ttl = await redis.ttl(totalKey);
+    const settingsKey = `user:${userId}:settings`;
 
     let resetAtIso: string | null = null;
     let resetHint: string;
     if (ttl > 0) {
       resetAtIso = new Date(Date.now() + ttl * 1000).toISOString();
-      resetHint =
-        '根据订阅维度费用键的 Redis TTL 推算，与 trackUsage 为订阅键设置的过期时间一致（通常对齐订阅周期）。';
+      resetHint = `来源：Redis 键 \`${totalKey}\` 的过期时刻（与订阅周期写入 Redis 的过期策略一致）。`;
     } else if (ttl === -1) {
-      resetHint =
-        '费用键存在但未设置 TTL，无法从 Redis 推算清零时间；若用户有订阅到期时间，可参考下方订阅到期。';
+      resetHint = `Redis 键 \`${totalKey}\` 存在但未配置过期；下列时间改取自 Redis 键 \`${settingsKey}\`（JSON）中的字段 \`subscription.expireTime\`。`;
       if (expireTime) {
         resetAtIso = new Date(expireTime).toISOString();
-        resetHint +=
-          ' 下列时间来自用户设置中的订阅到期时间，可能与成本键重置不完全一致。';
       }
     } else {
-      resetHint =
-        '当前无订阅周期费用键或已过期；若有订阅，以下用用户设置中的订阅到期作为参考。';
+      resetHint = `未读到有效 Redis 键 \`${totalKey}\`（无键或已过期）；下列时间取自 \`${settingsKey}\` → \`subscription.expireTime\`。`;
       if (expireTime) {
         resetAtIso = new Date(expireTime).toISOString();
       }
     }
-
-    const breakdown: BillingBreakdownItem[] = [
-      {
-        id: 'openai',
-        label: 'OpenAI（tokens 估算）',
-        micro: openaiMicro,
-        usd: microToUsd(openaiMicro),
-        calculationNote:
-          '各次 AI 请求按模型累计 input/output tokens，再按 AIPricing 中该模型的 $/1K 单价换算后求和。',
-      },
-      {
-        id: 'minimax',
-        label: 'MiniMax TTS',
-        micro: minimaxMicro,
-        usd: microToUsd(minimaxMicro),
-        calculationNote:
-          '仅在 tts.synthesize 等路径传入 costMeta.provider=minimax 且提供 chars 时累加。',
-      },
-      {
-        id: 'vercel_blob',
-        label: 'Vercel Blob',
-        micro: blobMicro,
-        usd: microToUsd(blobMicro),
-        calculationNote:
-          '上传等路径传入 costMeta.provider=blob 与 bytes 时，按存储单价折算。',
-      },
-    ];
 
     return {
       userId,
@@ -135,15 +196,19 @@ export async function getUserBillingSnapshot(userId: string): Promise<UserBillin
       subscriptionId,
       timezone,
       mode: 'subscription',
-      periodLabel: '当前订阅周期（与 Redis 订阅费用键 TTL 对齐）',
+      periodLabel: `当前订阅周期（Redis user:${userId}:subscription:cost_micro:*）`,
       totalMicro,
       totalUsd: microToUsd(totalMicro),
       quotaMicro: SUBSCRIPTION_LIMIT_MICRO,
       quotaUsd: microToUsd(SUBSCRIPTION_LIMIT_MICRO),
-      breakdown,
+      totalRedisKey: totalKey,
+      totalRedisRaw: totalSlot.raw,
+      totalValueSource: totalSlot.micro !== null ? 'redis' : 'db',
+      totalDbColumn: 'cost_total_micro',
+      totalDbStoredMicro: row?.costTotalMicro ?? null,
+      breakdownLines,
       resetAtIso,
       resetHint,
-      costKeyTtlSeconds: ttl >= -1 ? ttl : null,
       methodology,
     };
   }
@@ -159,46 +224,30 @@ export async function getUserBillingSnapshot(userId: string): Promise<UserBillin
       and(eq(tbl.userId, userId), eq(tbl.periodKey, periodKey)),
   });
 
-  const rTotal = await microFromRedis(totalKey);
-  const rOpenai = await microFromRedis(openaiKey);
-  const rMinimax = await microFromRedis(minimaxKey);
-  const rBlob = await microFromRedis(blobKey);
+  const [totalSlot, openaiSlot, minimaxSlot, blobSlot] = await Promise.all([
+    redisCostSlot(totalKey),
+    redisCostSlot(openaiKey),
+    redisCostSlot(minimaxKey),
+    redisCostSlot(blobKey),
+  ]);
 
-  const totalMicro = rTotal ?? row?.costTotalMicro ?? 0;
-  const openaiMicro = rOpenai ?? row?.costOpenaiMicro ?? 0;
-  const minimaxMicro = rMinimax ?? row?.costMinimaxTtsMicro ?? 0;
-  const blobMicro = rBlob ?? row?.costVercelBlobMicro ?? 0;
+  const totalMicro = totalSlot.micro ?? row?.costTotalMicro ?? 0;
+  const breakdownLines = buildBreakdownLines(
+    { openai: openaiSlot, minimax: minimaxSlot, blob: blobSlot },
+    { openai: openaiKey, minimax: minimaxKey, blob: blobKey },
+    row
+      ? {
+          costTotalMicro: row.costTotalMicro,
+          costOpenaiMicro: row.costOpenaiMicro,
+          costMinimaxTtsMicro: row.costMinimaxTtsMicro,
+          costVercelBlobMicro: row.costVercelBlobMicro,
+        }
+      : null
+  );
 
-  const ttl = await redis.ttl(totalKey);
   const secondsToReset = getSecondsUntilNextDailyReset(timezone);
   const resetAtIso = new Date(Date.now() + secondsToReset * 1000).toISOString();
-  const resetHint =
-    '免费用户按用户设置时区「下一个凌晨 5:00」重置当日成本累计（与 getSecondsUntilNextDailyReset 一致）；日期维度键为 token:{userId}:{YYYY-MM-DD}:cost_micro:*。';
-
-  const breakdown: BillingBreakdownItem[] = [
-    {
-      id: 'openai',
-      label: 'OpenAI（tokens 估算）',
-      micro: openaiMicro,
-      usd: microToUsd(openaiMicro),
-      calculationNote:
-        '各次请求按模型与 tokens 用 OpenAI 单价估算后计入当日键。',
-    },
-    {
-      id: 'minimax',
-      label: 'MiniMax TTS',
-      micro: minimaxMicro,
-      usd: microToUsd(minimaxMicro),
-      calculationNote: 'TTS 按字符与每千字符单价计入当日。',
-    },
-    {
-      id: 'vercel_blob',
-      label: 'Vercel Blob',
-      micro: blobMicro,
-      usd: microToUsd(blobMicro),
-      calculationNote: '按上传字节与 $/GB 计入当日。',
-    },
-  ];
+  const resetHint = `来源：按用户时区 \`${timezone}\` 与业务规则推算下一重置时刻（与 trackUsage 中免费侧一致：下一日 5:00）。当日费用对应 Redis 键如 \`${totalKey}\`（及同前缀的 openai_total / minimax_tts / vercel_blob）；聚合回退可对照 DB 表 \`usage\`（\`user_id\` + \`period_key\` = \`${periodKey}\`）。`;
 
   return {
     userId,
@@ -214,10 +263,14 @@ export async function getUserBillingSnapshot(userId: string): Promise<UserBillin
     totalUsd: microToUsd(totalMicro),
     quotaMicro: FREE_LIMIT_MICRO,
     quotaUsd: microToUsd(FREE_LIMIT_MICRO),
-    breakdown,
+    totalRedisKey: totalKey,
+    totalRedisRaw: totalSlot.raw,
+    totalValueSource: totalSlot.micro !== null ? 'redis' : 'db',
+    totalDbColumn: 'cost_total_micro',
+    totalDbStoredMicro: row?.costTotalMicro ?? null,
+    breakdownLines,
     resetAtIso,
     resetHint,
-    costKeyTtlSeconds: ttl >= -1 ? ttl : null,
     methodology,
   };
 }
