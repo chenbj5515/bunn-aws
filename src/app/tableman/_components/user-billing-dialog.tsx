@@ -145,7 +145,7 @@ export function UserBillingDialog({
                 <p className="font-medium text-neutral-900">
                   {formatDateTime(snapshot.resetAtIso)}
                 </p>
-                <p className="text-xs text-neutral-500 mt-2 leading-relaxed break-words">
+                <p className="text-xs text-neutral-500 mt-2 leading-relaxed wrap-break-word">
                   {snapshot.resetHint}
                 </p>
               </section>

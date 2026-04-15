@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Database, Users, Rocket, Webhook, Terminal } from "lucide-react";
+import { Database, Users, Rocket, Webhook, Terminal, AlertCircle } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -32,6 +32,11 @@ const NAV_ITEMS = [
     href: "/tableman/sql",
     icon: Terminal,
     label: "SQL 执行器",
+  },
+  {
+    href: "/tableman/error-logs",
+    icon: AlertCircle,
+    label: "错误日志",
   },
 ];
 
